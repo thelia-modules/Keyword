@@ -10,7 +10,7 @@ This module must be into your ```modules/``` directory (thelia/local/modules/).
 You can download the .zip file of this module or create a git submodule into your project like this :
 
 ```
-cd /path-to-thelia/local/modules
+cd /path-to-thelia
 git submodule add https://github.com/mespeche/thelia-keyword.git Keyword
 ```
 
