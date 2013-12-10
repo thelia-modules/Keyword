@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<config xmlns="http://thelia.net/schema/dic/config"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://thelia.net/schema/dic/config http://thelia.net/schema/dic/config/thelia-1.0.xsd">
+
+    <loops>
+        <loop name="keyword_content" class="Keyword\Loop\KeywordContent" />
+        <loop name="keyword_folder" class="Keyword\Loop\KeywordFolder" />
+        <loop name="keyword" class="Keyword\Loop\Keyword" />
+    </loops>
+
+    <forms>
+        <form name="keyword.admin.folder.modification" class="Keyword\Form\KeywordFolderModificationForm"/>
+        <form name="keyword.admin.content.modification" class="Keyword\Form\KeywordContentModificationForm"/>
+        <form name="keyword.admin.creation" class="Keyword\Form\KeywordCreationForm"/>
+        <form name="keyword.admin.modification" class="Keyword\Form\KeywordModificationForm"/>
+    </forms>
+
+    <commands>
+        <!--
+        <command class="MyModule\Command\MySuperCommand" />
+        -->
+    </commands>
+
+    <templateDirectives>
+        <!-- Sample definition
+        <templateDirectives class="MyModule\Directive\MyTemplateDirective" name="my_filter"/>
+        -->
+    </templateDirectives>
+
+    <services>
+        <service id="keyword.action" class="Keyword\Action\Keyword">
+            <argument type="service" id="service_container"/>
+            <tag name="kernel.event_subscriber"/>
+        </service>
+    </services>
+
+</config>

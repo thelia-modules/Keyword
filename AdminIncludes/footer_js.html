@@ -1,0 +1,50 @@
+{javascripts file='assets/js/bootstrap-switch/bootstrap-switch.js'}
+<script src="{$asset_url}"></script>
+{/javascripts}
+
+{javascripts file='assets/js/bootstrap-editable/bootstrap-editable.js'}
+<script src="{$asset_url}"></script>
+{/javascripts}
+
+<script>
+    $(function() {
+
+        $('a.keyword-delete').click(function(ev) {
+            $('#keyword_delete_id').val($(this).data('id'));
+        });
+
+        {* Inline editing of object position using bootstrap-editable *}
+
+        $('.keywordPositionChange').editable({
+            type        : 'text',
+            title       : '{intl l="Enter new keyword position"}',
+            mode        : 'popup',
+            inputclass  : 'input-mini',
+            placement   : 'left',
+            success     : function(response, newValue) {
+                // The URL template
+                var url = "{url path='/admin/module/Keyword/update-position' keyword_id='__ID__' position='__POS__'}";
+
+                // Perform subtitutions
+                url = url.replace('__ID__', $(this).data('id'))
+                        .replace('__POS__', newValue);
+
+                // Reload the page
+                location.href = url;
+            }
+        });
+
+        {* Toggle object visibility *}
+
+        $(".keywordVisibleToggle").on('switch-change', function(event, data) {
+            $.ajax({
+                url : "{url path='admin/module/Keyword/toggle-online'}",
+                data : {
+                    keyword_id : $(this).data('id'),
+                    action : 'visibilityToggle'
+                }
+            });
+        });
+
+    });
+</script>

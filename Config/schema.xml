@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<database defaultIdMethod="native" name="thelia" >
+    <!--
+    See propel documentation on http://propelorm.org for all information about schema file
+    -->
+	<table name="keyword" namespace="Keyword\Model">
+		<column autoIncrement="true" name="id" primaryKey="true" required="true" type="INTEGER" />
+		<column name="visible" type="TINYINT" />
+		<column name="position" type="INTEGER" />
+		<column name="title" size="255" type="VARCHAR" />
+		<column name="code" size="255" type="VARCHAR" />
+		<column name="description" type="CLOB" />
+		<column name="chapo" type="LONGVARCHAR" />
+		<column name="postscriptum" type="LONGVARCHAR" />
+		<behavior name="timestampable" />
+		<behavior name="i18n">
+			<parameter name="i18n_columns" value="title, description, chapo, postscriptum" />
+		</behavior>
+	</table>
+
+	<table name="content_associated_keyword" namespace="Keyword\Model">
+		<column name="content_id" primaryKey="true" required="true" type="INTEGER" />
+		<column name="keyword_id" primaryKey="true" required="true" type="INTEGER" />
+		<column name="position" required="true" type="INTEGER" />
+		<foreign-key foreignTable="content" name="fk_content_associated_keyword_content_id" onDelete="CASCADE" onUpdate="RESTRICT">
+			<reference foreign="id" local="content_id" />
+		</foreign-key>
+		<foreign-key foreignTable="keyword" name="fk_content_associated_keyword_keyword_id" onDelete="CASCADE" onUpdate="RESTRICT">
+			<reference foreign="id" local="keyword_id" />
+		</foreign-key>
+		<index name="idx_content_associated_keyword_content_id">
+			<index-column name="content_id" />
+		</index>
+		<index name="idx_content_associated_keyword_keyword_id">
+			<index-column name="keyword_id" />
+		</index>
+		<behavior name="timestampable" />
+	</table>
+
+	<table name="folder_associated_keyword" namespace="Keyword\Model">
+		<column name="folder_id" primaryKey="true" required="true" type="INTEGER" />
+		<column name="keyword_id" primaryKey="true" required="true" type="INTEGER" />
+		<column name="position" required="true" type="INTEGER" />
+		<foreign-key foreignTable="folder" name="fk_folder_associated_keyword_folder_id" onDelete="CASCADE" onUpdate="RESTRICT">
+			<reference foreign="id" local="folder_id" />
+		</foreign-key>
+		<foreign-key foreignTable="keyword" name="fk_folder_associated_keyword_keyword_id" onDelete="CASCADE" onUpdate="RESTRICT">
+			<reference foreign="id" local="keyword_id" />
+		</foreign-key>
+		<index name="idx_folder_associated_keyword_folder_id">
+			<index-column name="folder_id" />
+		</index>
+		<index name="idx_folder_associated_keyword_keyword_id">
+			<index-column name="keyword_id" />
+		</index>
+		<behavior name="timestampable" />
+	</table>
+
+    <external-schema filename="local/config/schema.xml" referenceOnly="true" />
+</database>

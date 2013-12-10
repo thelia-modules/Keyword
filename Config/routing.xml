@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<routes xmlns="http://symfony.com/schema/routing"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://symfony.com/schema/routing http://symfony.com/schema/routing/routing-1.0.xsd">
+
+    <route id="admin.keyword.folders.association.update" path="/admin/folders/update/{folder_id}/keyword">
+        <default key="_controller">Keyword\Controller\Admin\KeywordController::updateKeywordFolderAssociation</default>
+        <requirement key="folder_id">\d+</requirement>
+    </route>
+
+    <route id="admin.keyword.contents.association.update" path="/admin/content/update/{content_id}/keyword">
+        <default key="_controller">Keyword\Controller\Admin\KeywordController::updateKeywordContentAssociation</default>
+        <requirement key="content_id">\d+</requirement>
+    </route>
+
+    <route id="admin.keyword.update-position" path="/admin/module/Keyword/update-position">
+        <default key="_controller">Keyword\Controller\Admin\KeywordController::updatePositionAction</default>
+    </route>
+
+    <route id="admin.keyword.update" path="/admin/module/Keyword/update">
+        <default key="_controller">Keyword\Controller\Admin\KeywordController::updateAction</default>
+    </route>
+
+    <route id="admin.keyword.create" path="/admin/module/Keyword/create">
+        <default key="_controller">Keyword\Controller\Admin\KeywordController::createAction</default>
+    </route>
+
+    <route id="admin.keyword.delete" path="/admin/module/Keyword/delete">
+        <default key="_controller">Keyword\Controller\Admin\KeywordController::deleteAction</default>
+    </route>
+
+    <route id="admin.keyword.save" path="/admin/module/Keyword/save">
+        <default key="_controller">Keyword\Controller\Admin\KeywordController::processUpdateAction</default>
+    </route>
+
+    <route id="admin.keyword.toggle-online" path="/admin/module/Keyword/toggle-online">
+        <default key="_controller">Keyword\Controller\Admin\KeywordController::setToggleVisibilityAction</default>
+    </route>
+
+    <route id="admin.keyword.view" path="/admin/module/Keyword/view">
+        <default key="_controller">Keyword\Controller\Admin\KeywordController::viewAction</default>
+    </route>
+
+</routes>
