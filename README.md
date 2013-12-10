@@ -5,7 +5,7 @@ This allows you for example to display items based on a particular keyword or st
 
 ## How to install
 
-This module must be intro your ```modules/``` directory (thelia/local/modules/).
+This module must be into your ```modules/``` directory (thelia/local/modules/).
 
 You can download the .zip file of this module or create a git submodule into your project like this :
 
