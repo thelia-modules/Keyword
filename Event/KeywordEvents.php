@@ -67,6 +67,7 @@ class KeywordEvents extends ActionEvent
     function __construct($title, $code, $visible, $locale)
     {
         $this->title = $title;
+        $this->code = $code;
         $this->visible = $visible;
         $this->locale = $locale;
     }
