@@ -21,3 +21,28 @@ Next, go to your Thelia admin panel for module activation.
 You can manage your keywords on the configuration view of the module with the "configure" button on the modules list.
 
 To associate one or more keywords to a content or a folder, go to tab "Modules" of content or folder editing view.
+
+This module allow you to use 3 new loops : keyword_content, keyword_folder and keyword.
+
+Here is an example of using each :
+
+__Use the keyword_content loop (list of contents related to the "my_keyword" keyword)__
+```html
+{loop name="contents" type="keyword_content" keyword="my_keyword" folder="1" order="manual_reverse"}
+    ...
+{/loop}
+```
+
+__Use the keyword_folder loop (list of folders related to the "my_keyword" keyword)__
+```html
+{loop name="folders" type="keyword_folder" keyword="my_keyword"}
+    ...
+{/loop}
+```
+
+__Use the keyword loop (list all keywords that are visible)__
+```html
+{loop name="keyword_list" type="keyword" visible="*" order="manual" backend_context="1" lang=$lang_id}
+    ...
+{/loop}
+```
