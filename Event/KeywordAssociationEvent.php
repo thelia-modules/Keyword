@@ -23,6 +23,7 @@
 namespace Keyword\Event;
 
 use Thelia\Core\Event\ActionEvent;
+use Thelia\Model\Category;
 use Thelia\Model\Folder;
 use Thelia\Model\Content;
 
@@ -45,6 +46,11 @@ class KeywordAssociationEvent extends ActionEvent
      * @var \Thelia\Model\Content
      */
     protected $content;
+
+    /**
+     * @var \Thelia\Model\Category
+     */
+    protected $category;
 
     /**
      * @param array  $keyword_list     the list of keywords
@@ -70,6 +76,14 @@ class KeywordAssociationEvent extends ActionEvent
         $this->content = $content;
     }
 
+    /**
+     * @param Category $category
+     */
+    public function setCategory(Category $category)
+    {
+        $this->category = $category;
+    }
+
     public function getKeywordList(){
         return $this->keyword_list;
     }
@@ -80,6 +94,10 @@ class KeywordAssociationEvent extends ActionEvent
 
     public function getContent(){
         return $this->content;
+    }
+
+    public function getCategory(){
+        return $this->category;
     }
 
 }

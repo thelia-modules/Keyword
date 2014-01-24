@@ -14,6 +14,11 @@
         <requirement key="content_id">\d+</requirement>
     </route>
 
+    <route id="admin.keyword.categories.association.update" path="/admin/categories/update/{category_id}/keyword">
+        <default key="_controller">Keyword\Controller\Admin\KeywordController::updateKeywordCategoryAssociation</default>
+        <requirement key="content_id">\d+</requirement>
+    </route>
+
     <route id="admin.keyword.update-position" path="/admin/module/Keyword/update-position">
         <default key="_controller">Keyword\Controller\Admin\KeywordController::updatePositionAction</default>
     </route>

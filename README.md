@@ -40,6 +40,13 @@ __Use the keyword_folder loop (list of folders related to the "my_keyword" keywo
 {/loop}
 ```
 
+__Use the keyword_category loop (list of categories related to the "my_keyword" keyword)__
+```html
+{loop name="categories" type="keyword_category" keyword="my_keyword"}
+    ...
+{/loop}
+```
+
 __Use the keyword loop (list all keywords that are visible)__
 ```html
 {loop name="keyword_list" type="keyword" visible="*" order="manual" backend_context="1" lang=$lang_id}

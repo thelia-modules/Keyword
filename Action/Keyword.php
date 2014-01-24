@@ -29,6 +29,8 @@ use Keyword\Event\KeywordEvents;
 
 use Keyword\Event\KeywordToggleVisibilityEvent;
 use Keyword\Event\KeywordUpdateEvent;
+use Keyword\Model\CategoryAssociatedKeyword;
+use Keyword\Model\CategoryAssociatedKeywordQuery;
 use Keyword\Model\ContentAssociatedKeyword;
 use Keyword\Model\ContentAssociatedKeywordQuery;
 
@@ -96,6 +98,32 @@ class Keyword extends BaseAction implements EventSubscriberInterface
             $keywordFolderAssociation = new ContentAssociatedKeyword();
             $keywordFolderAssociation
                 ->setContentId($content->getId())
+                ->setKeywordId($keywordId)
+                ->save();
+
+        }
+
+    }
+
+    public function updateKeywordCategoryAssociation(KeywordAssociationEvent $event)
+    {
+        // Category to associate
+        $category = $event->getCategory();
+
+        // Keyword to save to this category
+        $keywordListToSave = $event->getKeywordList();
+
+        // Delete all association to this category
+        CategoryAssociatedKeywordQuery::create()
+            ->filterByCategoryId($category->getId())
+            ->delete();
+
+        // Create all associations to this category
+        foreach ($keywordListToSave as $keywordId) {
+
+            $keywordCategoryAssociation = new CategoryAssociatedKeyword();
+            $keywordCategoryAssociation
+                ->setCategoryId($category->getId())
                 ->setKeywordId($keywordId)
                 ->save();
 
@@ -212,6 +240,7 @@ class Keyword extends BaseAction implements EventSubscriberInterface
         return array(
             KeywordEvents::KEYWORD_UPDATE_FOLDER_ASSOCIATION    => array('updateKeywordFolderAssociation', 128),
             KeywordEvents::KEYWORD_UPDATE_CONTENT_ASSOCIATION   => array('updateKeywordContentAssociation', 128),
+            KeywordEvents::KEYWORD_UPDATE_CATEGORY_ASSOCIATION  => array('updateKeywordCategoryAssociation', 128),
             KeywordEvents::KEYWORD_UPDATE_POSITION              => array('updateKeywordPosition', 128),
             KeywordEvents::KEYWORD_CREATE                       => array('createKeyword', 128),
             KeywordEvents::KEYWORD_UPDATE                       => array('updateKeyword', 128),

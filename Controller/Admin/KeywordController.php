@@ -28,6 +28,7 @@ use Keyword\Event\KeywordDeleteEvent;
 use Keyword\Event\KeywordAssociationEvent;
 use Keyword\Event\KeywordEvents;
 use Keyword\Event\KeywordUpdateEvent;
+use Keyword\Form\KeywordCategoryModificationForm;
 use Keyword\Form\KeywordContentModificationForm;
 use Keyword\Form\KeywordCreationForm;
 use Keyword\Form\KeywordModificationForm;
@@ -41,6 +42,7 @@ use Thelia\Core\Event\UpdatePositionEvent;
 use Thelia\Core\Security\AccessManager;
 use Thelia\Model\Base\FolderQuery;
 use Thelia\Form\Exception\FormValidationException;
+use Thelia\Model\CategoryQuery;
 use Thelia\Model\ContentQuery;
 
 /**
@@ -176,6 +178,58 @@ class KeywordController extends AbstractCrudController
             'admin.content.update',
             array(),
             array('content_id' => $content_id, 'current_tab' => 'modules')
+        );
+    }
+
+    public function updateKeywordCategoryAssociation($category_id)
+    {
+
+        /** @var KeywordCategoryModificationForm $keywordCategoryUpdateForm */
+        $keywordCategoryUpdateForm = new KeywordCategoryModificationForm($this->getRequest());
+
+        $message = false;
+
+        try {
+
+            $category = CategoryQuery::create()->findPk($category_id);
+
+            if (null === $category) {
+                throw new \InvalidArgumentException(sprintf("%d folder id does not exist", $category_id));
+            }
+
+            $form = $this->validateForm($keywordCategoryUpdateForm);
+
+            $event = $this->createEventInstance($form->getData());
+            $event->setCategory($category);
+
+            $this->dispatch(KeywordEvents::KEYWORD_UPDATE_CATEGORY_ASSOCIATION, $event);
+
+            $this->redirectSuccess($keywordCategoryUpdateForm);
+
+        } catch (FormValidationException $e) {
+            $message = sprintf("Please check your input: %s", $e->getMessage());
+        } catch (PropelException $e) {
+            $message = $e->getMessage();
+        } catch (\Exception $e) {
+            $message = sprintf("Sorry, an error occured: %s", $e->getMessage()." ".$e->getFile());
+        }
+
+        if ($message !== false) {
+            \Thelia\Log\Tlog::getInstance()->error(sprintf("Error during keyword category association update process : %s.", $message));
+
+            $keywordCategoryUpdateForm->setErrorMessage($message);
+
+            $this->getParserContext()
+                ->addForm($keywordCategoryUpdateForm)
+                ->setGeneralError($message)
+            ;
+        }
+
+        // Redirect to current folder
+        $this->redirectToRoute(
+            'admin.categories.update',
+            array(),
+            array('category_id' => $category_id, 'current_tab' => 'modules')
         );
     }
 

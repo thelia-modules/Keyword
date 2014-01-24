@@ -5,6 +5,7 @@ namespace Keyword\Model;
 use Keyword\Model\Base\Keyword as BaseKeyword;
 use Keyword\Model\Map\KeywordTableMap;
 use Propel\Runtime\Propel;
+use Thelia\Model\CategoryQuery;
 use Thelia\Model\ContentQuery;
 use Thelia\Model\FolderQuery;
 
@@ -38,6 +39,20 @@ class Keyword extends BaseKeyword
 
         return FolderQuery::create()
             ->filterById($folderId)
+            ->find();
+    }
+
+    public function getCategories()
+    {
+        $categoryId = array();
+
+        foreach($this->getCategoryAssociatedKeywords() as $categoryAssociatedKeyword)
+        {
+            $categoryId[] = $categoryAssociatedKeyword->getCategoryId();
+        }
+
+        return CategoryQuery::create()
+            ->filterById($categoryId)
             ->find();
     }
 

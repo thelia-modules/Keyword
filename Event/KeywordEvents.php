@@ -58,6 +58,15 @@ class KeywordEvents extends ActionEvent
      */
     const KEYWORD_UPDATE_CONTENT_ASSOCIATION = "keyword.action.updateContentAssociation";
 
+    const BEFORE_KEYWORD_ASSOCIATE_CATEGORY                     = 'keyword.action.beforeKeywordAssociateCategory';
+    const AFTER_KEYWORD_ASSOCIATE_CATEGORY                      = 'keyword.action.afterKeywordAssociateCategory';
+
+    /**
+     * sent on keyword category association update
+     */
+    const KEYWORD_UPDATE_CATEGORY_ASSOCIATION = "keyword.action.updateCategoryAssociation";
+
+
     protected $locale;
     protected $title;
     protected $code;
