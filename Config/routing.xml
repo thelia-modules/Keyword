@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="UTF-8" ?>
 
 <routes xmlns="http://symfony.com/schema/routing"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -16,7 +15,12 @@
 
     <route id="admin.keyword.categories.association.update" path="/admin/categories/update/{category_id}/keyword">
         <default key="_controller">Keyword\Controller\Admin\KeywordController::updateKeywordCategoryAssociation</default>
-        <requirement key="content_id">\d+</requirement>
+        <requirement key="category_id">\d+</requirement>
+    </route>
+
+    <route id="admin.keyword.products.association.update" path="/admin/product/update/{product_id}/keyword">
+        <default key="_controller">Keyword\Controller\Admin\KeywordController::updateKeywordProductAssociation</default>
+        <requirement key="product_id">\d+</requirement>
     </route>
 
     <route id="admin.keyword.update-position" path="/admin/module/Keyword/update-position">

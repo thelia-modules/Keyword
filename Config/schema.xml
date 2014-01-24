@@ -72,7 +72,6 @@
         <index name="idx_category_associated_keyword_keyword_id">
             <index-column name="keyword_id" />
         </index>
-        <behavior name="timestampable" />
     </table>
 
     <table name="product_associated_keyword" namespace="Keyword\Model">

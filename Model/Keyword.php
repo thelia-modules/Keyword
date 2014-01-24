@@ -8,6 +8,7 @@ use Propel\Runtime\Propel;
 use Thelia\Model\CategoryQuery;
 use Thelia\Model\ContentQuery;
 use Thelia\Model\FolderQuery;
+use Thelia\Model\ProductQuery;
 
 class Keyword extends BaseKeyword
 {
@@ -53,6 +54,20 @@ class Keyword extends BaseKeyword
 
         return CategoryQuery::create()
             ->filterById($categoryId)
+            ->find();
+    }
+
+    public function getProducts()
+    {
+        $productId = array();
+
+        foreach($this->getProductAssociatedKeywords() as $productAssociatedKeyword)
+        {
+            $productId[] = $productAssociatedKeyword->getProductId();
+        }
+
+        return ProductQuery::create()
+            ->filterById($productId)
             ->find();
     }
 

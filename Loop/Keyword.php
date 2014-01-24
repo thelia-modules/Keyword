@@ -158,6 +158,11 @@ class Keyword extends BaseI18nLoop implements PropelSearchLoopInterface
                 $categoryId[] = $category->getId();
             }
 
+            $productId = array();
+            foreach($keyword->getProducts() as $product){
+                $productId[] = $product->getId();
+            }
+
             $loopResultRow->set("ID", $keyword->getId())
                 ->set("IS_TRANSLATED",$keyword->getVirtualColumn('IS_TRANSLATED'))
                 ->set("LOCALE",$this->locale)
@@ -171,6 +176,7 @@ class Keyword extends BaseI18nLoop implements PropelSearchLoopInterface
                 ->set("CONTENTS_ASSOCIATION", $contentId)
                 ->set("FOLDERS_ASSOCIATION", $folderId)
                 ->set("CATEGORIES_ASSOCIATION", $categoryId)
+                ->set("PRODUCTS_ASSOCIATION", $productId)
 
                 ->set("HAS_PREVIOUS", $previous != null ? 1 : 0)
                 ->set("HAS_NEXT"    , $next != null ? 1 : 0)

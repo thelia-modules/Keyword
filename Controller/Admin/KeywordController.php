@@ -33,6 +33,7 @@ use Keyword\Form\KeywordContentModificationForm;
 use Keyword\Form\KeywordCreationForm;
 use Keyword\Form\KeywordModificationForm;
 use Keyword\Form\KeywordFolderModificationForm;
+use Keyword\Form\KeywordProductModificationForm;
 use Keyword\Model\KeywordQuery;
 
 use Propel\Runtime\Exception\PropelException;
@@ -44,6 +45,7 @@ use Thelia\Model\Base\FolderQuery;
 use Thelia\Form\Exception\FormValidationException;
 use Thelia\Model\CategoryQuery;
 use Thelia\Model\ContentQuery;
+use Thelia\Model\ProductQuery;
 
 /**
  * Class KeywordController
@@ -194,7 +196,7 @@ class KeywordController extends AbstractCrudController
             $category = CategoryQuery::create()->findPk($category_id);
 
             if (null === $category) {
-                throw new \InvalidArgumentException(sprintf("%d folder id does not exist", $category_id));
+                throw new \InvalidArgumentException(sprintf("%d category id does not exist", $category_id));
             }
 
             $form = $this->validateForm($keywordCategoryUpdateForm);
@@ -230,6 +232,58 @@ class KeywordController extends AbstractCrudController
             'admin.categories.update',
             array(),
             array('category_id' => $category_id, 'current_tab' => 'modules')
+        );
+    }
+
+    public function updateKeywordProductAssociation($product_id)
+    {
+
+        /** @var KeywordProductModificationForm $keywordProductUpdateForm */
+        $keywordProductUpdateForm = new KeywordProductModificationForm($this->getRequest());
+
+        $message = false;
+
+        try {
+
+            $product = ProductQuery::create()->findPk($product_id);
+
+            if (null === $product) {
+                throw new \InvalidArgumentException(sprintf("%d product id does not exist", $product_id));
+            }
+
+            $form = $this->validateForm($keywordProductUpdateForm);
+
+            $event = $this->createEventInstance($form->getData());
+            $event->setProduct($product);
+
+            $this->dispatch(KeywordEvents::KEYWORD_UPDATE_PRODUCT_ASSOCIATION, $event);
+
+            $this->redirectSuccess($keywordProductUpdateForm);
+
+        } catch (FormValidationException $e) {
+            $message = sprintf("Please check your input: %s", $e->getMessage());
+        } catch (PropelException $e) {
+            $message = $e->getMessage();
+        } catch (\Exception $e) {
+            $message = sprintf("Sorry, an error occured: %s", $e->getMessage()." ".$e->getFile());
+        }
+
+        if ($message !== false) {
+            \Thelia\Log\Tlog::getInstance()->error(sprintf("Error during keyword product association update process : %s.", $message));
+
+            $keywordProductUpdateForm->setErrorMessage($message);
+
+            $this->getParserContext()
+                ->addForm($keywordProductUpdateForm)
+                ->setGeneralError($message)
+            ;
+        }
+
+        // Redirect to current folder
+        $this->redirectToRoute(
+            'admin.products.update',
+            array(),
+            array('product_id' => $product_id, 'current_tab' => 'modules')
         );
     }
 

@@ -29,6 +29,7 @@ use Keyword\Event\KeywordEvents;
 
 use Keyword\Event\KeywordToggleVisibilityEvent;
 use Keyword\Event\KeywordUpdateEvent;
+use Keyword\Model\Base\ProductAssociatedKeywordQuery;
 use Keyword\Model\CategoryAssociatedKeyword;
 use Keyword\Model\CategoryAssociatedKeywordQuery;
 use Keyword\Model\ContentAssociatedKeyword;
@@ -38,6 +39,7 @@ use Keyword\Model\FolderAssociatedKeyword;
 use Keyword\Model\FolderAssociatedKeywordQuery;
 
 use Keyword\Model\KeywordQuery;
+use Keyword\Model\ProductAssociatedKeyword;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Thelia\Action\BaseAction;
 use Thelia\Core\Event\UpdatePositionEvent;
@@ -124,6 +126,32 @@ class Keyword extends BaseAction implements EventSubscriberInterface
             $keywordCategoryAssociation = new CategoryAssociatedKeyword();
             $keywordCategoryAssociation
                 ->setCategoryId($category->getId())
+                ->setKeywordId($keywordId)
+                ->save();
+
+        }
+
+    }
+
+    public function updateKeywordProductAssociation(KeywordAssociationEvent $event)
+    {
+        // Product to associate
+        $product = $event->getProduct();
+
+        // Keyword to save to this product
+        $keywordListToSave = $event->getKeywordList();
+
+        // Delete all association to this product
+        ProductAssociatedKeywordQuery::create()
+            ->filterByProductId($product->getId())
+            ->delete();
+
+        // Create all associations to this folder
+        foreach ($keywordListToSave as $keywordId) {
+
+            $keywordProductAssociation = new ProductAssociatedKeyword();
+            $keywordProductAssociation
+                ->setProductId($product->getId())
                 ->setKeywordId($keywordId)
                 ->save();
 
@@ -241,6 +269,7 @@ class Keyword extends BaseAction implements EventSubscriberInterface
             KeywordEvents::KEYWORD_UPDATE_FOLDER_ASSOCIATION    => array('updateKeywordFolderAssociation', 128),
             KeywordEvents::KEYWORD_UPDATE_CONTENT_ASSOCIATION   => array('updateKeywordContentAssociation', 128),
             KeywordEvents::KEYWORD_UPDATE_CATEGORY_ASSOCIATION  => array('updateKeywordCategoryAssociation', 128),
+            KeywordEvents::KEYWORD_UPDATE_PRODUCT_ASSOCIATION   => array('updateKeywordProductAssociation', 128),
             KeywordEvents::KEYWORD_UPDATE_POSITION              => array('updateKeywordPosition', 128),
             KeywordEvents::KEYWORD_CREATE                       => array('createKeyword', 128),
             KeywordEvents::KEYWORD_UPDATE                       => array('updateKeyword', 128),
