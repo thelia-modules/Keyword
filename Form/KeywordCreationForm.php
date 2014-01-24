@@ -36,13 +36,13 @@ class KeywordCreationForm extends BaseForm
                     'constraints' => array(
                         new NotBlank()
                     ),
-                    'label' => Translator::getInstance()->trans('Title :'),
+                    'label' => Translator::getInstance()->trans('Title'),
                     'label_attr' => array(
                         'for' => 'keyword_title'
                     )
                 ))
             ->add('code', 'text', array(
-                    'label' => Translator::getInstance()->trans('Code :'),
+                    'label' => Translator::getInstance()->trans('[Keyword]Unique identifier'),
                     'label_attr' => array(
                         'for' => 'keyword_code'
                     )

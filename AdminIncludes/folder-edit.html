@@ -2,13 +2,13 @@
 
     <div class="panel panel-default">
         <div class="panel-heading">
-            <h3 class="panel-title">Keyword</h3>
+            <h3 class="panel-title">{intl l="[Keyword]Keywords"}</h3>
         </div>
         <div class="panel-body">
 
             {form name="keyword.admin.folder.modification"}
             <form action="{url path="/admin/folders/update/{folder attr='id'}/keyword"}" method="POST" role="form">
-                <legend>Gestion des mots clés</legend>
+                <legend>{intl l="[Keyword]Keywords association"}</legend>
 
                 {form_hidden_fields form=$form}
 
@@ -20,8 +20,6 @@
                 {if $form_error}<div class="alert alert-danger">{$form_error_message}</div>{/if}
 
                 <div class="form-group">
-                    <label>Liste des mots clés associés :</label>
-
                     {loop name="keywords" type="keyword"}
                     <div class="checkbox">
                         <label>
@@ -33,7 +31,7 @@
                     {/loop}
                 </div>
 
-                <button type="submit" class="btn btn-primary">Submit</button>
+                <button type="submit" class="btn btn-primary">{intl l="Save"}</button>
             </form>
             {/form}
 

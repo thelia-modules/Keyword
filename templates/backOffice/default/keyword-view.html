@@ -3,7 +3,7 @@
 {block name="check-resource"}admin.keyword{/block}
 {block name="check-access"}view{/block}
 
-{block name="page-title"}{intl l='View keyword associations'}{/block}
+{block name="page-title"}{intl l='[Keyword]View keyword associations'}{/block}
 
 {block name="main-content"}
 <div class="keyword view-keyword">
@@ -11,7 +11,7 @@
 
         <ul class="breadcrumb">
             <li><a href="{url path='admin/home'}">{intl l="Home"}</a></li>
-            <li><a href="{url path='admin/module/Keyword'}">{intl l="Keywords"}</a></li>
+            <li><a href="{url path='admin/module/Keyword'}">{intl l="[Keyword]Keywords"}</a></li>
         </ul>
 
         <div class="row">
@@ -19,19 +19,19 @@
             <div class="col-md-12 general-block-decorator">
                 <div class="row">
                     <div class="col-md-7 title">
-                        {intl l='View keyword "%title" associations' title=$TITLE}
+                        {intl l='[Keyword]View keyword "%title" associations' title=$TITLE}
                     </div>
 
                     <div class="col-md-5 actions">
 
                         {if $HAS_PREVIOUS != 0}
-                        <a href="{url path="/admin/module/Keyword/view?keyword_id=$PREVIOUS"}" class="btn btn-default" title="{intl l='View previous keyword'}"><span class="glyphicon glyphicon-arrow-left"></span></a>
+                        <a href="{url path="/admin/module/Keyword/view?keyword_id=$PREVIOUS"}" class="btn btn-default" title="{intl l='[Keyword]View previous keyword'}"><span class="glyphicon glyphicon-arrow-left"></span></a>
                         {else}
                         <a href="#" disabled="disabled" class="btn btn-default"><span class="glyphicon glyphicon-arrow-left"></span></a>
                         {/if}
 
                         {if $HAS_NEXT != 0}
-                        <a href="{url path="/admin/module/Keyword/view?keyword_id=$NEXT"}" class="btn btn-default" title="{intl l='View next keyword'}"><span class="glyphicon glyphicon-arrow-right"></span></a>
+                        <a href="{url path="/admin/module/Keyword/view?keyword_id=$NEXT"}" class="btn btn-default" title="{intl l='[Keyword]View next keyword'}"><span class="glyphicon glyphicon-arrow-right"></span></a>
                         {else}
                         <a href="#" disabled="disabled" class="btn btn-default"><span class="glyphicon glyphicon-arrow-right"></span></a>
                         {/if}
@@ -42,10 +42,10 @@
 
                     <div class="col-md-12">
                         <ul class="nav nav-tabs" id="tabbed-menu">
-                            <li class="active"><a href="#folder-association" data-toggle="tab">{intl l="Folder association"}</a></li>
-                            <li><a href="#content-association" data-toggle="tab">{intl l="Content association"}</a></li>
-                            <li><a href="#category-association" data-toggle="tab">{intl l="Category association"}</a></li>
-                            <li><a href="#product-association" data-toggle="tab">{intl l="Product association"}</a></li>
+                            <li class="active"><a href="#folder-association" data-toggle="tab">{intl l="[Keyword]Folders association"}</a></li>
+                            <li><a href="#content-association" data-toggle="tab">{intl l="[Keyword]Contents association"}</a></li>
+                            <li><a href="#category-association" data-toggle="tab">{intl l="[Keyword]Categories association"}</a></li>
+                            <li><a href="#product-association" data-toggle="tab">{intl l="[Keyword]Products association"}</a></li>
                         </ul>
 
                         <div class="tab-content">
@@ -111,7 +111,7 @@
                                     <tr>
                                         <td class="message">
                                             <div class="alert alert-info">
-                                                {intl l="This keyword has no folder assocation."}
+                                                {intl l="[Keyword]This keyword has no folder assocation."}
                                             </div>
                                         </td>
                                     </tr>
@@ -125,7 +125,7 @@
 
                                 <table class="table table-striped table-condensed" id="content_list">
                                     <caption>
-                                        {intl l="Contents"}
+                                        {intl l="[Keyword]Contents"}
                                     </caption>
 
                                     {ifloop rel="content_list"}
@@ -177,7 +177,7 @@
                                     <tr>
                                         <td class="message">
                                             <div class="alert alert-info">
-                                                {intl l="This keyword has no content assocation."}
+                                                {intl l="[Keyword]This keyword has no content assocation."}
                                             </div>
                                         </td>
                                     </tr>
@@ -250,7 +250,7 @@
                                     <tr>
                                         <td class="message">
                                             <div class="alert alert-info">
-                                                {intl l="This keyword has no category assocation."}
+                                                {intl l="[Keyword]This keyword has no category assocation."}
                                             </div>
                                         </td>
                                     </tr>
@@ -316,7 +316,7 @@
                                     <tr>
                                         <td class="message">
                                             <div class="alert alert-info">
-                                                {intl l="This keyword has no product assocation."}
+                                                {intl l="[Keyword]This keyword has no product assocation."}
                                             </div>
                                         </td>
                                     </tr>
