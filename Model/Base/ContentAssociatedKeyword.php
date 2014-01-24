@@ -120,7 +120,7 @@ abstract class ContentAssociatedKeyword implements ActiveRecordInterface
      */
     public function isModified()
     {
-        return !empty($this->modifiedColumns);
+        return !!$this->modifiedColumns;
     }
 
     /**
@@ -131,7 +131,7 @@ abstract class ContentAssociatedKeyword implements ActiveRecordInterface
      */
     public function isColumnModified($col)
     {
-        return in_array($col, $this->modifiedColumns);
+        return $this->modifiedColumns && isset($this->modifiedColumns[$col]);
     }
 
     /**
@@ -140,7 +140,7 @@ abstract class ContentAssociatedKeyword implements ActiveRecordInterface
      */
     public function getModifiedColumns()
     {
-        return array_unique($this->modifiedColumns);
+        return $this->modifiedColumns ? array_keys($this->modifiedColumns) : [];
     }
 
     /**
@@ -193,8 +193,8 @@ abstract class ContentAssociatedKeyword implements ActiveRecordInterface
     public function resetModified($col = null)
     {
         if (null !== $col) {
-            while (false !== ($offset = array_search($col, $this->modifiedColumns))) {
-                array_splice($this->modifiedColumns, $offset, 1);
+            if (isset($this->modifiedColumns[$col])) {
+                unset($this->modifiedColumns[$col]);
             }
         } else {
             $this->modifiedColumns = array();
@@ -451,7 +451,7 @@ abstract class ContentAssociatedKeyword implements ActiveRecordInterface
 
         if ($this->content_id !== $v) {
             $this->content_id = $v;
-            $this->modifiedColumns[] = ContentAssociatedKeywordTableMap::CONTENT_ID;
+            $this->modifiedColumns[ContentAssociatedKeywordTableMap::CONTENT_ID] = true;
         }
 
         if ($this->aContent !== null && $this->aContent->getId() !== $v) {
@@ -476,7 +476,7 @@ abstract class ContentAssociatedKeyword implements ActiveRecordInterface
 
         if ($this->keyword_id !== $v) {
             $this->keyword_id = $v;
-            $this->modifiedColumns[] = ContentAssociatedKeywordTableMap::KEYWORD_ID;
+            $this->modifiedColumns[ContentAssociatedKeywordTableMap::KEYWORD_ID] = true;
         }
 
         if ($this->aKeyword !== null && $this->aKeyword->getId() !== $v) {
@@ -501,7 +501,7 @@ abstract class ContentAssociatedKeyword implements ActiveRecordInterface
 
         if ($this->position !== $v) {
             $this->position = $v;
-            $this->modifiedColumns[] = ContentAssociatedKeywordTableMap::POSITION;
+            $this->modifiedColumns[ContentAssociatedKeywordTableMap::POSITION] = true;
         }
 
 
@@ -521,7 +521,7 @@ abstract class ContentAssociatedKeyword implements ActiveRecordInterface
         if ($this->created_at !== null || $dt !== null) {
             if ($dt !== $this->created_at) {
                 $this->created_at = $dt;
-                $this->modifiedColumns[] = ContentAssociatedKeywordTableMap::CREATED_AT;
+                $this->modifiedColumns[ContentAssociatedKeywordTableMap::CREATED_AT] = true;
             }
         } // if either are not null
 
@@ -542,7 +542,7 @@ abstract class ContentAssociatedKeyword implements ActiveRecordInterface
         if ($this->updated_at !== null || $dt !== null) {
             if ($dt !== $this->updated_at) {
                 $this->updated_at = $dt;
-                $this->modifiedColumns[] = ContentAssociatedKeywordTableMap::UPDATED_AT;
+                $this->modifiedColumns[ContentAssociatedKeywordTableMap::UPDATED_AT] = true;
             }
         } // if either are not null
 
@@ -1368,7 +1368,7 @@ abstract class ContentAssociatedKeyword implements ActiveRecordInterface
      */
     public function keepUpdateDateUnchanged()
     {
-        $this->modifiedColumns[] = ContentAssociatedKeywordTableMap::UPDATED_AT;
+        $this->modifiedColumns[ContentAssociatedKeywordTableMap::UPDATED_AT] = true;
 
         return $this;
     }

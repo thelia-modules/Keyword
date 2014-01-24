@@ -48,6 +48,14 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildKeywordQuery rightJoinFolderAssociatedKeyword($relationAlias = null) Adds a RIGHT JOIN clause to the query using the FolderAssociatedKeyword relation
  * @method     ChildKeywordQuery innerJoinFolderAssociatedKeyword($relationAlias = null) Adds a INNER JOIN clause to the query using the FolderAssociatedKeyword relation
  *
+ * @method     ChildKeywordQuery leftJoinCategoryAssociatedKeyword($relationAlias = null) Adds a LEFT JOIN clause to the query using the CategoryAssociatedKeyword relation
+ * @method     ChildKeywordQuery rightJoinCategoryAssociatedKeyword($relationAlias = null) Adds a RIGHT JOIN clause to the query using the CategoryAssociatedKeyword relation
+ * @method     ChildKeywordQuery innerJoinCategoryAssociatedKeyword($relationAlias = null) Adds a INNER JOIN clause to the query using the CategoryAssociatedKeyword relation
+ *
+ * @method     ChildKeywordQuery leftJoinProductAssociatedKeyword($relationAlias = null) Adds a LEFT JOIN clause to the query using the ProductAssociatedKeyword relation
+ * @method     ChildKeywordQuery rightJoinProductAssociatedKeyword($relationAlias = null) Adds a RIGHT JOIN clause to the query using the ProductAssociatedKeyword relation
+ * @method     ChildKeywordQuery innerJoinProductAssociatedKeyword($relationAlias = null) Adds a INNER JOIN clause to the query using the ProductAssociatedKeyword relation
+ *
  * @method     ChildKeywordQuery leftJoinKeywordI18n($relationAlias = null) Adds a LEFT JOIN clause to the query using the KeywordI18n relation
  * @method     ChildKeywordQuery rightJoinKeywordI18n($relationAlias = null) Adds a RIGHT JOIN clause to the query using the KeywordI18n relation
  * @method     ChildKeywordQuery innerJoinKeywordI18n($relationAlias = null) Adds a INNER JOIN clause to the query using the KeywordI18n relation
@@ -627,6 +635,152 @@ abstract class KeywordQuery extends ModelCriteria
         return $this
             ->joinFolderAssociatedKeyword($relationAlias, $joinType)
             ->useQuery($relationAlias ? $relationAlias : 'FolderAssociatedKeyword', '\Keyword\Model\FolderAssociatedKeywordQuery');
+    }
+
+    /**
+     * Filter the query by a related \Keyword\Model\CategoryAssociatedKeyword object
+     *
+     * @param \Keyword\Model\CategoryAssociatedKeyword|ObjectCollection $categoryAssociatedKeyword  the related object to use as filter
+     * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return ChildKeywordQuery The current query, for fluid interface
+     */
+    public function filterByCategoryAssociatedKeyword($categoryAssociatedKeyword, $comparison = null)
+    {
+        if ($categoryAssociatedKeyword instanceof \Keyword\Model\CategoryAssociatedKeyword) {
+            return $this
+                ->addUsingAlias(KeywordTableMap::ID, $categoryAssociatedKeyword->getKeywordId(), $comparison);
+        } elseif ($categoryAssociatedKeyword instanceof ObjectCollection) {
+            return $this
+                ->useCategoryAssociatedKeywordQuery()
+                ->filterByPrimaryKeys($categoryAssociatedKeyword->getPrimaryKeys())
+                ->endUse();
+        } else {
+            throw new PropelException('filterByCategoryAssociatedKeyword() only accepts arguments of type \Keyword\Model\CategoryAssociatedKeyword or Collection');
+        }
+    }
+
+    /**
+     * Adds a JOIN clause to the query using the CategoryAssociatedKeyword relation
+     *
+     * @param     string $relationAlias optional alias for the relation
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return ChildKeywordQuery The current query, for fluid interface
+     */
+    public function joinCategoryAssociatedKeyword($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        $tableMap = $this->getTableMap();
+        $relationMap = $tableMap->getRelation('CategoryAssociatedKeyword');
+
+        // create a ModelJoin object for this join
+        $join = new ModelJoin();
+        $join->setJoinType($joinType);
+        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
+        if ($previousJoin = $this->getPreviousJoin()) {
+            $join->setPreviousJoin($previousJoin);
+        }
+
+        // add the ModelJoin to the current object
+        if ($relationAlias) {
+            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
+            $this->addJoinObject($join, $relationAlias);
+        } else {
+            $this->addJoinObject($join, 'CategoryAssociatedKeyword');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Use the CategoryAssociatedKeyword relation CategoryAssociatedKeyword object
+     *
+     * @see useQuery()
+     *
+     * @param     string $relationAlias optional alias for the relation,
+     *                                   to be used as main alias in the secondary query
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return   \Keyword\Model\CategoryAssociatedKeywordQuery A secondary query class using the current class as primary query
+     */
+    public function useCategoryAssociatedKeywordQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        return $this
+            ->joinCategoryAssociatedKeyword($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'CategoryAssociatedKeyword', '\Keyword\Model\CategoryAssociatedKeywordQuery');
+    }
+
+    /**
+     * Filter the query by a related \Keyword\Model\ProductAssociatedKeyword object
+     *
+     * @param \Keyword\Model\ProductAssociatedKeyword|ObjectCollection $productAssociatedKeyword  the related object to use as filter
+     * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return ChildKeywordQuery The current query, for fluid interface
+     */
+    public function filterByProductAssociatedKeyword($productAssociatedKeyword, $comparison = null)
+    {
+        if ($productAssociatedKeyword instanceof \Keyword\Model\ProductAssociatedKeyword) {
+            return $this
+                ->addUsingAlias(KeywordTableMap::ID, $productAssociatedKeyword->getKeywordId(), $comparison);
+        } elseif ($productAssociatedKeyword instanceof ObjectCollection) {
+            return $this
+                ->useProductAssociatedKeywordQuery()
+                ->filterByPrimaryKeys($productAssociatedKeyword->getPrimaryKeys())
+                ->endUse();
+        } else {
+            throw new PropelException('filterByProductAssociatedKeyword() only accepts arguments of type \Keyword\Model\ProductAssociatedKeyword or Collection');
+        }
+    }
+
+    /**
+     * Adds a JOIN clause to the query using the ProductAssociatedKeyword relation
+     *
+     * @param     string $relationAlias optional alias for the relation
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return ChildKeywordQuery The current query, for fluid interface
+     */
+    public function joinProductAssociatedKeyword($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        $tableMap = $this->getTableMap();
+        $relationMap = $tableMap->getRelation('ProductAssociatedKeyword');
+
+        // create a ModelJoin object for this join
+        $join = new ModelJoin();
+        $join->setJoinType($joinType);
+        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
+        if ($previousJoin = $this->getPreviousJoin()) {
+            $join->setPreviousJoin($previousJoin);
+        }
+
+        // add the ModelJoin to the current object
+        if ($relationAlias) {
+            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
+            $this->addJoinObject($join, $relationAlias);
+        } else {
+            $this->addJoinObject($join, 'ProductAssociatedKeyword');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Use the ProductAssociatedKeyword relation ProductAssociatedKeyword object
+     *
+     * @see useQuery()
+     *
+     * @param     string $relationAlias optional alias for the relation,
+     *                                   to be used as main alias in the secondary query
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return   \Keyword\Model\ProductAssociatedKeywordQuery A secondary query class using the current class as primary query
+     */
+    public function useProductAssociatedKeywordQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        return $this
+            ->joinProductAssociatedKeyword($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'ProductAssociatedKeyword', '\Keyword\Model\ProductAssociatedKeywordQuery');
     }
 
     /**

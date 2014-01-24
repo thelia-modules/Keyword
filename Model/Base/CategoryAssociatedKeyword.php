@@ -2,12 +2,14 @@
 
 namespace Keyword\Model\Base;
 
+use \DateTime;
 use \Exception;
 use \PDO;
+use Keyword\Model\CategoryAssociatedKeyword as ChildCategoryAssociatedKeyword;
+use Keyword\Model\CategoryAssociatedKeywordQuery as ChildCategoryAssociatedKeywordQuery;
 use Keyword\Model\Keyword as ChildKeyword;
-use Keyword\Model\KeywordI18nQuery as ChildKeywordI18nQuery;
 use Keyword\Model\KeywordQuery as ChildKeywordQuery;
-use Keyword\Model\Map\KeywordI18nTableMap;
+use Keyword\Model\Map\CategoryAssociatedKeywordTableMap;
 use Propel\Runtime\Propel;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\ActiveQuery\ModelCriteria;
@@ -18,13 +20,16 @@ use Propel\Runtime\Exception\BadMethodCallException;
 use Propel\Runtime\Exception\PropelException;
 use Propel\Runtime\Map\TableMap;
 use Propel\Runtime\Parser\AbstractParser;
+use Propel\Runtime\Util\PropelDateTime;
+use Thelia\Model\CategoryQuery;
+use Thelia\Model\Category as ChildCategory;
 
-abstract class KeywordI18n implements ActiveRecordInterface
+abstract class CategoryAssociatedKeyword implements ActiveRecordInterface
 {
     /**
      * TableMap class name
      */
-    const TABLE_MAP = '\\Keyword\\Model\\Map\\KeywordI18nTableMap';
+    const TABLE_MAP = '\\Keyword\\Model\\Map\\CategoryAssociatedKeywordTableMap';
 
 
     /**
@@ -54,41 +59,39 @@ abstract class KeywordI18n implements ActiveRecordInterface
     protected $virtualColumns = array();
 
     /**
-     * The value for the id field.
+     * The value for the category_id field.
      * @var        int
      */
-    protected $id;
+    protected $category_id;
 
     /**
-     * The value for the locale field.
-     * Note: this column has a database default value of: 'en_US'
-     * @var        string
+     * The value for the keyword_id field.
+     * @var        int
      */
-    protected $locale;
+    protected $keyword_id;
 
     /**
-     * The value for the title field.
-     * @var        string
+     * The value for the position field.
+     * @var        int
      */
-    protected $title;
+    protected $position;
 
     /**
-     * The value for the description field.
+     * The value for the created_at field.
      * @var        string
      */
-    protected $description;
+    protected $created_at;
 
     /**
-     * The value for the chapo field.
+     * The value for the updated_at field.
      * @var        string
      */
-    protected $chapo;
+    protected $updated_at;
 
     /**
-     * The value for the postscriptum field.
-     * @var        string
+     * @var        Category
      */
-    protected $postscriptum;
+    protected $aCategory;
 
     /**
      * @var        Keyword
@@ -104,23 +107,10 @@ abstract class KeywordI18n implements ActiveRecordInterface
     protected $alreadyInSave = false;
 
     /**
-     * Applies default values to this object.
-     * This method should be called from the object's constructor (or
-     * equivalent initialization method).
-     * @see __construct()
-     */
-    public function applyDefaultValues()
-    {
-        $this->locale = 'en_US';
-    }
-
-    /**
-     * Initializes internal state of Keyword\Model\Base\KeywordI18n object.
-     * @see applyDefaults()
+     * Initializes internal state of Keyword\Model\Base\CategoryAssociatedKeyword object.
      */
     public function __construct()
     {
-        $this->applyDefaultValues();
     }
 
     /**
@@ -212,9 +202,9 @@ abstract class KeywordI18n implements ActiveRecordInterface
     }
 
     /**
-     * Compares this with another <code>KeywordI18n</code> instance.  If
-     * <code>obj</code> is an instance of <code>KeywordI18n</code>, delegates to
-     * <code>equals(KeywordI18n)</code>.  Otherwise, returns <code>false</code>.
+     * Compares this with another <code>CategoryAssociatedKeyword</code> instance.  If
+     * <code>obj</code> is an instance of <code>CategoryAssociatedKeyword</code>, delegates to
+     * <code>equals(CategoryAssociatedKeyword)</code>.  Otherwise, returns <code>false</code>.
      *
      * @param  mixed   $obj The object to compare to.
      * @return boolean Whether equal to the object specified.
@@ -297,7 +287,7 @@ abstract class KeywordI18n implements ActiveRecordInterface
      * @param string $name  The virtual column name
      * @param mixed  $value The value to give to the virtual column
      *
-     * @return KeywordI18n The current object, for fluid interface
+     * @return CategoryAssociatedKeyword The current object, for fluid interface
      */
     public function setVirtualColumn($name, $value)
     {
@@ -329,7 +319,7 @@ abstract class KeywordI18n implements ActiveRecordInterface
      *                       or a format name ('XML', 'YAML', 'JSON', 'CSV')
      * @param string $data The source data to import from
      *
-     * @return KeywordI18n The current object, for fluid interface
+     * @return CategoryAssociatedKeyword The current object, for fluid interface
      */
     public function importFrom($parser, $data)
     {
@@ -375,86 +365,118 @@ abstract class KeywordI18n implements ActiveRecordInterface
     }
 
     /**
-     * Get the [id] column value.
+     * Get the [category_id] column value.
      *
      * @return   int
      */
-    public function getId()
+    public function getCategoryId()
     {
 
-        return $this->id;
+        return $this->category_id;
     }
 
     /**
-     * Get the [locale] column value.
+     * Get the [keyword_id] column value.
      *
-     * @return   string
+     * @return   int
      */
-    public function getLocale()
+    public function getKeywordId()
     {
 
-        return $this->locale;
+        return $this->keyword_id;
     }
 
     /**
-     * Get the [title] column value.
+     * Get the [position] column value.
      *
-     * @return   string
+     * @return   int
      */
-    public function getTitle()
+    public function getPosition()
     {
 
-        return $this->title;
+        return $this->position;
     }
 
     /**
-     * Get the [description] column value.
+     * Get the [optionally formatted] temporal [created_at] column value.
      *
-     * @return   string
-     */
-    public function getDescription()
-    {
-
-        return $this->description;
-    }
-
-    /**
-     * Get the [chapo] column value.
      *
-     * @return   string
-     */
-    public function getChapo()
-    {
-
-        return $this->chapo;
-    }
-
-    /**
-     * Get the [postscriptum] column value.
+     * @param      string $format The date/time format string (either date()-style or strftime()-style).
+     *                            If format is NULL, then the raw \DateTime object will be returned.
      *
-     * @return   string
+     * @return mixed Formatted date/time value as string or \DateTime object (if format is NULL), NULL if column is NULL, and 0 if column value is 0000-00-00 00:00:00
+     *
+     * @throws PropelException - if unable to parse/validate the date/time value.
      */
-    public function getPostscriptum()
+    public function getCreatedAt($format = NULL)
     {
-
-        return $this->postscriptum;
+        if ($format === null) {
+            return $this->created_at;
+        } else {
+            return $this->created_at instanceof \DateTime ? $this->created_at->format($format) : null;
+        }
     }
 
     /**
-     * Set the value of [id] column.
+     * Get the [optionally formatted] temporal [updated_at] column value.
+     *
+     *
+     * @param      string $format The date/time format string (either date()-style or strftime()-style).
+     *                            If format is NULL, then the raw \DateTime object will be returned.
+     *
+     * @return mixed Formatted date/time value as string or \DateTime object (if format is NULL), NULL if column is NULL, and 0 if column value is 0000-00-00 00:00:00
+     *
+     * @throws PropelException - if unable to parse/validate the date/time value.
+     */
+    public function getUpdatedAt($format = NULL)
+    {
+        if ($format === null) {
+            return $this->updated_at;
+        } else {
+            return $this->updated_at instanceof \DateTime ? $this->updated_at->format($format) : null;
+        }
+    }
+
+    /**
+     * Set the value of [category_id] column.
      *
      * @param      int $v new value
-     * @return   \Keyword\Model\KeywordI18n The current object (for fluent API support)
+     * @return   \Keyword\Model\CategoryAssociatedKeyword The current object (for fluent API support)
      */
-    public function setId($v)
+    public function setCategoryId($v)
     {
         if ($v !== null) {
             $v = (int) $v;
         }
 
-        if ($this->id !== $v) {
-            $this->id = $v;
-            $this->modifiedColumns[KeywordI18nTableMap::ID] = true;
+        if ($this->category_id !== $v) {
+            $this->category_id = $v;
+            $this->modifiedColumns[CategoryAssociatedKeywordTableMap::CATEGORY_ID] = true;
+        }
+
+        if ($this->aCategory !== null && $this->aCategory->getId() !== $v) {
+            $this->aCategory = null;
+        }
+
+
+        return $this;
+    } // setCategoryId()
+
+    /**
+     * Set the value of [keyword_id] column.
+     *
+     * @param      int $v new value
+     * @return   \Keyword\Model\CategoryAssociatedKeyword The current object (for fluent API support)
+     */
+    public function setKeywordId($v)
+    {
+        if ($v !== null) {
+            $v = (int) $v;
+        }
+
+        if ($this->keyword_id !== $v) {
+            $this->keyword_id = $v;
+            $this->modifiedColumns[CategoryAssociatedKeywordTableMap::KEYWORD_ID] = true;
         }
 
         if ($this->aKeyword !== null && $this->aKeyword->getId() !== $v) {
@@ -463,112 +485,70 @@ abstract class KeywordI18n implements ActiveRecordInterface
 
 
         return $this;
-    } // setId()
+    } // setKeywordId()
 
     /**
-     * Set the value of [locale] column.
+     * Set the value of [position] column.
      *
-     * @param      string $v new value
-     * @return   \Keyword\Model\KeywordI18n The current object (for fluent API support)
+     * @param      int $v new value
+     * @return   \Keyword\Model\CategoryAssociatedKeyword The current object (for fluent API support)
      */
-    public function setLocale($v)
+    public function setPosition($v)
     {
         if ($v !== null) {
-            $v = (string) $v;
+            $v = (int) $v;
         }
 
-        if ($this->locale !== $v) {
-            $this->locale = $v;
-            $this->modifiedColumns[KeywordI18nTableMap::LOCALE] = true;
+        if ($this->position !== $v) {
+            $this->position = $v;
+            $this->modifiedColumns[CategoryAssociatedKeywordTableMap::POSITION] = true;
         }
 
 
         return $this;
-    } // setLocale()
+    } // setPosition()
 
     /**
-     * Set the value of [title] column.
+     * Sets the value of [created_at] column to a normalized version of the date/time value specified.
      *
-     * @param      string $v new value
-     * @return   \Keyword\Model\KeywordI18n The current object (for fluent API support)
+     * @param      mixed $v string, integer (timestamp), or \DateTime value.
+     *               Empty strings are treated as NULL.
+     * @return   \Keyword\Model\CategoryAssociatedKeyword The current object (for fluent API support)
      */
-    public function setTitle($v)
+    public function setCreatedAt($v)
     {
-        if ($v !== null) {
-            $v = (string) $v;
-        }
-
-        if ($this->title !== $v) {
-            $this->title = $v;
-            $this->modifiedColumns[KeywordI18nTableMap::TITLE] = true;
-        }
+        $dt = PropelDateTime::newInstance($v, null, '\DateTime');
+        if ($this->created_at !== null || $dt !== null) {
+            if ($dt !== $this->created_at) {
+                $this->created_at = $dt;
+                $this->modifiedColumns[CategoryAssociatedKeywordTableMap::CREATED_AT] = true;
+            }
+        } // if either are not null
 
 
         return $this;
-    } // setTitle()
+    } // setCreatedAt()
 
     /**
-     * Set the value of [description] column.
+     * Sets the value of [updated_at] column to a normalized version of the date/time value specified.
      *
-     * @param      string $v new value
-     * @return   \Keyword\Model\KeywordI18n The current object (for fluent API support)
+     * @param      mixed $v string, integer (timestamp), or \DateTime value.
+     *               Empty strings are treated as NULL.
+     * @return   \Keyword\Model\CategoryAssociatedKeyword The current object (for fluent API support)
      */
-    public function setDescription($v)
+    public function setUpdatedAt($v)
     {
-        if ($v !== null) {
-            $v = (string) $v;
-        }
-
-        if ($this->description !== $v) {
-            $this->description = $v;
-            $this->modifiedColumns[KeywordI18nTableMap::DESCRIPTION] = true;
-        }
+        $dt = PropelDateTime::newInstance($v, null, '\DateTime');
+        if ($this->updated_at !== null || $dt !== null) {
+            if ($dt !== $this->updated_at) {
+                $this->updated_at = $dt;
+                $this->modifiedColumns[CategoryAssociatedKeywordTableMap::UPDATED_AT] = true;
+            }
+        } // if either are not null
 
 
         return $this;
-    } // setDescription()
-
-    /**
-     * Set the value of [chapo] column.
-     *
-     * @param      string $v new value
-     * @return   \Keyword\Model\KeywordI18n The current object (for fluent API support)
-     */
-    public function setChapo($v)
-    {
-        if ($v !== null) {
-            $v = (string) $v;
-        }
-
-        if ($this->chapo !== $v) {
-            $this->chapo = $v;
-            $this->modifiedColumns[KeywordI18nTableMap::CHAPO] = true;
-        }
-
-
-        return $this;
-    } // setChapo()
-
-    /**
-     * Set the value of [postscriptum] column.
-     *
-     * @param      string $v new value
-     * @return   \Keyword\Model\KeywordI18n The current object (for fluent API support)
-     */
-    public function setPostscriptum($v)
-    {
-        if ($v !== null) {
-            $v = (string) $v;
-        }
-
-        if ($this->postscriptum !== $v) {
-            $this->postscriptum = $v;
-            $this->modifiedColumns[KeywordI18nTableMap::POSTSCRIPTUM] = true;
-        }
-
-
-        return $this;
-    } // setPostscriptum()
+    } // setUpdatedAt()
 
     /**
      * Indicates whether the columns in this object are only set to default values.
@@ -580,10 +560,6 @@ abstract class KeywordI18n implements ActiveRecordInterface
      */
     public function hasOnlyDefaultValues()
     {
-            if ($this->locale !== 'en_US') {
-                return false;
-            }
-
         // otherwise, everything was equal, so return TRUE
         return true;
     } // hasOnlyDefaultValues()
@@ -611,23 +587,26 @@ abstract class KeywordI18n implements ActiveRecordInterface
         try {
 
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 0 + $startcol : KeywordI18nTableMap::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->id = (null !== $col) ? (int) $col : null;
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 0 + $startcol : CategoryAssociatedKeywordTableMap::translateFieldName('CategoryId', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->category_id = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 1 + $startcol : KeywordI18nTableMap::translateFieldName('Locale', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->locale = (null !== $col) ? (string) $col : null;
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 1 + $startcol : CategoryAssociatedKeywordTableMap::translateFieldName('KeywordId', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->keyword_id = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : KeywordI18nTableMap::translateFieldName('Title', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->title = (null !== $col) ? (string) $col : null;
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : CategoryAssociatedKeywordTableMap::translateFieldName('Position', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->position = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : KeywordI18nTableMap::translateFieldName('Description', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->description = (null !== $col) ? (string) $col : null;
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : CategoryAssociatedKeywordTableMap::translateFieldName('CreatedAt', TableMap::TYPE_PHPNAME, $indexType)];
+            if ($col === '0000-00-00 00:00:00') {
+                $col = null;
+            }
+            $this->created_at = (null !== $col) ? PropelDateTime::newInstance($col, null, '\DateTime') : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : KeywordI18nTableMap::translateFieldName('Chapo', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->chapo = (null !== $col) ? (string) $col : null;
-
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : KeywordI18nTableMap::translateFieldName('Postscriptum', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->postscriptum = (null !== $col) ? (string) $col : null;
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : CategoryAssociatedKeywordTableMap::translateFieldName('UpdatedAt', TableMap::TYPE_PHPNAME, $indexType)];
+            if ($col === '0000-00-00 00:00:00') {
+                $col = null;
+            }
+            $this->updated_at = (null !== $col) ? PropelDateTime::newInstance($col, null, '\DateTime') : null;
             $this->resetModified();
 
             $this->setNew(false);
@@ -636,10 +615,10 @@ abstract class KeywordI18n implements ActiveRecordInterface
                 $this->ensureConsistency();
             }
 
-            return $startcol + 6; // 6 = KeywordI18nTableMap::NUM_HYDRATE_COLUMNS.
+            return $startcol + 5; // 5 = CategoryAssociatedKeywordTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
-            throw new PropelException("Error populating \Keyword\Model\KeywordI18n object", 0, $e);
+            throw new PropelException("Error populating \Keyword\Model\CategoryAssociatedKeyword object", 0, $e);
         }
     }
 
@@ -658,7 +637,10 @@ abstract class KeywordI18n implements ActiveRecordInterface
      */
     public function ensureConsistency()
     {
-        if ($this->aKeyword !== null && $this->id !== $this->aKeyword->getId()) {
+        if ($this->aCategory !== null && $this->category_id !== $this->aCategory->getId()) {
+            $this->aCategory = null;
+        }
+        if ($this->aKeyword !== null && $this->keyword_id !== $this->aKeyword->getId()) {
             $this->aKeyword = null;
         }
     } // ensureConsistency
@@ -684,13 +666,13 @@ abstract class KeywordI18n implements ActiveRecordInterface
         }
 
         if ($con === null) {
-            $con = Propel::getServiceContainer()->getReadConnection(KeywordI18nTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getReadConnection(CategoryAssociatedKeywordTableMap::DATABASE_NAME);
         }
 
         // We don't need to alter the object instance pool; we're just modifying this instance
         // already in the pool.
 
-        $dataFetcher = ChildKeywordI18nQuery::create(null, $this->buildPkeyCriteria())->setFormatter(ModelCriteria::FORMAT_STATEMENT)->find($con);
+        $dataFetcher = ChildCategoryAssociatedKeywordQuery::create(null, $this->buildPkeyCriteria())->setFormatter(ModelCriteria::FORMAT_STATEMENT)->find($con);
         $row = $dataFetcher->fetch();
         $dataFetcher->close();
         if (!$row) {
@@ -700,6 +682,7 @@ abstract class KeywordI18n implements ActiveRecordInterface
 
         if ($deep) {  // also de-associate any related objects?
 
+            $this->aCategory = null;
             $this->aKeyword = null;
         } // if (deep)
     }
@@ -710,8 +693,8 @@ abstract class KeywordI18n implements ActiveRecordInterface
      * @param      ConnectionInterface $con
      * @return void
      * @throws PropelException
-     * @see KeywordI18n::setDeleted()
-     * @see KeywordI18n::isDeleted()
+     * @see CategoryAssociatedKeyword::setDeleted()
+     * @see CategoryAssociatedKeyword::isDeleted()
      */
     public function delete(ConnectionInterface $con = null)
     {
@@ -720,12 +703,12 @@ abstract class KeywordI18n implements ActiveRecordInterface
         }
 
         if ($con === null) {
-            $con = Propel::getServiceContainer()->getWriteConnection(KeywordI18nTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getWriteConnection(CategoryAssociatedKeywordTableMap::DATABASE_NAME);
         }
 
         $con->beginTransaction();
         try {
-            $deleteQuery = ChildKeywordI18nQuery::create()
+            $deleteQuery = ChildCategoryAssociatedKeywordQuery::create()
                 ->filterByPrimaryKey($this->getPrimaryKey());
             $ret = $this->preDelete($con);
             if ($ret) {
@@ -762,7 +745,7 @@ abstract class KeywordI18n implements ActiveRecordInterface
         }
 
         if ($con === null) {
-            $con = Propel::getServiceContainer()->getWriteConnection(KeywordI18nTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getWriteConnection(CategoryAssociatedKeywordTableMap::DATABASE_NAME);
         }
 
         $con->beginTransaction();
@@ -771,8 +754,19 @@ abstract class KeywordI18n implements ActiveRecordInterface
             $ret = $this->preSave($con);
             if ($isInsert) {
                 $ret = $ret && $this->preInsert($con);
+                // timestampable behavior
+                if (!$this->isColumnModified(CategoryAssociatedKeywordTableMap::CREATED_AT)) {
+                    $this->setCreatedAt(time());
+                }
+                if (!$this->isColumnModified(CategoryAssociatedKeywordTableMap::UPDATED_AT)) {
+                    $this->setUpdatedAt(time());
+                }
             } else {
                 $ret = $ret && $this->preUpdate($con);
+                // timestampable behavior
+                if ($this->isModified() && !$this->isColumnModified(CategoryAssociatedKeywordTableMap::UPDATED_AT)) {
+                    $this->setUpdatedAt(time());
+                }
             }
             if ($ret) {
                 $affectedRows = $this->doSave($con);
@@ -782,7 +776,7 @@ abstract class KeywordI18n implements ActiveRecordInterface
                     $this->postUpdate($con);
                 }
                 $this->postSave($con);
-                KeywordI18nTableMap::addInstanceToPool($this);
+                CategoryAssociatedKeywordTableMap::addInstanceToPool($this);
             } else {
                 $affectedRows = 0;
             }
@@ -816,6 +810,13 @@ abstract class KeywordI18n implements ActiveRecordInterface
             // were passed to this object by their corresponding set
             // method.  This object relates to these object(s) by a
             // foreign key reference.
+
+            if ($this->aCategory !== null) {
+                if ($this->aCategory->isModified() || $this->aCategory->isNew()) {
+                    $affectedRows += $this->aCategory->save($con);
+                }
+                $this->setCategory($this->aCategory);
+            }
 
             if ($this->aKeyword !== null) {
                 if ($this->aKeyword->isModified() || $this->aKeyword->isNew()) {
@@ -857,27 +858,24 @@ abstract class KeywordI18n implements ActiveRecordInterface
 
 
          // check the columns in natural order for more readable SQL queries
-        if ($this->isColumnModified(KeywordI18nTableMap::ID)) {
-            $modifiedColumns[':p' . $index++]  = 'ID';
+        if ($this->isColumnModified(CategoryAssociatedKeywordTableMap::CATEGORY_ID)) {
+            $modifiedColumns[':p' . $index++]  = 'CATEGORY_ID';
         }
-        if ($this->isColumnModified(KeywordI18nTableMap::LOCALE)) {
-            $modifiedColumns[':p' . $index++]  = 'LOCALE';
+        if ($this->isColumnModified(CategoryAssociatedKeywordTableMap::KEYWORD_ID)) {
+            $modifiedColumns[':p' . $index++]  = 'KEYWORD_ID';
         }
-        if ($this->isColumnModified(KeywordI18nTableMap::TITLE)) {
-            $modifiedColumns[':p' . $index++]  = 'TITLE';
+        if ($this->isColumnModified(CategoryAssociatedKeywordTableMap::POSITION)) {
+            $modifiedColumns[':p' . $index++]  = 'POSITION';
         }
-        if ($this->isColumnModified(KeywordI18nTableMap::DESCRIPTION)) {
-            $modifiedColumns[':p' . $index++]  = 'DESCRIPTION';
+        if ($this->isColumnModified(CategoryAssociatedKeywordTableMap::CREATED_AT)) {
+            $modifiedColumns[':p' . $index++]  = 'CREATED_AT';
         }
-        if ($this->isColumnModified(KeywordI18nTableMap::CHAPO)) {
-            $modifiedColumns[':p' . $index++]  = 'CHAPO';
-        }
-        if ($this->isColumnModified(KeywordI18nTableMap::POSTSCRIPTUM)) {
-            $modifiedColumns[':p' . $index++]  = 'POSTSCRIPTUM';
+        if ($this->isColumnModified(CategoryAssociatedKeywordTableMap::UPDATED_AT)) {
+            $modifiedColumns[':p' . $index++]  = 'UPDATED_AT';
         }
 
         $sql = sprintf(
-            'INSERT INTO keyword_i18n (%s) VALUES (%s)',
+            'INSERT INTO category_associated_keyword (%s) VALUES (%s)',
             implode(', ', $modifiedColumns),
             implode(', ', array_keys($modifiedColumns))
         );
@@ -886,23 +884,20 @@ abstract class KeywordI18n implements ActiveRecordInterface
             $stmt = $con->prepare($sql);
             foreach ($modifiedColumns as $identifier => $columnName) {
                 switch ($columnName) {
-                    case 'ID':
-                        $stmt->bindValue($identifier, $this->id, PDO::PARAM_INT);
+                    case 'CATEGORY_ID':
+                        $stmt->bindValue($identifier, $this->category_id, PDO::PARAM_INT);
                         break;
-                    case 'LOCALE':
-                        $stmt->bindValue($identifier, $this->locale, PDO::PARAM_STR);
+                    case 'KEYWORD_ID':
+                        $stmt->bindValue($identifier, $this->keyword_id, PDO::PARAM_INT);
                         break;
-                    case 'TITLE':
-                        $stmt->bindValue($identifier, $this->title, PDO::PARAM_STR);
+                    case 'POSITION':
+                        $stmt->bindValue($identifier, $this->position, PDO::PARAM_INT);
                         break;
-                    case 'DESCRIPTION':
-                        $stmt->bindValue($identifier, $this->description, PDO::PARAM_STR);
+                    case 'CREATED_AT':
+                        $stmt->bindValue($identifier, $this->created_at ? $this->created_at->format("Y-m-d H:i:s") : null, PDO::PARAM_STR);
                         break;
-                    case 'CHAPO':
-                        $stmt->bindValue($identifier, $this->chapo, PDO::PARAM_STR);
-                        break;
-                    case 'POSTSCRIPTUM':
-                        $stmt->bindValue($identifier, $this->postscriptum, PDO::PARAM_STR);
+                    case 'UPDATED_AT':
+                        $stmt->bindValue($identifier, $this->updated_at ? $this->updated_at->format("Y-m-d H:i:s") : null, PDO::PARAM_STR);
                         break;
                 }
             }
@@ -943,7 +938,7 @@ abstract class KeywordI18n implements ActiveRecordInterface
      */
     public function getByName($name, $type = TableMap::TYPE_PHPNAME)
     {
-        $pos = KeywordI18nTableMap::translateFieldName($name, $type, TableMap::TYPE_NUM);
+        $pos = CategoryAssociatedKeywordTableMap::translateFieldName($name, $type, TableMap::TYPE_NUM);
         $field = $this->getByPosition($pos);
 
         return $field;
@@ -960,22 +955,19 @@ abstract class KeywordI18n implements ActiveRecordInterface
     {
         switch ($pos) {
             case 0:
-                return $this->getId();
+                return $this->getCategoryId();
                 break;
             case 1:
-                return $this->getLocale();
+                return $this->getKeywordId();
                 break;
             case 2:
-                return $this->getTitle();
+                return $this->getPosition();
                 break;
             case 3:
-                return $this->getDescription();
+                return $this->getCreatedAt();
                 break;
             case 4:
-                return $this->getChapo();
-                break;
-            case 5:
-                return $this->getPostscriptum();
+                return $this->getUpdatedAt();
                 break;
             default:
                 return null;
@@ -1000,18 +992,17 @@ abstract class KeywordI18n implements ActiveRecordInterface
      */
     public function toArray($keyType = TableMap::TYPE_PHPNAME, $includeLazyLoadColumns = true, $alreadyDumpedObjects = array(), $includeForeignObjects = false)
     {
-        if (isset($alreadyDumpedObjects['KeywordI18n'][serialize($this->getPrimaryKey())])) {
+        if (isset($alreadyDumpedObjects['CategoryAssociatedKeyword'][serialize($this->getPrimaryKey())])) {
             return '*RECURSION*';
         }
-        $alreadyDumpedObjects['KeywordI18n'][serialize($this->getPrimaryKey())] = true;
-        $keys = KeywordI18nTableMap::getFieldNames($keyType);
+        $alreadyDumpedObjects['CategoryAssociatedKeyword'][serialize($this->getPrimaryKey())] = true;
+        $keys = CategoryAssociatedKeywordTableMap::getFieldNames($keyType);
         $result = array(
-            $keys[0] => $this->getId(),
-            $keys[1] => $this->getLocale(),
-            $keys[2] => $this->getTitle(),
-            $keys[3] => $this->getDescription(),
-            $keys[4] => $this->getChapo(),
-            $keys[5] => $this->getPostscriptum(),
+            $keys[0] => $this->getCategoryId(),
+            $keys[1] => $this->getKeywordId(),
+            $keys[2] => $this->getPosition(),
+            $keys[3] => $this->getCreatedAt(),
+            $keys[4] => $this->getUpdatedAt(),
         );
         $virtualColumns = $this->virtualColumns;
         foreach ($virtualColumns as $key => $virtualColumn) {
@@ -1019,6 +1010,9 @@ abstract class KeywordI18n implements ActiveRecordInterface
         }
 
         if ($includeForeignObjects) {
+            if (null !== $this->aCategory) {
+                $result['Category'] = $this->aCategory->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
+            }
             if (null !== $this->aKeyword) {
                 $result['Keyword'] = $this->aKeyword->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
             }
@@ -1040,7 +1034,7 @@ abstract class KeywordI18n implements ActiveRecordInterface
      */
     public function setByName($name, $value, $type = TableMap::TYPE_PHPNAME)
     {
-        $pos = KeywordI18nTableMap::translateFieldName($name, $type, TableMap::TYPE_NUM);
+        $pos = CategoryAssociatedKeywordTableMap::translateFieldName($name, $type, TableMap::TYPE_NUM);
 
         return $this->setByPosition($pos, $value);
     }
@@ -1057,22 +1051,19 @@ abstract class KeywordI18n implements ActiveRecordInterface
     {
         switch ($pos) {
             case 0:
-                $this->setId($value);
+                $this->setCategoryId($value);
                 break;
             case 1:
-                $this->setLocale($value);
+                $this->setKeywordId($value);
                 break;
             case 2:
-                $this->setTitle($value);
+                $this->setPosition($value);
                 break;
             case 3:
-                $this->setDescription($value);
+                $this->setCreatedAt($value);
                 break;
             case 4:
-                $this->setChapo($value);
-                break;
-            case 5:
-                $this->setPostscriptum($value);
+                $this->setUpdatedAt($value);
                 break;
         } // switch()
     }
@@ -1096,14 +1087,13 @@ abstract class KeywordI18n implements ActiveRecordInterface
      */
     public function fromArray($arr, $keyType = TableMap::TYPE_PHPNAME)
     {
-        $keys = KeywordI18nTableMap::getFieldNames($keyType);
+        $keys = CategoryAssociatedKeywordTableMap::getFieldNames($keyType);
 
-        if (array_key_exists($keys[0], $arr)) $this->setId($arr[$keys[0]]);
-        if (array_key_exists($keys[1], $arr)) $this->setLocale($arr[$keys[1]]);
-        if (array_key_exists($keys[2], $arr)) $this->setTitle($arr[$keys[2]]);
-        if (array_key_exists($keys[3], $arr)) $this->setDescription($arr[$keys[3]]);
-        if (array_key_exists($keys[4], $arr)) $this->setChapo($arr[$keys[4]]);
-        if (array_key_exists($keys[5], $arr)) $this->setPostscriptum($arr[$keys[5]]);
+        if (array_key_exists($keys[0], $arr)) $this->setCategoryId($arr[$keys[0]]);
+        if (array_key_exists($keys[1], $arr)) $this->setKeywordId($arr[$keys[1]]);
+        if (array_key_exists($keys[2], $arr)) $this->setPosition($arr[$keys[2]]);
+        if (array_key_exists($keys[3], $arr)) $this->setCreatedAt($arr[$keys[3]]);
+        if (array_key_exists($keys[4], $arr)) $this->setUpdatedAt($arr[$keys[4]]);
     }
 
     /**
@@ -1113,14 +1103,13 @@ abstract class KeywordI18n implements ActiveRecordInterface
      */
     public function buildCriteria()
     {
-        $criteria = new Criteria(KeywordI18nTableMap::DATABASE_NAME);
+        $criteria = new Criteria(CategoryAssociatedKeywordTableMap::DATABASE_NAME);
 
-        if ($this->isColumnModified(KeywordI18nTableMap::ID)) $criteria->add(KeywordI18nTableMap::ID, $this->id);
-        if ($this->isColumnModified(KeywordI18nTableMap::LOCALE)) $criteria->add(KeywordI18nTableMap::LOCALE, $this->locale);
-        if ($this->isColumnModified(KeywordI18nTableMap::TITLE)) $criteria->add(KeywordI18nTableMap::TITLE, $this->title);
-        if ($this->isColumnModified(KeywordI18nTableMap::DESCRIPTION)) $criteria->add(KeywordI18nTableMap::DESCRIPTION, $this->description);
-        if ($this->isColumnModified(KeywordI18nTableMap::CHAPO)) $criteria->add(KeywordI18nTableMap::CHAPO, $this->chapo);
-        if ($this->isColumnModified(KeywordI18nTableMap::POSTSCRIPTUM)) $criteria->add(KeywordI18nTableMap::POSTSCRIPTUM, $this->postscriptum);
+        if ($this->isColumnModified(CategoryAssociatedKeywordTableMap::CATEGORY_ID)) $criteria->add(CategoryAssociatedKeywordTableMap::CATEGORY_ID, $this->category_id);
+        if ($this->isColumnModified(CategoryAssociatedKeywordTableMap::KEYWORD_ID)) $criteria->add(CategoryAssociatedKeywordTableMap::KEYWORD_ID, $this->keyword_id);
+        if ($this->isColumnModified(CategoryAssociatedKeywordTableMap::POSITION)) $criteria->add(CategoryAssociatedKeywordTableMap::POSITION, $this->position);
+        if ($this->isColumnModified(CategoryAssociatedKeywordTableMap::CREATED_AT)) $criteria->add(CategoryAssociatedKeywordTableMap::CREATED_AT, $this->created_at);
+        if ($this->isColumnModified(CategoryAssociatedKeywordTableMap::UPDATED_AT)) $criteria->add(CategoryAssociatedKeywordTableMap::UPDATED_AT, $this->updated_at);
 
         return $criteria;
     }
@@ -1135,9 +1124,9 @@ abstract class KeywordI18n implements ActiveRecordInterface
      */
     public function buildPkeyCriteria()
     {
-        $criteria = new Criteria(KeywordI18nTableMap::DATABASE_NAME);
-        $criteria->add(KeywordI18nTableMap::ID, $this->id);
-        $criteria->add(KeywordI18nTableMap::LOCALE, $this->locale);
+        $criteria = new Criteria(CategoryAssociatedKeywordTableMap::DATABASE_NAME);
+        $criteria->add(CategoryAssociatedKeywordTableMap::CATEGORY_ID, $this->category_id);
+        $criteria->add(CategoryAssociatedKeywordTableMap::KEYWORD_ID, $this->keyword_id);
 
         return $criteria;
     }
@@ -1150,8 +1139,8 @@ abstract class KeywordI18n implements ActiveRecordInterface
     public function getPrimaryKey()
     {
         $pks = array();
-        $pks[0] = $this->getId();
-        $pks[1] = $this->getLocale();
+        $pks[0] = $this->getCategoryId();
+        $pks[1] = $this->getKeywordId();
 
         return $pks;
     }
@@ -1164,8 +1153,8 @@ abstract class KeywordI18n implements ActiveRecordInterface
      */
     public function setPrimaryKey($keys)
     {
-        $this->setId($keys[0]);
-        $this->setLocale($keys[1]);
+        $this->setCategoryId($keys[0]);
+        $this->setKeywordId($keys[1]);
     }
 
     /**
@@ -1175,7 +1164,7 @@ abstract class KeywordI18n implements ActiveRecordInterface
     public function isPrimaryKeyNull()
     {
 
-        return (null === $this->getId()) && (null === $this->getLocale());
+        return (null === $this->getCategoryId()) && (null === $this->getKeywordId());
     }
 
     /**
@@ -1184,19 +1173,18 @@ abstract class KeywordI18n implements ActiveRecordInterface
      * If desired, this method can also make copies of all associated (fkey referrers)
      * objects.
      *
-     * @param      object $copyObj An object of \Keyword\Model\KeywordI18n (or compatible) type.
+     * @param      object $copyObj An object of \Keyword\Model\CategoryAssociatedKeyword (or compatible) type.
      * @param      boolean $deepCopy Whether to also copy all rows that refer (by fkey) to the current row.
      * @param      boolean $makeNew Whether to reset autoincrement PKs and make the object new.
      * @throws PropelException
      */
     public function copyInto($copyObj, $deepCopy = false, $makeNew = true)
     {
-        $copyObj->setId($this->getId());
-        $copyObj->setLocale($this->getLocale());
-        $copyObj->setTitle($this->getTitle());
-        $copyObj->setDescription($this->getDescription());
-        $copyObj->setChapo($this->getChapo());
-        $copyObj->setPostscriptum($this->getPostscriptum());
+        $copyObj->setCategoryId($this->getCategoryId());
+        $copyObj->setKeywordId($this->getKeywordId());
+        $copyObj->setPosition($this->getPosition());
+        $copyObj->setCreatedAt($this->getCreatedAt());
+        $copyObj->setUpdatedAt($this->getUpdatedAt());
         if ($makeNew) {
             $copyObj->setNew(true);
         }
@@ -1211,7 +1199,7 @@ abstract class KeywordI18n implements ActiveRecordInterface
      * objects.
      *
      * @param      boolean $deepCopy Whether to also copy all rows that refer (by fkey) to the current row.
-     * @return                 \Keyword\Model\KeywordI18n Clone of current object.
+     * @return                 \Keyword\Model\CategoryAssociatedKeyword Clone of current object.
      * @throws PropelException
      */
     public function copy($deepCopy = false)
@@ -1225,18 +1213,69 @@ abstract class KeywordI18n implements ActiveRecordInterface
     }
 
     /**
+     * Declares an association between this object and a ChildCategory object.
+     *
+     * @param                  ChildCategory $v
+     * @return                 \Keyword\Model\CategoryAssociatedKeyword The current object (for fluent API support)
+     * @throws PropelException
+     */
+    public function setCategory(ChildCategory $v = null)
+    {
+        if ($v === null) {
+            $this->setCategoryId(NULL);
+        } else {
+            $this->setCategoryId($v->getId());
+        }
+
+        $this->aCategory = $v;
+
+        // Add binding for other direction of this n:n relationship.
+        // If this object has already been added to the ChildCategory object, it will not be re-added.
+        if ($v !== null) {
+            $v->addCategoryAssociatedKeyword($this);
+        }
+
+
+        return $this;
+    }
+
+
+    /**
+     * Get the associated ChildCategory object
+     *
+     * @param      ConnectionInterface $con Optional Connection object.
+     * @return                 ChildCategory The associated ChildCategory object.
+     * @throws PropelException
+     */
+    public function getCategory(ConnectionInterface $con = null)
+    {
+        if ($this->aCategory === null && ($this->category_id !== null)) {
+            $this->aCategory = CategoryQuery::create()->findPk($this->category_id, $con);
+            /* The following can be used additionally to
+                guarantee the related object contains a reference
+                to this object.  This level of coupling may, however, be
+                undesirable since it could result in an only partially populated collection
+                in the referenced object.
+                $this->aCategory->addCategoryAssociatedKeywords($this);
+             */
+        }
+
+        return $this->aCategory;
+    }
+
+    /**
      * Declares an association between this object and a ChildKeyword object.
      *
      * @param                  ChildKeyword $v
-     * @return                 \Keyword\Model\KeywordI18n The current object (for fluent API support)
+     * @return                 \Keyword\Model\CategoryAssociatedKeyword The current object (for fluent API support)
      * @throws PropelException
      */
     public function setKeyword(ChildKeyword $v = null)
     {
         if ($v === null) {
-            $this->setId(NULL);
+            $this->setKeywordId(NULL);
         } else {
-            $this->setId($v->getId());
+            $this->setKeywordId($v->getId());
         }
 
         $this->aKeyword = $v;
@@ -1244,7 +1283,7 @@ abstract class KeywordI18n implements ActiveRecordInterface
         // Add binding for other direction of this n:n relationship.
         // If this object has already been added to the ChildKeyword object, it will not be re-added.
         if ($v !== null) {
-            $v->addKeywordI18n($this);
+            $v->addCategoryAssociatedKeyword($this);
         }
 
 
@@ -1261,14 +1300,14 @@ abstract class KeywordI18n implements ActiveRecordInterface
      */
     public function getKeyword(ConnectionInterface $con = null)
     {
-        if ($this->aKeyword === null && ($this->id !== null)) {
-            $this->aKeyword = ChildKeywordQuery::create()->findPk($this->id, $con);
+        if ($this->aKeyword === null && ($this->keyword_id !== null)) {
+            $this->aKeyword = ChildKeywordQuery::create()->findPk($this->keyword_id, $con);
             /* The following can be used additionally to
                 guarantee the related object contains a reference
                 to this object.  This level of coupling may, however, be
                 undesirable since it could result in an only partially populated collection
                 in the referenced object.
-                $this->aKeyword->addKeywordI18ns($this);
+                $this->aKeyword->addCategoryAssociatedKeywords($this);
              */
         }
 
@@ -1280,15 +1319,13 @@ abstract class KeywordI18n implements ActiveRecordInterface
      */
     public function clear()
     {
-        $this->id = null;
-        $this->locale = null;
-        $this->title = null;
-        $this->description = null;
-        $this->chapo = null;
-        $this->postscriptum = null;
+        $this->category_id = null;
+        $this->keyword_id = null;
+        $this->position = null;
+        $this->created_at = null;
+        $this->updated_at = null;
         $this->alreadyInSave = false;
         $this->clearAllReferences();
-        $this->applyDefaultValues();
         $this->resetModified();
         $this->setNew(true);
         $this->setDeleted(false);
@@ -1308,6 +1345,7 @@ abstract class KeywordI18n implements ActiveRecordInterface
         if ($deep) {
         } // if ($deep)
 
+        $this->aCategory = null;
         $this->aKeyword = null;
     }
 
@@ -1318,7 +1356,21 @@ abstract class KeywordI18n implements ActiveRecordInterface
      */
     public function __toString()
     {
-        return (string) $this->exportTo(KeywordI18nTableMap::DEFAULT_STRING_FORMAT);
+        return (string) $this->exportTo(CategoryAssociatedKeywordTableMap::DEFAULT_STRING_FORMAT);
+    }
+
+    // timestampable behavior
+
+    /**
+     * Mark the current object so that the update date doesn't get updated during next save
+     *
+     * @return     ChildCategoryAssociatedKeyword The current object (for fluent API support)
+     */
+    public function keepUpdateDateUnchanged()
+    {
+        $this->modifiedColumns[CategoryAssociatedKeywordTableMap::UPDATED_AT] = true;
+
+        return $this;
     }
 
     /**

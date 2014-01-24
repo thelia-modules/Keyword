@@ -5,6 +5,8 @@ namespace Keyword\Model\Base;
 use \DateTime;
 use \Exception;
 use \PDO;
+use Keyword\Model\CategoryAssociatedKeyword as ChildCategoryAssociatedKeyword;
+use Keyword\Model\CategoryAssociatedKeywordQuery as ChildCategoryAssociatedKeywordQuery;
 use Keyword\Model\ContentAssociatedKeyword as ChildContentAssociatedKeyword;
 use Keyword\Model\ContentAssociatedKeywordQuery as ChildContentAssociatedKeywordQuery;
 use Keyword\Model\FolderAssociatedKeyword as ChildFolderAssociatedKeyword;
@@ -13,6 +15,8 @@ use Keyword\Model\Keyword as ChildKeyword;
 use Keyword\Model\KeywordI18n as ChildKeywordI18n;
 use Keyword\Model\KeywordI18nQuery as ChildKeywordI18nQuery;
 use Keyword\Model\KeywordQuery as ChildKeywordQuery;
+use Keyword\Model\ProductAssociatedKeyword as ChildProductAssociatedKeyword;
+use Keyword\Model\ProductAssociatedKeywordQuery as ChildProductAssociatedKeywordQuery;
 use Keyword\Model\Map\KeywordTableMap;
 use Propel\Runtime\Propel;
 use Propel\Runtime\ActiveQuery\Criteria;
@@ -110,6 +114,18 @@ abstract class Keyword implements ActiveRecordInterface
     protected $collFolderAssociatedKeywordsPartial;
 
     /**
+     * @var        ObjectCollection|ChildCategoryAssociatedKeyword[] Collection to store aggregation of ChildCategoryAssociatedKeyword objects.
+     */
+    protected $collCategoryAssociatedKeywords;
+    protected $collCategoryAssociatedKeywordsPartial;
+
+    /**
+     * @var        ObjectCollection|ChildProductAssociatedKeyword[] Collection to store aggregation of ChildProductAssociatedKeyword objects.
+     */
+    protected $collProductAssociatedKeywords;
+    protected $collProductAssociatedKeywordsPartial;
+
+    /**
      * @var        ObjectCollection|ChildKeywordI18n[] Collection to store aggregation of ChildKeywordI18n objects.
      */
     protected $collKeywordI18ns;
@@ -153,6 +169,18 @@ abstract class Keyword implements ActiveRecordInterface
      * An array of objects scheduled for deletion.
      * @var ObjectCollection
      */
+    protected $categoryAssociatedKeywordsScheduledForDeletion = null;
+
+    /**
+     * An array of objects scheduled for deletion.
+     * @var ObjectCollection
+     */
+    protected $productAssociatedKeywordsScheduledForDeletion = null;
+
+    /**
+     * An array of objects scheduled for deletion.
+     * @var ObjectCollection
+     */
     protected $keywordI18nsScheduledForDeletion = null;
 
     /**
@@ -169,7 +197,7 @@ abstract class Keyword implements ActiveRecordInterface
      */
     public function isModified()
     {
-        return !empty($this->modifiedColumns);
+        return !!$this->modifiedColumns;
     }
 
     /**
@@ -180,7 +208,7 @@ abstract class Keyword implements ActiveRecordInterface
      */
     public function isColumnModified($col)
     {
-        return in_array($col, $this->modifiedColumns);
+        return $this->modifiedColumns && isset($this->modifiedColumns[$col]);
     }
 
     /**
@@ -189,7 +217,7 @@ abstract class Keyword implements ActiveRecordInterface
      */
     public function getModifiedColumns()
     {
-        return array_unique($this->modifiedColumns);
+        return $this->modifiedColumns ? array_keys($this->modifiedColumns) : [];
     }
 
     /**
@@ -242,8 +270,8 @@ abstract class Keyword implements ActiveRecordInterface
     public function resetModified($col = null)
     {
         if (null !== $col) {
-            while (false !== ($offset = array_search($col, $this->modifiedColumns))) {
-                array_splice($this->modifiedColumns, $offset, 1);
+            if (isset($this->modifiedColumns[$col])) {
+                unset($this->modifiedColumns[$col]);
             }
         } else {
             $this->modifiedColumns = array();
@@ -511,7 +539,7 @@ abstract class Keyword implements ActiveRecordInterface
 
         if ($this->id !== $v) {
             $this->id = $v;
-            $this->modifiedColumns[] = KeywordTableMap::ID;
+            $this->modifiedColumns[KeywordTableMap::ID] = true;
         }
 
 
@@ -532,7 +560,7 @@ abstract class Keyword implements ActiveRecordInterface
 
         if ($this->visible !== $v) {
             $this->visible = $v;
-            $this->modifiedColumns[] = KeywordTableMap::VISIBLE;
+            $this->modifiedColumns[KeywordTableMap::VISIBLE] = true;
         }
 
 
@@ -553,7 +581,7 @@ abstract class Keyword implements ActiveRecordInterface
 
         if ($this->position !== $v) {
             $this->position = $v;
-            $this->modifiedColumns[] = KeywordTableMap::POSITION;
+            $this->modifiedColumns[KeywordTableMap::POSITION] = true;
         }
 
 
@@ -574,7 +602,7 @@ abstract class Keyword implements ActiveRecordInterface
 
         if ($this->code !== $v) {
             $this->code = $v;
-            $this->modifiedColumns[] = KeywordTableMap::CODE;
+            $this->modifiedColumns[KeywordTableMap::CODE] = true;
         }
 
 
@@ -594,7 +622,7 @@ abstract class Keyword implements ActiveRecordInterface
         if ($this->created_at !== null || $dt !== null) {
             if ($dt !== $this->created_at) {
                 $this->created_at = $dt;
-                $this->modifiedColumns[] = KeywordTableMap::CREATED_AT;
+                $this->modifiedColumns[KeywordTableMap::CREATED_AT] = true;
             }
         } // if either are not null
 
@@ -615,7 +643,7 @@ abstract class Keyword implements ActiveRecordInterface
         if ($this->updated_at !== null || $dt !== null) {
             if ($dt !== $this->updated_at) {
                 $this->updated_at = $dt;
-                $this->modifiedColumns[] = KeywordTableMap::UPDATED_AT;
+                $this->modifiedColumns[KeywordTableMap::UPDATED_AT] = true;
             }
         } // if either are not null
 
@@ -755,6 +783,10 @@ abstract class Keyword implements ActiveRecordInterface
             $this->collContentAssociatedKeywords = null;
 
             $this->collFolderAssociatedKeywords = null;
+
+            $this->collCategoryAssociatedKeywords = null;
+
+            $this->collProductAssociatedKeywords = null;
 
             $this->collKeywordI18ns = null;
 
@@ -925,6 +957,40 @@ abstract class Keyword implements ActiveRecordInterface
                 }
             }
 
+            if ($this->categoryAssociatedKeywordsScheduledForDeletion !== null) {
+                if (!$this->categoryAssociatedKeywordsScheduledForDeletion->isEmpty()) {
+                    \Keyword\Model\CategoryAssociatedKeywordQuery::create()
+                        ->filterByPrimaryKeys($this->categoryAssociatedKeywordsScheduledForDeletion->getPrimaryKeys(false))
+                        ->delete($con);
+                    $this->categoryAssociatedKeywordsScheduledForDeletion = null;
+                }
+            }
+
+                if ($this->collCategoryAssociatedKeywords !== null) {
+            foreach ($this->collCategoryAssociatedKeywords as $referrerFK) {
+                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
+                        $affectedRows += $referrerFK->save($con);
+                    }
+                }
+            }
+
+            if ($this->productAssociatedKeywordsScheduledForDeletion !== null) {
+                if (!$this->productAssociatedKeywordsScheduledForDeletion->isEmpty()) {
+                    \Keyword\Model\ProductAssociatedKeywordQuery::create()
+                        ->filterByPrimaryKeys($this->productAssociatedKeywordsScheduledForDeletion->getPrimaryKeys(false))
+                        ->delete($con);
+                    $this->productAssociatedKeywordsScheduledForDeletion = null;
+                }
+            }
+
+                if ($this->collProductAssociatedKeywords !== null) {
+            foreach ($this->collProductAssociatedKeywords as $referrerFK) {
+                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
+                        $affectedRows += $referrerFK->save($con);
+                    }
+                }
+            }
+
             if ($this->keywordI18nsScheduledForDeletion !== null) {
                 if (!$this->keywordI18nsScheduledForDeletion->isEmpty()) {
                     \Keyword\Model\KeywordI18nQuery::create()
@@ -962,7 +1028,7 @@ abstract class Keyword implements ActiveRecordInterface
         $modifiedColumns = array();
         $index = 0;
 
-        $this->modifiedColumns[] = KeywordTableMap::ID;
+        $this->modifiedColumns[KeywordTableMap::ID] = true;
         if (null !== $this->id) {
             throw new PropelException('Cannot insert a value for auto-increment primary key (' . KeywordTableMap::ID . ')');
         }
@@ -1142,6 +1208,12 @@ abstract class Keyword implements ActiveRecordInterface
             }
             if (null !== $this->collFolderAssociatedKeywords) {
                 $result['FolderAssociatedKeywords'] = $this->collFolderAssociatedKeywords->toArray(null, true, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+            }
+            if (null !== $this->collCategoryAssociatedKeywords) {
+                $result['CategoryAssociatedKeywords'] = $this->collCategoryAssociatedKeywords->toArray(null, true, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+            }
+            if (null !== $this->collProductAssociatedKeywords) {
+                $result['ProductAssociatedKeywords'] = $this->collProductAssociatedKeywords->toArray(null, true, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
             }
             if (null !== $this->collKeywordI18ns) {
                 $result['KeywordI18ns'] = $this->collKeywordI18ns->toArray(null, true, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
@@ -1331,6 +1403,18 @@ abstract class Keyword implements ActiveRecordInterface
                 }
             }
 
+            foreach ($this->getCategoryAssociatedKeywords() as $relObj) {
+                if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
+                    $copyObj->addCategoryAssociatedKeyword($relObj->copy($deepCopy));
+                }
+            }
+
+            foreach ($this->getProductAssociatedKeywords() as $relObj) {
+                if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
+                    $copyObj->addProductAssociatedKeyword($relObj->copy($deepCopy));
+                }
+            }
+
             foreach ($this->getKeywordI18ns() as $relObj) {
                 if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
                     $copyObj->addKeywordI18n($relObj->copy($deepCopy));
@@ -1383,6 +1467,12 @@ abstract class Keyword implements ActiveRecordInterface
         }
         if ('FolderAssociatedKeyword' == $relationName) {
             return $this->initFolderAssociatedKeywords();
+        }
+        if ('CategoryAssociatedKeyword' == $relationName) {
+            return $this->initCategoryAssociatedKeywords();
+        }
+        if ('ProductAssociatedKeyword' == $relationName) {
+            return $this->initProductAssociatedKeywords();
         }
         if ('KeywordI18n' == $relationName) {
             return $this->initKeywordI18ns();
@@ -1471,7 +1561,7 @@ abstract class Keyword implements ActiveRecordInterface
                         $this->collContentAssociatedKeywordsPartial = true;
                     }
 
-                    $collContentAssociatedKeywords->getInternalIterator()->rewind();
+                    reset($collContentAssociatedKeywords);
 
                     return $collContentAssociatedKeywords;
                 }
@@ -1717,7 +1807,7 @@ abstract class Keyword implements ActiveRecordInterface
                         $this->collFolderAssociatedKeywordsPartial = true;
                     }
 
-                    $collFolderAssociatedKeywords->getInternalIterator()->rewind();
+                    reset($collFolderAssociatedKeywords);
 
                     return $collFolderAssociatedKeywords;
                 }
@@ -1882,6 +1972,498 @@ abstract class Keyword implements ActiveRecordInterface
     }
 
     /**
+     * Clears out the collCategoryAssociatedKeywords collection
+     *
+     * This does not modify the database; however, it will remove any associated objects, causing
+     * them to be refetched by subsequent calls to accessor method.
+     *
+     * @return void
+     * @see        addCategoryAssociatedKeywords()
+     */
+    public function clearCategoryAssociatedKeywords()
+    {
+        $this->collCategoryAssociatedKeywords = null; // important to set this to NULL since that means it is uninitialized
+    }
+
+    /**
+     * Reset is the collCategoryAssociatedKeywords collection loaded partially.
+     */
+    public function resetPartialCategoryAssociatedKeywords($v = true)
+    {
+        $this->collCategoryAssociatedKeywordsPartial = $v;
+    }
+
+    /**
+     * Initializes the collCategoryAssociatedKeywords collection.
+     *
+     * By default this just sets the collCategoryAssociatedKeywords collection to an empty array (like clearcollCategoryAssociatedKeywords());
+     * however, you may wish to override this method in your stub class to provide setting appropriate
+     * to your application -- for example, setting the initial array to the values stored in database.
+     *
+     * @param      boolean $overrideExisting If set to true, the method call initializes
+     *                                        the collection even if it is not empty
+     *
+     * @return void
+     */
+    public function initCategoryAssociatedKeywords($overrideExisting = true)
+    {
+        if (null !== $this->collCategoryAssociatedKeywords && !$overrideExisting) {
+            return;
+        }
+        $this->collCategoryAssociatedKeywords = new ObjectCollection();
+        $this->collCategoryAssociatedKeywords->setModel('\Keyword\Model\CategoryAssociatedKeyword');
+    }
+
+    /**
+     * Gets an array of ChildCategoryAssociatedKeyword objects which contain a foreign key that references this object.
+     *
+     * If the $criteria is not null, it is used to always fetch the results from the database.
+     * Otherwise the results are fetched from the database the first time, then cached.
+     * Next time the same method is called without $criteria, the cached collection is returned.
+     * If this ChildKeyword is new, it will return
+     * an empty collection or the current collection; the criteria is ignored on a new object.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @return Collection|ChildCategoryAssociatedKeyword[] List of ChildCategoryAssociatedKeyword objects
+     * @throws PropelException
+     */
+    public function getCategoryAssociatedKeywords($criteria = null, ConnectionInterface $con = null)
+    {
+        $partial = $this->collCategoryAssociatedKeywordsPartial && !$this->isNew();
+        if (null === $this->collCategoryAssociatedKeywords || null !== $criteria  || $partial) {
+            if ($this->isNew() && null === $this->collCategoryAssociatedKeywords) {
+                // return empty collection
+                $this->initCategoryAssociatedKeywords();
+            } else {
+                $collCategoryAssociatedKeywords = ChildCategoryAssociatedKeywordQuery::create(null, $criteria)
+                    ->filterByKeyword($this)
+                    ->find($con);
+
+                if (null !== $criteria) {
+                    if (false !== $this->collCategoryAssociatedKeywordsPartial && count($collCategoryAssociatedKeywords)) {
+                        $this->initCategoryAssociatedKeywords(false);
+
+                        foreach ($collCategoryAssociatedKeywords as $obj) {
+                            if (false == $this->collCategoryAssociatedKeywords->contains($obj)) {
+                                $this->collCategoryAssociatedKeywords->append($obj);
+                            }
+                        }
+
+                        $this->collCategoryAssociatedKeywordsPartial = true;
+                    }
+
+                    reset($collCategoryAssociatedKeywords);
+
+                    return $collCategoryAssociatedKeywords;
+                }
+
+                if ($partial && $this->collCategoryAssociatedKeywords) {
+                    foreach ($this->collCategoryAssociatedKeywords as $obj) {
+                        if ($obj->isNew()) {
+                            $collCategoryAssociatedKeywords[] = $obj;
+                        }
+                    }
+                }
+
+                $this->collCategoryAssociatedKeywords = $collCategoryAssociatedKeywords;
+                $this->collCategoryAssociatedKeywordsPartial = false;
+            }
+        }
+
+        return $this->collCategoryAssociatedKeywords;
+    }
+
+    /**
+     * Sets a collection of CategoryAssociatedKeyword objects related by a one-to-many relationship
+     * to the current object.
+     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
+     * and new objects from the given Propel collection.
+     *
+     * @param      Collection $categoryAssociatedKeywords A Propel collection.
+     * @param      ConnectionInterface $con Optional connection object
+     * @return   ChildKeyword The current object (for fluent API support)
+     */
+    public function setCategoryAssociatedKeywords(Collection $categoryAssociatedKeywords, ConnectionInterface $con = null)
+    {
+        $categoryAssociatedKeywordsToDelete = $this->getCategoryAssociatedKeywords(new Criteria(), $con)->diff($categoryAssociatedKeywords);
+
+
+        //since at least one column in the foreign key is at the same time a PK
+        //we can not just set a PK to NULL in the lines below. We have to store
+        //a backup of all values, so we are able to manipulate these items based on the onDelete value later.
+        $this->categoryAssociatedKeywordsScheduledForDeletion = clone $categoryAssociatedKeywordsToDelete;
+
+        foreach ($categoryAssociatedKeywordsToDelete as $categoryAssociatedKeywordRemoved) {
+            $categoryAssociatedKeywordRemoved->setKeyword(null);
+        }
+
+        $this->collCategoryAssociatedKeywords = null;
+        foreach ($categoryAssociatedKeywords as $categoryAssociatedKeyword) {
+            $this->addCategoryAssociatedKeyword($categoryAssociatedKeyword);
+        }
+
+        $this->collCategoryAssociatedKeywords = $categoryAssociatedKeywords;
+        $this->collCategoryAssociatedKeywordsPartial = false;
+
+        return $this;
+    }
+
+    /**
+     * Returns the number of related CategoryAssociatedKeyword objects.
+     *
+     * @param      Criteria $criteria
+     * @param      boolean $distinct
+     * @param      ConnectionInterface $con
+     * @return int             Count of related CategoryAssociatedKeyword objects.
+     * @throws PropelException
+     */
+    public function countCategoryAssociatedKeywords(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
+    {
+        $partial = $this->collCategoryAssociatedKeywordsPartial && !$this->isNew();
+        if (null === $this->collCategoryAssociatedKeywords || null !== $criteria || $partial) {
+            if ($this->isNew() && null === $this->collCategoryAssociatedKeywords) {
+                return 0;
+            }
+
+            if ($partial && !$criteria) {
+                return count($this->getCategoryAssociatedKeywords());
+            }
+
+            $query = ChildCategoryAssociatedKeywordQuery::create(null, $criteria);
+            if ($distinct) {
+                $query->distinct();
+            }
+
+            return $query
+                ->filterByKeyword($this)
+                ->count($con);
+        }
+
+        return count($this->collCategoryAssociatedKeywords);
+    }
+
+    /**
+     * Method called to associate a ChildCategoryAssociatedKeyword object to this object
+     * through the ChildCategoryAssociatedKeyword foreign key attribute.
+     *
+     * @param    ChildCategoryAssociatedKeyword $l ChildCategoryAssociatedKeyword
+     * @return   \Keyword\Model\Keyword The current object (for fluent API support)
+     */
+    public function addCategoryAssociatedKeyword(ChildCategoryAssociatedKeyword $l)
+    {
+        if ($this->collCategoryAssociatedKeywords === null) {
+            $this->initCategoryAssociatedKeywords();
+            $this->collCategoryAssociatedKeywordsPartial = true;
+        }
+
+        if (!in_array($l, $this->collCategoryAssociatedKeywords->getArrayCopy(), true)) { // only add it if the **same** object is not already associated
+            $this->doAddCategoryAssociatedKeyword($l);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param CategoryAssociatedKeyword $categoryAssociatedKeyword The categoryAssociatedKeyword object to add.
+     */
+    protected function doAddCategoryAssociatedKeyword($categoryAssociatedKeyword)
+    {
+        $this->collCategoryAssociatedKeywords[]= $categoryAssociatedKeyword;
+        $categoryAssociatedKeyword->setKeyword($this);
+    }
+
+    /**
+     * @param  CategoryAssociatedKeyword $categoryAssociatedKeyword The categoryAssociatedKeyword object to remove.
+     * @return ChildKeyword The current object (for fluent API support)
+     */
+    public function removeCategoryAssociatedKeyword($categoryAssociatedKeyword)
+    {
+        if ($this->getCategoryAssociatedKeywords()->contains($categoryAssociatedKeyword)) {
+            $this->collCategoryAssociatedKeywords->remove($this->collCategoryAssociatedKeywords->search($categoryAssociatedKeyword));
+            if (null === $this->categoryAssociatedKeywordsScheduledForDeletion) {
+                $this->categoryAssociatedKeywordsScheduledForDeletion = clone $this->collCategoryAssociatedKeywords;
+                $this->categoryAssociatedKeywordsScheduledForDeletion->clear();
+            }
+            $this->categoryAssociatedKeywordsScheduledForDeletion[]= clone $categoryAssociatedKeyword;
+            $categoryAssociatedKeyword->setKeyword(null);
+        }
+
+        return $this;
+    }
+
+
+    /**
+     * If this collection has already been initialized with
+     * an identical criteria, it returns the collection.
+     * Otherwise if this Keyword is new, it will return
+     * an empty collection; or if this Keyword has previously
+     * been saved, it will retrieve related CategoryAssociatedKeywords from storage.
+     *
+     * This method is protected by default in order to keep the public
+     * api reasonable.  You can provide public methods for those you
+     * actually need in Keyword.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
+     * @return Collection|ChildCategoryAssociatedKeyword[] List of ChildCategoryAssociatedKeyword objects
+     */
+    public function getCategoryAssociatedKeywordsJoinCategory($criteria = null, $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    {
+        $query = ChildCategoryAssociatedKeywordQuery::create(null, $criteria);
+        $query->joinWith('Category', $joinBehavior);
+
+        return $this->getCategoryAssociatedKeywords($query, $con);
+    }
+
+    /**
+     * Clears out the collProductAssociatedKeywords collection
+     *
+     * This does not modify the database; however, it will remove any associated objects, causing
+     * them to be refetched by subsequent calls to accessor method.
+     *
+     * @return void
+     * @see        addProductAssociatedKeywords()
+     */
+    public function clearProductAssociatedKeywords()
+    {
+        $this->collProductAssociatedKeywords = null; // important to set this to NULL since that means it is uninitialized
+    }
+
+    /**
+     * Reset is the collProductAssociatedKeywords collection loaded partially.
+     */
+    public function resetPartialProductAssociatedKeywords($v = true)
+    {
+        $this->collProductAssociatedKeywordsPartial = $v;
+    }
+
+    /**
+     * Initializes the collProductAssociatedKeywords collection.
+     *
+     * By default this just sets the collProductAssociatedKeywords collection to an empty array (like clearcollProductAssociatedKeywords());
+     * however, you may wish to override this method in your stub class to provide setting appropriate
+     * to your application -- for example, setting the initial array to the values stored in database.
+     *
+     * @param      boolean $overrideExisting If set to true, the method call initializes
+     *                                        the collection even if it is not empty
+     *
+     * @return void
+     */
+    public function initProductAssociatedKeywords($overrideExisting = true)
+    {
+        if (null !== $this->collProductAssociatedKeywords && !$overrideExisting) {
+            return;
+        }
+        $this->collProductAssociatedKeywords = new ObjectCollection();
+        $this->collProductAssociatedKeywords->setModel('\Keyword\Model\ProductAssociatedKeyword');
+    }
+
+    /**
+     * Gets an array of ChildProductAssociatedKeyword objects which contain a foreign key that references this object.
+     *
+     * If the $criteria is not null, it is used to always fetch the results from the database.
+     * Otherwise the results are fetched from the database the first time, then cached.
+     * Next time the same method is called without $criteria, the cached collection is returned.
+     * If this ChildKeyword is new, it will return
+     * an empty collection or the current collection; the criteria is ignored on a new object.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @return Collection|ChildProductAssociatedKeyword[] List of ChildProductAssociatedKeyword objects
+     * @throws PropelException
+     */
+    public function getProductAssociatedKeywords($criteria = null, ConnectionInterface $con = null)
+    {
+        $partial = $this->collProductAssociatedKeywordsPartial && !$this->isNew();
+        if (null === $this->collProductAssociatedKeywords || null !== $criteria  || $partial) {
+            if ($this->isNew() && null === $this->collProductAssociatedKeywords) {
+                // return empty collection
+                $this->initProductAssociatedKeywords();
+            } else {
+                $collProductAssociatedKeywords = ChildProductAssociatedKeywordQuery::create(null, $criteria)
+                    ->filterByKeyword($this)
+                    ->find($con);
+
+                if (null !== $criteria) {
+                    if (false !== $this->collProductAssociatedKeywordsPartial && count($collProductAssociatedKeywords)) {
+                        $this->initProductAssociatedKeywords(false);
+
+                        foreach ($collProductAssociatedKeywords as $obj) {
+                            if (false == $this->collProductAssociatedKeywords->contains($obj)) {
+                                $this->collProductAssociatedKeywords->append($obj);
+                            }
+                        }
+
+                        $this->collProductAssociatedKeywordsPartial = true;
+                    }
+
+                    reset($collProductAssociatedKeywords);
+
+                    return $collProductAssociatedKeywords;
+                }
+
+                if ($partial && $this->collProductAssociatedKeywords) {
+                    foreach ($this->collProductAssociatedKeywords as $obj) {
+                        if ($obj->isNew()) {
+                            $collProductAssociatedKeywords[] = $obj;
+                        }
+                    }
+                }
+
+                $this->collProductAssociatedKeywords = $collProductAssociatedKeywords;
+                $this->collProductAssociatedKeywordsPartial = false;
+            }
+        }
+
+        return $this->collProductAssociatedKeywords;
+    }
+
+    /**
+     * Sets a collection of ProductAssociatedKeyword objects related by a one-to-many relationship
+     * to the current object.
+     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
+     * and new objects from the given Propel collection.
+     *
+     * @param      Collection $productAssociatedKeywords A Propel collection.
+     * @param      ConnectionInterface $con Optional connection object
+     * @return   ChildKeyword The current object (for fluent API support)
+     */
+    public function setProductAssociatedKeywords(Collection $productAssociatedKeywords, ConnectionInterface $con = null)
+    {
+        $productAssociatedKeywordsToDelete = $this->getProductAssociatedKeywords(new Criteria(), $con)->diff($productAssociatedKeywords);
+
+
+        //since at least one column in the foreign key is at the same time a PK
+        //we can not just set a PK to NULL in the lines below. We have to store
+        //a backup of all values, so we are able to manipulate these items based on the onDelete value later.
+        $this->productAssociatedKeywordsScheduledForDeletion = clone $productAssociatedKeywordsToDelete;
+
+        foreach ($productAssociatedKeywordsToDelete as $productAssociatedKeywordRemoved) {
+            $productAssociatedKeywordRemoved->setKeyword(null);
+        }
+
+        $this->collProductAssociatedKeywords = null;
+        foreach ($productAssociatedKeywords as $productAssociatedKeyword) {
+            $this->addProductAssociatedKeyword($productAssociatedKeyword);
+        }
+
+        $this->collProductAssociatedKeywords = $productAssociatedKeywords;
+        $this->collProductAssociatedKeywordsPartial = false;
+
+        return $this;
+    }
+
+    /**
+     * Returns the number of related ProductAssociatedKeyword objects.
+     *
+     * @param      Criteria $criteria
+     * @param      boolean $distinct
+     * @param      ConnectionInterface $con
+     * @return int             Count of related ProductAssociatedKeyword objects.
+     * @throws PropelException
+     */
+    public function countProductAssociatedKeywords(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
+    {
+        $partial = $this->collProductAssociatedKeywordsPartial && !$this->isNew();
+        if (null === $this->collProductAssociatedKeywords || null !== $criteria || $partial) {
+            if ($this->isNew() && null === $this->collProductAssociatedKeywords) {
+                return 0;
+            }
+
+            if ($partial && !$criteria) {
+                return count($this->getProductAssociatedKeywords());
+            }
+
+            $query = ChildProductAssociatedKeywordQuery::create(null, $criteria);
+            if ($distinct) {
+                $query->distinct();
+            }
+
+            return $query
+                ->filterByKeyword($this)
+                ->count($con);
+        }
+
+        return count($this->collProductAssociatedKeywords);
+    }
+
+    /**
+     * Method called to associate a ChildProductAssociatedKeyword object to this object
+     * through the ChildProductAssociatedKeyword foreign key attribute.
+     *
+     * @param    ChildProductAssociatedKeyword $l ChildProductAssociatedKeyword
+     * @return   \Keyword\Model\Keyword The current object (for fluent API support)
+     */
+    public function addProductAssociatedKeyword(ChildProductAssociatedKeyword $l)
+    {
+        if ($this->collProductAssociatedKeywords === null) {
+            $this->initProductAssociatedKeywords();
+            $this->collProductAssociatedKeywordsPartial = true;
+        }
+
+        if (!in_array($l, $this->collProductAssociatedKeywords->getArrayCopy(), true)) { // only add it if the **same** object is not already associated
+            $this->doAddProductAssociatedKeyword($l);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param ProductAssociatedKeyword $productAssociatedKeyword The productAssociatedKeyword object to add.
+     */
+    protected function doAddProductAssociatedKeyword($productAssociatedKeyword)
+    {
+        $this->collProductAssociatedKeywords[]= $productAssociatedKeyword;
+        $productAssociatedKeyword->setKeyword($this);
+    }
+
+    /**
+     * @param  ProductAssociatedKeyword $productAssociatedKeyword The productAssociatedKeyword object to remove.
+     * @return ChildKeyword The current object (for fluent API support)
+     */
+    public function removeProductAssociatedKeyword($productAssociatedKeyword)
+    {
+        if ($this->getProductAssociatedKeywords()->contains($productAssociatedKeyword)) {
+            $this->collProductAssociatedKeywords->remove($this->collProductAssociatedKeywords->search($productAssociatedKeyword));
+            if (null === $this->productAssociatedKeywordsScheduledForDeletion) {
+                $this->productAssociatedKeywordsScheduledForDeletion = clone $this->collProductAssociatedKeywords;
+                $this->productAssociatedKeywordsScheduledForDeletion->clear();
+            }
+            $this->productAssociatedKeywordsScheduledForDeletion[]= clone $productAssociatedKeyword;
+            $productAssociatedKeyword->setKeyword(null);
+        }
+
+        return $this;
+    }
+
+
+    /**
+     * If this collection has already been initialized with
+     * an identical criteria, it returns the collection.
+     * Otherwise if this Keyword is new, it will return
+     * an empty collection; or if this Keyword has previously
+     * been saved, it will retrieve related ProductAssociatedKeywords from storage.
+     *
+     * This method is protected by default in order to keep the public
+     * api reasonable.  You can provide public methods for those you
+     * actually need in Keyword.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
+     * @return Collection|ChildProductAssociatedKeyword[] List of ChildProductAssociatedKeyword objects
+     */
+    public function getProductAssociatedKeywordsJoinProduct($criteria = null, $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    {
+        $query = ChildProductAssociatedKeywordQuery::create(null, $criteria);
+        $query->joinWith('Product', $joinBehavior);
+
+        return $this->getProductAssociatedKeywords($query, $con);
+    }
+
+    /**
      * Clears out the collKeywordI18ns collection
      *
      * This does not modify the database; however, it will remove any associated objects, causing
@@ -1963,7 +2545,7 @@ abstract class Keyword implements ActiveRecordInterface
                         $this->collKeywordI18nsPartial = true;
                     }
 
-                    $collKeywordI18ns->getInternalIterator()->rewind();
+                    reset($collKeywordI18ns);
 
                     return $collKeywordI18ns;
                 }
@@ -2146,6 +2728,16 @@ abstract class Keyword implements ActiveRecordInterface
                     $o->clearAllReferences($deep);
                 }
             }
+            if ($this->collCategoryAssociatedKeywords) {
+                foreach ($this->collCategoryAssociatedKeywords as $o) {
+                    $o->clearAllReferences($deep);
+                }
+            }
+            if ($this->collProductAssociatedKeywords) {
+                foreach ($this->collProductAssociatedKeywords as $o) {
+                    $o->clearAllReferences($deep);
+                }
+            }
             if ($this->collKeywordI18ns) {
                 foreach ($this->collKeywordI18ns as $o) {
                     $o->clearAllReferences($deep);
@@ -2157,17 +2749,10 @@ abstract class Keyword implements ActiveRecordInterface
         $this->currentLocale = 'en_US';
         $this->currentTranslations = null;
 
-        if ($this->collContentAssociatedKeywords instanceof Collection) {
-            $this->collContentAssociatedKeywords->clearIterator();
-        }
         $this->collContentAssociatedKeywords = null;
-        if ($this->collFolderAssociatedKeywords instanceof Collection) {
-            $this->collFolderAssociatedKeywords->clearIterator();
-        }
         $this->collFolderAssociatedKeywords = null;
-        if ($this->collKeywordI18ns instanceof Collection) {
-            $this->collKeywordI18ns->clearIterator();
-        }
+        $this->collCategoryAssociatedKeywords = null;
+        $this->collProductAssociatedKeywords = null;
         $this->collKeywordI18ns = null;
     }
 
@@ -2190,7 +2775,7 @@ abstract class Keyword implements ActiveRecordInterface
      */
     public function keepUpdateDateUnchanged()
     {
-        $this->modifiedColumns[] = KeywordTableMap::UPDATED_AT;
+        $this->modifiedColumns[KeywordTableMap::UPDATED_AT] = true;
 
         return $this;
     }

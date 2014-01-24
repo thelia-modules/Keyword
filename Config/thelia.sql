@@ -77,6 +77,62 @@ CREATE TABLE `folder_associated_keyword`
 ) ENGINE=InnoDB;
 
 -- ---------------------------------------------------------------------
+-- category_associated_keyword
+-- ---------------------------------------------------------------------
+
+DROP TABLE IF EXISTS `category_associated_keyword`;
+
+CREATE TABLE `category_associated_keyword`
+(
+    `category_id` INTEGER NOT NULL,
+    `keyword_id` INTEGER NOT NULL,
+    `position` INTEGER NOT NULL,
+    `created_at` DATETIME,
+    `updated_at` DATETIME,
+    PRIMARY KEY (`category_id`,`keyword_id`),
+    INDEX `idx_category_associated_keyword_category_id` (`category_id`),
+    INDEX `idx_category_associated_keyword_keyword_id` (`keyword_id`),
+    CONSTRAINT `fk_category_associated_keyword_category_id`
+        FOREIGN KEY (`category_id`)
+        REFERENCES `category` (`id`)
+        ON UPDATE RESTRICT
+        ON DELETE CASCADE,
+    CONSTRAINT `fk_category_associated_keyword_keyword_id`
+        FOREIGN KEY (`keyword_id`)
+        REFERENCES `keyword` (`id`)
+        ON UPDATE RESTRICT
+        ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+-- ---------------------------------------------------------------------
+-- product_associated_keyword
+-- ---------------------------------------------------------------------
+
+DROP TABLE IF EXISTS `product_associated_keyword`;
+
+CREATE TABLE `product_associated_keyword`
+(
+    `product_id` INTEGER NOT NULL,
+    `keyword_id` INTEGER NOT NULL,
+    `position` INTEGER NOT NULL,
+    `created_at` DATETIME,
+    `updated_at` DATETIME,
+    PRIMARY KEY (`product_id`,`keyword_id`),
+    INDEX `idx_product_associated_keyword_product_id` (`product_id`),
+    INDEX `idx_product_associated_keyword_keyword_id` (`keyword_id`),
+    CONSTRAINT `fk_product_associated_keyword_product_id`
+        FOREIGN KEY (`product_id`)
+        REFERENCES `product` (`id`)
+        ON UPDATE RESTRICT
+        ON DELETE CASCADE,
+    CONSTRAINT `fk_product_associated_keyword_keyword_id`
+        FOREIGN KEY (`keyword_id`)
+        REFERENCES `keyword` (`id`)
+        ON UPDATE RESTRICT
+        ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+-- ---------------------------------------------------------------------
 -- keyword_i18n
 -- ---------------------------------------------------------------------
 

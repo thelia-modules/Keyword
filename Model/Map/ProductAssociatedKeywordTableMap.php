@@ -2,8 +2,8 @@
 
 namespace Keyword\Model\Map;
 
-use Keyword\Model\ContentAssociatedKeyword;
-use Keyword\Model\ContentAssociatedKeywordQuery;
+use Keyword\Model\ProductAssociatedKeyword;
+use Keyword\Model\ProductAssociatedKeywordQuery;
 use Propel\Runtime\Propel;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\ActiveQuery\InstancePoolTrait;
@@ -16,7 +16,7 @@ use Propel\Runtime\Map\TableMapTrait;
 
 
 /**
- * This class defines the structure of the 'content_associated_keyword' table.
+ * This class defines the structure of the 'product_associated_keyword' table.
  *
  *
  *
@@ -26,14 +26,14 @@ use Propel\Runtime\Map\TableMapTrait;
  * (i.e. if it's a text column type).
  *
  */
-class ContentAssociatedKeywordTableMap extends TableMap
+class ProductAssociatedKeywordTableMap extends TableMap
 {
     use InstancePoolTrait;
     use TableMapTrait;
     /**
      * The (dot-path) name of this class
      */
-    const CLASS_NAME = 'Keyword.Model.Map.ContentAssociatedKeywordTableMap';
+    const CLASS_NAME = 'Keyword.Model.Map.ProductAssociatedKeywordTableMap';
 
     /**
      * The default database name for this class
@@ -43,17 +43,17 @@ class ContentAssociatedKeywordTableMap extends TableMap
     /**
      * The table name for this class
      */
-    const TABLE_NAME = 'content_associated_keyword';
+    const TABLE_NAME = 'product_associated_keyword';
 
     /**
      * The related Propel class for this table
      */
-    const OM_CLASS = '\\Keyword\\Model\\ContentAssociatedKeyword';
+    const OM_CLASS = '\\Keyword\\Model\\ProductAssociatedKeyword';
 
     /**
      * A class that can be returned by this tableMap
      */
-    const CLASS_DEFAULT = 'Keyword.Model.ContentAssociatedKeyword';
+    const CLASS_DEFAULT = 'Keyword.Model.ProductAssociatedKeyword';
 
     /**
      * The total number of columns
@@ -71,29 +71,29 @@ class ContentAssociatedKeywordTableMap extends TableMap
     const NUM_HYDRATE_COLUMNS = 5;
 
     /**
-     * the column name for the CONTENT_ID field
+     * the column name for the PRODUCT_ID field
      */
-    const CONTENT_ID = 'content_associated_keyword.CONTENT_ID';
+    const PRODUCT_ID = 'product_associated_keyword.PRODUCT_ID';
 
     /**
      * the column name for the KEYWORD_ID field
      */
-    const KEYWORD_ID = 'content_associated_keyword.KEYWORD_ID';
+    const KEYWORD_ID = 'product_associated_keyword.KEYWORD_ID';
 
     /**
      * the column name for the POSITION field
      */
-    const POSITION = 'content_associated_keyword.POSITION';
+    const POSITION = 'product_associated_keyword.POSITION';
 
     /**
      * the column name for the CREATED_AT field
      */
-    const CREATED_AT = 'content_associated_keyword.CREATED_AT';
+    const CREATED_AT = 'product_associated_keyword.CREATED_AT';
 
     /**
      * the column name for the UPDATED_AT field
      */
-    const UPDATED_AT = 'content_associated_keyword.UPDATED_AT';
+    const UPDATED_AT = 'product_associated_keyword.UPDATED_AT';
 
     /**
      * The default string format for model objects of the related table
@@ -107,11 +107,11 @@ class ContentAssociatedKeywordTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('ContentId', 'KeywordId', 'Position', 'CreatedAt', 'UpdatedAt', ),
-        self::TYPE_STUDLYPHPNAME => array('contentId', 'keywordId', 'position', 'createdAt', 'updatedAt', ),
-        self::TYPE_COLNAME       => array(ContentAssociatedKeywordTableMap::CONTENT_ID, ContentAssociatedKeywordTableMap::KEYWORD_ID, ContentAssociatedKeywordTableMap::POSITION, ContentAssociatedKeywordTableMap::CREATED_AT, ContentAssociatedKeywordTableMap::UPDATED_AT, ),
-        self::TYPE_RAW_COLNAME   => array('CONTENT_ID', 'KEYWORD_ID', 'POSITION', 'CREATED_AT', 'UPDATED_AT', ),
-        self::TYPE_FIELDNAME     => array('content_id', 'keyword_id', 'position', 'created_at', 'updated_at', ),
+        self::TYPE_PHPNAME       => array('ProductId', 'KeywordId', 'Position', 'CreatedAt', 'UpdatedAt', ),
+        self::TYPE_STUDLYPHPNAME => array('productId', 'keywordId', 'position', 'createdAt', 'updatedAt', ),
+        self::TYPE_COLNAME       => array(ProductAssociatedKeywordTableMap::PRODUCT_ID, ProductAssociatedKeywordTableMap::KEYWORD_ID, ProductAssociatedKeywordTableMap::POSITION, ProductAssociatedKeywordTableMap::CREATED_AT, ProductAssociatedKeywordTableMap::UPDATED_AT, ),
+        self::TYPE_RAW_COLNAME   => array('PRODUCT_ID', 'KEYWORD_ID', 'POSITION', 'CREATED_AT', 'UPDATED_AT', ),
+        self::TYPE_FIELDNAME     => array('product_id', 'keyword_id', 'position', 'created_at', 'updated_at', ),
         self::TYPE_NUM           => array(0, 1, 2, 3, 4, )
     );
 
@@ -122,11 +122,11 @@ class ContentAssociatedKeywordTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('ContentId' => 0, 'KeywordId' => 1, 'Position' => 2, 'CreatedAt' => 3, 'UpdatedAt' => 4, ),
-        self::TYPE_STUDLYPHPNAME => array('contentId' => 0, 'keywordId' => 1, 'position' => 2, 'createdAt' => 3, 'updatedAt' => 4, ),
-        self::TYPE_COLNAME       => array(ContentAssociatedKeywordTableMap::CONTENT_ID => 0, ContentAssociatedKeywordTableMap::KEYWORD_ID => 1, ContentAssociatedKeywordTableMap::POSITION => 2, ContentAssociatedKeywordTableMap::CREATED_AT => 3, ContentAssociatedKeywordTableMap::UPDATED_AT => 4, ),
-        self::TYPE_RAW_COLNAME   => array('CONTENT_ID' => 0, 'KEYWORD_ID' => 1, 'POSITION' => 2, 'CREATED_AT' => 3, 'UPDATED_AT' => 4, ),
-        self::TYPE_FIELDNAME     => array('content_id' => 0, 'keyword_id' => 1, 'position' => 2, 'created_at' => 3, 'updated_at' => 4, ),
+        self::TYPE_PHPNAME       => array('ProductId' => 0, 'KeywordId' => 1, 'Position' => 2, 'CreatedAt' => 3, 'UpdatedAt' => 4, ),
+        self::TYPE_STUDLYPHPNAME => array('productId' => 0, 'keywordId' => 1, 'position' => 2, 'createdAt' => 3, 'updatedAt' => 4, ),
+        self::TYPE_COLNAME       => array(ProductAssociatedKeywordTableMap::PRODUCT_ID => 0, ProductAssociatedKeywordTableMap::KEYWORD_ID => 1, ProductAssociatedKeywordTableMap::POSITION => 2, ProductAssociatedKeywordTableMap::CREATED_AT => 3, ProductAssociatedKeywordTableMap::UPDATED_AT => 4, ),
+        self::TYPE_RAW_COLNAME   => array('PRODUCT_ID' => 0, 'KEYWORD_ID' => 1, 'POSITION' => 2, 'CREATED_AT' => 3, 'UPDATED_AT' => 4, ),
+        self::TYPE_FIELDNAME     => array('product_id' => 0, 'keyword_id' => 1, 'position' => 2, 'created_at' => 3, 'updated_at' => 4, ),
         self::TYPE_NUM           => array(0, 1, 2, 3, 4, )
     );
 
@@ -140,13 +140,13 @@ class ContentAssociatedKeywordTableMap extends TableMap
     public function initialize()
     {
         // attributes
-        $this->setName('content_associated_keyword');
-        $this->setPhpName('ContentAssociatedKeyword');
-        $this->setClassName('\\Keyword\\Model\\ContentAssociatedKeyword');
+        $this->setName('product_associated_keyword');
+        $this->setPhpName('ProductAssociatedKeyword');
+        $this->setClassName('\\Keyword\\Model\\ProductAssociatedKeyword');
         $this->setPackage('Keyword.Model');
         $this->setUseIdGenerator(false);
         // columns
-        $this->addForeignPrimaryKey('CONTENT_ID', 'ContentId', 'INTEGER' , 'content', 'ID', true, null, null);
+        $this->addForeignPrimaryKey('PRODUCT_ID', 'ProductId', 'INTEGER' , 'product', 'ID', true, null, null);
         $this->addForeignPrimaryKey('KEYWORD_ID', 'KeywordId', 'INTEGER' , 'keyword', 'ID', true, null, null);
         $this->addColumn('POSITION', 'Position', 'INTEGER', true, null, null);
         $this->addColumn('CREATED_AT', 'CreatedAt', 'TIMESTAMP', false, null, null);
@@ -158,7 +158,7 @@ class ContentAssociatedKeywordTableMap extends TableMap
      */
     public function buildRelations()
     {
-        $this->addRelation('Content', '\\Thelia\\Model\\Content', RelationMap::MANY_TO_ONE, array('content_id' => 'id', ), 'CASCADE', 'RESTRICT');
+        $this->addRelation('Product', '\\Thelia\\Model\\Product', RelationMap::MANY_TO_ONE, array('product_id' => 'id', ), 'CASCADE', 'RESTRICT');
         $this->addRelation('Keyword', '\\Keyword\\Model\\Keyword', RelationMap::MANY_TO_ONE, array('keyword_id' => 'id', ), 'CASCADE', 'RESTRICT');
     } // buildRelations()
 
@@ -183,14 +183,14 @@ class ContentAssociatedKeywordTableMap extends TableMap
      * to the cache in order to ensure that the same objects are always returned by find*()
      * and findPk*() calls.
      *
-     * @param \Keyword\Model\ContentAssociatedKeyword $obj A \Keyword\Model\ContentAssociatedKeyword object.
+     * @param \Keyword\Model\ProductAssociatedKeyword $obj A \Keyword\Model\ProductAssociatedKeyword object.
      * @param string $key             (optional) key to use for instance map (for performance boost if key was already calculated externally).
      */
     public static function addInstanceToPool($obj, $key = null)
     {
         if (Propel::isInstancePoolingEnabled()) {
             if (null === $key) {
-                $key = serialize(array((string) $obj->getContentId(), (string) $obj->getKeywordId()));
+                $key = serialize(array((string) $obj->getProductId(), (string) $obj->getKeywordId()));
             } // if key === null
             self::$instances[$key] = $obj;
         }
@@ -204,13 +204,13 @@ class ContentAssociatedKeywordTableMap extends TableMap
      * methods in your stub classes -- you may need to explicitly remove objects
      * from the cache in order to prevent returning objects that no longer exist.
      *
-     * @param mixed $value A \Keyword\Model\ContentAssociatedKeyword object or a primary key value.
+     * @param mixed $value A \Keyword\Model\ProductAssociatedKeyword object or a primary key value.
      */
     public static function removeInstanceFromPool($value)
     {
         if (Propel::isInstancePoolingEnabled() && null !== $value) {
-            if (is_object($value) && $value instanceof \Keyword\Model\ContentAssociatedKeyword) {
-                $key = serialize(array((string) $value->getContentId(), (string) $value->getKeywordId()));
+            if (is_object($value) && $value instanceof \Keyword\Model\ProductAssociatedKeyword) {
+                $key = serialize(array((string) $value->getProductId(), (string) $value->getKeywordId()));
 
             } elseif (is_array($value) && count($value) === 2) {
                 // assume we've been passed a primary key";
@@ -220,7 +220,7 @@ class ContentAssociatedKeywordTableMap extends TableMap
 
                 return;
             } else {
-                $e = new PropelException("Invalid value passed to removeInstanceFromPool().  Expected primary key or \Keyword\Model\ContentAssociatedKeyword object; got " . (is_object($value) ? get_class($value) . ' object.' : var_export($value, true)));
+                $e = new PropelException("Invalid value passed to removeInstanceFromPool().  Expected primary key or \Keyword\Model\ProductAssociatedKeyword object; got " . (is_object($value) ? get_class($value) . ' object.' : var_export($value, true)));
                 throw $e;
             }
 
@@ -242,11 +242,11 @@ class ContentAssociatedKeywordTableMap extends TableMap
     public static function getPrimaryKeyHashFromRow($row, $offset = 0, $indexType = TableMap::TYPE_NUM)
     {
         // If the PK cannot be derived from the row, return NULL.
-        if ($row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('ContentId', TableMap::TYPE_PHPNAME, $indexType)] === null && $row[TableMap::TYPE_NUM == $indexType ? 1 + $offset : static::translateFieldName('KeywordId', TableMap::TYPE_PHPNAME, $indexType)] === null) {
+        if ($row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('ProductId', TableMap::TYPE_PHPNAME, $indexType)] === null && $row[TableMap::TYPE_NUM == $indexType ? 1 + $offset : static::translateFieldName('KeywordId', TableMap::TYPE_PHPNAME, $indexType)] === null) {
             return null;
         }
 
-        return serialize(array((string) $row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('ContentId', TableMap::TYPE_PHPNAME, $indexType)], (string) $row[TableMap::TYPE_NUM == $indexType ? 1 + $offset : static::translateFieldName('KeywordId', TableMap::TYPE_PHPNAME, $indexType)]));
+        return serialize(array((string) $row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('ProductId', TableMap::TYPE_PHPNAME, $indexType)], (string) $row[TableMap::TYPE_NUM == $indexType ? 1 + $offset : static::translateFieldName('KeywordId', TableMap::TYPE_PHPNAME, $indexType)]));
     }
 
     /**
@@ -280,7 +280,7 @@ class ContentAssociatedKeywordTableMap extends TableMap
      */
     public static function getOMClass($withPrefix = true)
     {
-        return $withPrefix ? ContentAssociatedKeywordTableMap::CLASS_DEFAULT : ContentAssociatedKeywordTableMap::OM_CLASS;
+        return $withPrefix ? ProductAssociatedKeywordTableMap::CLASS_DEFAULT : ProductAssociatedKeywordTableMap::OM_CLASS;
     }
 
     /**
@@ -294,21 +294,21 @@ class ContentAssociatedKeywordTableMap extends TableMap
      *
      * @throws PropelException Any exceptions caught during processing will be
      *         rethrown wrapped into a PropelException.
-     * @return array (ContentAssociatedKeyword object, last column rank)
+     * @return array (ProductAssociatedKeyword object, last column rank)
      */
     public static function populateObject($row, $offset = 0, $indexType = TableMap::TYPE_NUM)
     {
-        $key = ContentAssociatedKeywordTableMap::getPrimaryKeyHashFromRow($row, $offset, $indexType);
-        if (null !== ($obj = ContentAssociatedKeywordTableMap::getInstanceFromPool($key))) {
+        $key = ProductAssociatedKeywordTableMap::getPrimaryKeyHashFromRow($row, $offset, $indexType);
+        if (null !== ($obj = ProductAssociatedKeywordTableMap::getInstanceFromPool($key))) {
             // We no longer rehydrate the object, since this can cause data loss.
             // See http://www.propelorm.org/ticket/509
             // $obj->hydrate($row, $offset, true); // rehydrate
-            $col = $offset + ContentAssociatedKeywordTableMap::NUM_HYDRATE_COLUMNS;
+            $col = $offset + ProductAssociatedKeywordTableMap::NUM_HYDRATE_COLUMNS;
         } else {
-            $cls = ContentAssociatedKeywordTableMap::OM_CLASS;
+            $cls = ProductAssociatedKeywordTableMap::OM_CLASS;
             $obj = new $cls();
             $col = $obj->hydrate($row, $offset, false, $indexType);
-            ContentAssociatedKeywordTableMap::addInstanceToPool($obj, $key);
+            ProductAssociatedKeywordTableMap::addInstanceToPool($obj, $key);
         }
 
         return array($obj, $col);
@@ -331,8 +331,8 @@ class ContentAssociatedKeywordTableMap extends TableMap
         $cls = static::getOMClass(false);
         // populate the object(s)
         while ($row = $dataFetcher->fetch()) {
-            $key = ContentAssociatedKeywordTableMap::getPrimaryKeyHashFromRow($row, 0, $dataFetcher->getIndexType());
-            if (null !== ($obj = ContentAssociatedKeywordTableMap::getInstanceFromPool($key))) {
+            $key = ProductAssociatedKeywordTableMap::getPrimaryKeyHashFromRow($row, 0, $dataFetcher->getIndexType());
+            if (null !== ($obj = ProductAssociatedKeywordTableMap::getInstanceFromPool($key))) {
                 // We no longer rehydrate the object, since this can cause data loss.
                 // See http://www.propelorm.org/ticket/509
                 // $obj->hydrate($row, 0, true); // rehydrate
@@ -341,7 +341,7 @@ class ContentAssociatedKeywordTableMap extends TableMap
                 $obj = new $cls();
                 $obj->hydrate($row);
                 $results[] = $obj;
-                ContentAssociatedKeywordTableMap::addInstanceToPool($obj, $key);
+                ProductAssociatedKeywordTableMap::addInstanceToPool($obj, $key);
             } // if key exists
         }
 
@@ -362,13 +362,13 @@ class ContentAssociatedKeywordTableMap extends TableMap
     public static function addSelectColumns(Criteria $criteria, $alias = null)
     {
         if (null === $alias) {
-            $criteria->addSelectColumn(ContentAssociatedKeywordTableMap::CONTENT_ID);
-            $criteria->addSelectColumn(ContentAssociatedKeywordTableMap::KEYWORD_ID);
-            $criteria->addSelectColumn(ContentAssociatedKeywordTableMap::POSITION);
-            $criteria->addSelectColumn(ContentAssociatedKeywordTableMap::CREATED_AT);
-            $criteria->addSelectColumn(ContentAssociatedKeywordTableMap::UPDATED_AT);
+            $criteria->addSelectColumn(ProductAssociatedKeywordTableMap::PRODUCT_ID);
+            $criteria->addSelectColumn(ProductAssociatedKeywordTableMap::KEYWORD_ID);
+            $criteria->addSelectColumn(ProductAssociatedKeywordTableMap::POSITION);
+            $criteria->addSelectColumn(ProductAssociatedKeywordTableMap::CREATED_AT);
+            $criteria->addSelectColumn(ProductAssociatedKeywordTableMap::UPDATED_AT);
         } else {
-            $criteria->addSelectColumn($alias . '.CONTENT_ID');
+            $criteria->addSelectColumn($alias . '.PRODUCT_ID');
             $criteria->addSelectColumn($alias . '.KEYWORD_ID');
             $criteria->addSelectColumn($alias . '.POSITION');
             $criteria->addSelectColumn($alias . '.CREATED_AT');
@@ -385,7 +385,7 @@ class ContentAssociatedKeywordTableMap extends TableMap
      */
     public static function getTableMap()
     {
-        return Propel::getServiceContainer()->getDatabaseMap(ContentAssociatedKeywordTableMap::DATABASE_NAME)->getTable(ContentAssociatedKeywordTableMap::TABLE_NAME);
+        return Propel::getServiceContainer()->getDatabaseMap(ProductAssociatedKeywordTableMap::DATABASE_NAME)->getTable(ProductAssociatedKeywordTableMap::TABLE_NAME);
     }
 
     /**
@@ -393,16 +393,16 @@ class ContentAssociatedKeywordTableMap extends TableMap
      */
     public static function buildTableMap()
     {
-      $dbMap = Propel::getServiceContainer()->getDatabaseMap(ContentAssociatedKeywordTableMap::DATABASE_NAME);
-      if (!$dbMap->hasTable(ContentAssociatedKeywordTableMap::TABLE_NAME)) {
-        $dbMap->addTableObject(new ContentAssociatedKeywordTableMap());
+      $dbMap = Propel::getServiceContainer()->getDatabaseMap(ProductAssociatedKeywordTableMap::DATABASE_NAME);
+      if (!$dbMap->hasTable(ProductAssociatedKeywordTableMap::TABLE_NAME)) {
+        $dbMap->addTableObject(new ProductAssociatedKeywordTableMap());
       }
     }
 
     /**
-     * Performs a DELETE on the database, given a ContentAssociatedKeyword or Criteria object OR a primary key value.
+     * Performs a DELETE on the database, given a ProductAssociatedKeyword or Criteria object OR a primary key value.
      *
-     * @param mixed               $values Criteria or ContentAssociatedKeyword object or primary key or array of primary keys
+     * @param mixed               $values Criteria or ProductAssociatedKeyword object or primary key or array of primary keys
      *              which is used to create the DELETE statement
      * @param ConnectionInterface $con the connection to use
      * @return int The number of affected rows (if supported by underlying database driver).  This includes CASCADE-related rows
@@ -413,17 +413,17 @@ class ContentAssociatedKeywordTableMap extends TableMap
      public static function doDelete($values, ConnectionInterface $con = null)
      {
         if (null === $con) {
-            $con = Propel::getServiceContainer()->getWriteConnection(ContentAssociatedKeywordTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getWriteConnection(ProductAssociatedKeywordTableMap::DATABASE_NAME);
         }
 
         if ($values instanceof Criteria) {
             // rename for clarity
             $criteria = $values;
-        } elseif ($values instanceof \Keyword\Model\ContentAssociatedKeyword) { // it's a model object
+        } elseif ($values instanceof \Keyword\Model\ProductAssociatedKeyword) { // it's a model object
             // create criteria based on pk values
             $criteria = $values->buildPkeyCriteria();
         } else { // it's a primary key, or an array of pks
-            $criteria = new Criteria(ContentAssociatedKeywordTableMap::DATABASE_NAME);
+            $criteria = new Criteria(ProductAssociatedKeywordTableMap::DATABASE_NAME);
             // primary key is composite; we therefore, expect
             // the primary key passed to be an array of pkey values
             if (count($values) == count($values, COUNT_RECURSIVE)) {
@@ -431,17 +431,17 @@ class ContentAssociatedKeywordTableMap extends TableMap
                 $values = array($values);
             }
             foreach ($values as $value) {
-                $criterion = $criteria->getNewCriterion(ContentAssociatedKeywordTableMap::CONTENT_ID, $value[0]);
-                $criterion->addAnd($criteria->getNewCriterion(ContentAssociatedKeywordTableMap::KEYWORD_ID, $value[1]));
+                $criterion = $criteria->getNewCriterion(ProductAssociatedKeywordTableMap::PRODUCT_ID, $value[0]);
+                $criterion->addAnd($criteria->getNewCriterion(ProductAssociatedKeywordTableMap::KEYWORD_ID, $value[1]));
                 $criteria->addOr($criterion);
             }
         }
 
-        $query = ContentAssociatedKeywordQuery::create()->mergeWith($criteria);
+        $query = ProductAssociatedKeywordQuery::create()->mergeWith($criteria);
 
-        if ($values instanceof Criteria) { ContentAssociatedKeywordTableMap::clearInstancePool();
+        if ($values instanceof Criteria) { ProductAssociatedKeywordTableMap::clearInstancePool();
         } elseif (!is_object($values)) { // it's a primary key, or an array of pks
-            foreach ((array) $values as $singleval) { ContentAssociatedKeywordTableMap::removeInstanceFromPool($singleval);
+            foreach ((array) $values as $singleval) { ProductAssociatedKeywordTableMap::removeInstanceFromPool($singleval);
             }
         }
 
@@ -449,20 +449,20 @@ class ContentAssociatedKeywordTableMap extends TableMap
     }
 
     /**
-     * Deletes all rows from the content_associated_keyword table.
+     * Deletes all rows from the product_associated_keyword table.
      *
      * @param ConnectionInterface $con the connection to use
      * @return int The number of affected rows (if supported by underlying database driver).
      */
     public static function doDeleteAll(ConnectionInterface $con = null)
     {
-        return ContentAssociatedKeywordQuery::create()->doDeleteAll($con);
+        return ProductAssociatedKeywordQuery::create()->doDeleteAll($con);
     }
 
     /**
-     * Performs an INSERT on the database, given a ContentAssociatedKeyword or Criteria object.
+     * Performs an INSERT on the database, given a ProductAssociatedKeyword or Criteria object.
      *
-     * @param mixed               $criteria Criteria or ContentAssociatedKeyword object containing data that is used to create the INSERT statement.
+     * @param mixed               $criteria Criteria or ProductAssociatedKeyword object containing data that is used to create the INSERT statement.
      * @param ConnectionInterface $con the ConnectionInterface connection to use
      * @return mixed           The new primary key.
      * @throws PropelException Any exceptions caught during processing will be
@@ -471,18 +471,18 @@ class ContentAssociatedKeywordTableMap extends TableMap
     public static function doInsert($criteria, ConnectionInterface $con = null)
     {
         if (null === $con) {
-            $con = Propel::getServiceContainer()->getWriteConnection(ContentAssociatedKeywordTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getWriteConnection(ProductAssociatedKeywordTableMap::DATABASE_NAME);
         }
 
         if ($criteria instanceof Criteria) {
             $criteria = clone $criteria; // rename for clarity
         } else {
-            $criteria = $criteria->buildCriteria(); // build Criteria from ContentAssociatedKeyword object
+            $criteria = $criteria->buildCriteria(); // build Criteria from ProductAssociatedKeyword object
         }
 
 
         // Set the correct dbName
-        $query = ContentAssociatedKeywordQuery::create()->mergeWith($criteria);
+        $query = ProductAssociatedKeywordQuery::create()->mergeWith($criteria);
 
         try {
             // use transaction because $criteria could contain info
@@ -498,7 +498,7 @@ class ContentAssociatedKeywordTableMap extends TableMap
         return $pk;
     }
 
-} // ContentAssociatedKeywordTableMap
+} // ProductAssociatedKeywordTableMap
 // This is the static code needed to register the TableMap for this table with the main Propel class.
 //
-ContentAssociatedKeywordTableMap::buildTableMap();
+ProductAssociatedKeywordTableMap::buildTableMap();

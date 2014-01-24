@@ -37,24 +37,63 @@
 		<behavior name="timestampable" />
 	</table>
 
-	<table name="folder_associated_keyword" namespace="Keyword\Model">
-		<column name="folder_id" primaryKey="true" required="true" type="INTEGER" />
-		<column name="keyword_id" primaryKey="true" required="true" type="INTEGER" />
-		<column name="position" required="true" type="INTEGER" />
-		<foreign-key foreignTable="folder" name="fk_folder_associated_keyword_folder_id" onDelete="CASCADE" onUpdate="RESTRICT">
-			<reference foreign="id" local="folder_id" />
-		</foreign-key>
-		<foreign-key foreignTable="keyword" name="fk_folder_associated_keyword_keyword_id" onDelete="CASCADE" onUpdate="RESTRICT">
-			<reference foreign="id" local="keyword_id" />
-		</foreign-key>
-		<index name="idx_folder_associated_keyword_folder_id">
-			<index-column name="folder_id" />
-		</index>
-		<index name="idx_folder_associated_keyword_keyword_id">
-			<index-column name="keyword_id" />
-		</index>
-		<behavior name="timestampable" />
-	</table>
+    <table name="folder_associated_keyword" namespace="Keyword\Model">
+        <column name="folder_id" primaryKey="true" required="true" type="INTEGER" />
+        <column name="keyword_id" primaryKey="true" required="true" type="INTEGER" />
+        <column name="position" required="true" type="INTEGER" />
+        <foreign-key foreignTable="folder" name="fk_folder_associated_keyword_folder_id" onDelete="CASCADE" onUpdate="RESTRICT">
+            <reference foreign="id" local="folder_id" />
+        </foreign-key>
+        <foreign-key foreignTable="keyword" name="fk_folder_associated_keyword_keyword_id" onDelete="CASCADE" onUpdate="RESTRICT">
+            <reference foreign="id" local="keyword_id" />
+        </foreign-key>
+        <index name="idx_folder_associated_keyword_folder_id">
+            <index-column name="folder_id" />
+        </index>
+        <index name="idx_folder_associated_keyword_keyword_id">
+            <index-column name="keyword_id" />
+        </index>
+        <behavior name="timestampable" />
+    </table>
+
+    <table name="category_associated_keyword" namespace="Keyword\Model">
+        <column name="category_id" primaryKey="true" required="true" type="INTEGER" />
+        <column name="keyword_id" primaryKey="true" required="true" type="INTEGER" />
+        <column name="position" required="true" type="INTEGER" />
+        <foreign-key foreignTable="category" name="fk_category_associated_keyword_category_id" onDelete="CASCADE" onUpdate="RESTRICT">
+            <reference foreign="id" local="category_id" />
+        </foreign-key>
+        <foreign-key foreignTable="keyword" name="fk_category_associated_keyword_keyword_id" onDelete="CASCADE" onUpdate="RESTRICT">
+            <reference foreign="id" local="keyword_id" />
+        </foreign-key>
+        <index name="idx_category_associated_keyword_category_id">
+            <index-column name="category_id" />
+        </index>
+        <index name="idx_category_associated_keyword_keyword_id">
+            <index-column name="keyword_id" />
+        </index>
+        <behavior name="timestampable" />
+    </table>
+
+    <table name="product_associated_keyword" namespace="Keyword\Model">
+        <column name="product_id" primaryKey="true" required="true" type="INTEGER" />
+        <column name="keyword_id" primaryKey="true" required="true" type="INTEGER" />
+        <column name="position" required="true" type="INTEGER" />
+        <foreign-key foreignTable="product" name="fk_product_associated_keyword_product_id" onDelete="CASCADE" onUpdate="RESTRICT">
+            <reference foreign="id" local="product_id" />
+        </foreign-key>
+        <foreign-key foreignTable="keyword" name="fk_product_associated_keyword_keyword_id" onDelete="CASCADE" onUpdate="RESTRICT">
+            <reference foreign="id" local="keyword_id" />
+        </foreign-key>
+        <index name="idx_product_associated_keyword_product_id">
+            <index-column name="product_id" />
+        </index>
+        <index name="idx_product_associated_keyword_keyword_id">
+            <index-column name="keyword_id" />
+        </index>
+        <behavior name="timestampable" />
+    </table>
+
 
     <external-schema filename="local/config/schema.xml" referenceOnly="true" />
 </database>

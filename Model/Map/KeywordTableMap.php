@@ -8,6 +8,7 @@ use Propel\Runtime\Propel;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\ActiveQuery\InstancePoolTrait;
 use Propel\Runtime\Connection\ConnectionInterface;
+use Propel\Runtime\DataFetcher\DataFetcherInterface;
 use Propel\Runtime\Exception\PropelException;
 use Propel\Runtime\Map\RelationMap;
 use Propel\Runtime\Map\TableMap;
@@ -174,6 +175,8 @@ class KeywordTableMap extends TableMap
     {
         $this->addRelation('ContentAssociatedKeyword', '\\Keyword\\Model\\ContentAssociatedKeyword', RelationMap::ONE_TO_MANY, array('id' => 'keyword_id', ), 'CASCADE', 'RESTRICT', 'ContentAssociatedKeywords');
         $this->addRelation('FolderAssociatedKeyword', '\\Keyword\\Model\\FolderAssociatedKeyword', RelationMap::ONE_TO_MANY, array('id' => 'keyword_id', ), 'CASCADE', 'RESTRICT', 'FolderAssociatedKeywords');
+        $this->addRelation('CategoryAssociatedKeyword', '\\Keyword\\Model\\CategoryAssociatedKeyword', RelationMap::ONE_TO_MANY, array('id' => 'keyword_id', ), 'CASCADE', 'RESTRICT', 'CategoryAssociatedKeywords');
+        $this->addRelation('ProductAssociatedKeyword', '\\Keyword\\Model\\ProductAssociatedKeyword', RelationMap::ONE_TO_MANY, array('id' => 'keyword_id', ), 'CASCADE', 'RESTRICT', 'ProductAssociatedKeywords');
         $this->addRelation('KeywordI18n', '\\Keyword\\Model\\KeywordI18n', RelationMap::ONE_TO_MANY, array('id' => 'id', ), 'CASCADE', null, 'KeywordI18ns');
     } // buildRelations()
 
@@ -199,6 +202,8 @@ class KeywordTableMap extends TableMap
         // since one or more of them may be deleted by ON DELETE CASCADE/SETNULL rule.
                 ContentAssociatedKeywordTableMap::clearInstancePool();
                 FolderAssociatedKeywordTableMap::clearInstancePool();
+                CategoryAssociatedKeywordTableMap::clearInstancePool();
+                ProductAssociatedKeywordTableMap::clearInstancePool();
                 KeywordI18nTableMap::clearInstancePool();
             }
 
