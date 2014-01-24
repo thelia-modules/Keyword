@@ -13,6 +13,7 @@
     <forms>
         <form name="keyword.admin.folder.modification" class="Keyword\Form\KeywordFolderModificationForm"/>
         <form name="keyword.admin.content.modification" class="Keyword\Form\KeywordContentModificationForm"/>
+        <form name="keyword.admin.category.modification" class="Keyword\Form\KeywordCategoryModificationForm"/>
         <form name="keyword.admin.creation" class="Keyword\Form\KeywordCreationForm"/>
         <form name="keyword.admin.modification" class="Keyword\Form\KeywordModificationForm"/>
     </forms>
