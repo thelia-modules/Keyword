@@ -59,6 +59,13 @@ class Keyword extends BaseI18nLoop implements PropelSearchLoopInterface
             Argument::createIntListTypeArgument('id'),
             Argument::createBooleanOrBothTypeArgument('visible', 1),
             new Argument(
+                'keyword',
+                new TypeCollection(
+                    new Type\AlphaNumStringListType()
+                ),
+                'alpha'
+            ),
+            new Argument(
                 'order',
                 new TypeCollection(
                     new Type\EnumListType(array('alpha', 'alpha-reverse', 'manual', 'manual_reverse', 'random', 'given_id'))
@@ -72,6 +79,11 @@ class Keyword extends BaseI18nLoop implements PropelSearchLoopInterface
     {
 
         $search = KeywordQuery::create();
+
+        /* If keyword criteria filter by keyword code */
+        if ($this->getKeyword()) {
+            $search->filterByCode($this->getKeyword());
+        }
 
         /* manage translations */
         $this->configureI18nProcessing($search);
