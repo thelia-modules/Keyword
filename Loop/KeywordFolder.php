@@ -52,8 +52,7 @@ class KeywordFolder extends Folder{
                 'keyword',
                 new TypeCollection(
                     new Type\AlphaNumStringListType()
-                ),
-                'alpha'
+                )
             )
         );
 

@@ -62,8 +62,7 @@ class Keyword extends BaseI18nLoop implements PropelSearchLoopInterface
                 'keyword',
                 new TypeCollection(
                     new Type\AlphaNumStringListType()
-                ),
-                'alpha'
+                )
             ),
             new Argument(
                 'order',

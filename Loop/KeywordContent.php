@@ -52,8 +52,7 @@ class KeywordContent extends Content{
                 'keyword',
                 new TypeCollection(
                     new Type\AlphaNumStringListType()
-                ),
-                'alpha'
+                )
             )
         );
 

@@ -52,8 +52,7 @@ class KeywordCategory extends Category{
                 'keyword',
                 new TypeCollection(
                     new Type\AlphaNumStringListType()
-                ),
-                'alpha'
+                )
             )
         );
 

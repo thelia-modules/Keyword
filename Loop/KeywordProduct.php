@@ -52,8 +52,7 @@ class KeywordProduct extends Product{
                 'keyword',
                 new TypeCollection(
                     new Type\AlphaNumStringListType()
-                ),
-                'alpha'
+                )
             )
         );
 
