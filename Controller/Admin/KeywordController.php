@@ -433,9 +433,15 @@ class KeywordController extends AbstractCrudController
      */
     protected function getExistingObject()
     {
-        return KeywordQuery::create()
-            ->joinWithI18n($this->getCurrentEditionLocale())
+        $keyword = KeywordQuery::create()
             ->findOneById($this->getRequest()->get('keyword_id', 0));
+
+        if (null !== $keyword) {
+            $keyword->setLocale($this->getCurrentEditionLocale());
+        }
+
+        return $keyword;
+
     }
 
     /**
