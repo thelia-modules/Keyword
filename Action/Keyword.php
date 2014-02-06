@@ -162,6 +162,7 @@ class Keyword extends BaseAction implements EventSubscriberInterface
     public function updateKeywordPosition(UpdatePositionEvent $event)
     {
         if (null !== $keyword = KeywordQuery::create()->findPk($event->getObjectId())) {
+
             $keyword->setDispatcher($this->getDispatcher());
 
             switch ($event->getMode()) {
@@ -197,8 +198,7 @@ class Keyword extends BaseAction implements EventSubscriberInterface
     {
         if (null !== $keyword = KeywordQuery::create()->findPk($event->getKeywordId())) {
 
-            $keyword->setDispatcher($this->getDispatcher())
-                ->delete();
+            $keyword->delete();
 
             $event->setKeyword($keyword);
         }
@@ -212,7 +212,6 @@ class Keyword extends BaseAction implements EventSubscriberInterface
     public function updateKeyword(KeywordUpdateEvent $event)
     {
         if (null !== $keyword = KeywordQuery::create()->findPk($event->getKeywordId())) {
-            $keyword->setDispatcher($this->getDispatcher());
 
             $keyword
                 ->setVisible($event->getVisible())
@@ -234,7 +233,6 @@ class Keyword extends BaseAction implements EventSubscriberInterface
         $keyword = $event->getKeyword();
 
         $keyword
-            ->setDispatcher($this->getDispatcher())
             ->setVisible(!$keyword->getVisible())
             ->save();
 
