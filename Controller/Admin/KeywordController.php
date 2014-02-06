@@ -81,6 +81,9 @@ class KeywordController extends AbstractCrudController
 
     public function updateKeywordFolderAssociation($folder_id)
     {
+        if (null !== $response = $this->checkAuth(array(), array('Keyword'), AccessManager::UPDATE)) {
+            return $response;
+        }
 
         /** @var KeywordFolderModificationForm $keywordFolderUpdateForm */
         $keywordFolderUpdateForm = new KeywordFolderModificationForm($this->getRequest());
@@ -134,6 +137,10 @@ class KeywordController extends AbstractCrudController
     public function updateKeywordContentAssociation($content_id)
     {
 
+        if (null !== $response = $this->checkAuth(array(), array('Keyword'), AccessManager::UPDATE)) {
+            return $response;
+        }
+
         /** @var KeywordContentModificationForm $keywordContentUpdateForm */
         $keywordContentUpdateForm = new KeywordContentModificationForm($this->getRequest());
 
@@ -186,6 +193,10 @@ class KeywordController extends AbstractCrudController
     public function updateKeywordCategoryAssociation($category_id)
     {
 
+        if (null !== $response = $this->checkAuth(array(), array('Keyword'), AccessManager::UPDATE)) {
+            return $response;
+        }
+
         /** @var KeywordCategoryModificationForm $keywordCategoryUpdateForm */
         $keywordCategoryUpdateForm = new KeywordCategoryModificationForm($this->getRequest());
 
@@ -237,6 +248,10 @@ class KeywordController extends AbstractCrudController
 
     public function updateKeywordProductAssociation($product_id)
     {
+
+        if (null !== $response = $this->checkAuth(array(), array('Keyword'), AccessManager::UPDATE)) {
+            return $response;
+        }
 
         /** @var KeywordProductModificationForm $keywordProductUpdateForm */
         $keywordProductUpdateForm = new KeywordProductModificationForm($this->getRequest());
