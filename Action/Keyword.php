@@ -163,7 +163,7 @@ class Keyword extends BaseAction implements EventSubscriberInterface
     {
         if (null !== $keyword = KeywordQuery::create()->findPk($event->getObjectId())) {
 
-            $keyword->setDispatcher($this->getDispatcher());
+            $keyword->setDispatcher($event->getDispatcher());
 
             switch ($event->getMode()) {
                 case UpdatePositionEvent::POSITION_ABSOLUTE:
