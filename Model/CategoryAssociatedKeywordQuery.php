@@ -4,7 +4,6 @@ namespace Keyword\Model;
 
 use Keyword\Model\Base\CategoryAssociatedKeywordQuery as BaseCategoryAssociatedKeywordQuery;
 
-
 /**
  * Skeleton subclass for performing query and update operations on the 'category_associated_keyword' table.
  *

@@ -19,8 +19,7 @@ class Keyword extends BaseKeyword
     {
         $contentId = array();
 
-        foreach($this->getContentAssociatedKeywords() as $contentAssociatedKeyword)
-        {
+        foreach ($this->getContentAssociatedKeywords() as $contentAssociatedKeyword) {
             $contentId[] = $contentAssociatedKeyword->getContentId();
         }
 
@@ -33,8 +32,7 @@ class Keyword extends BaseKeyword
     {
         $folderId = array();
 
-        foreach($this->getFolderAssociatedKeywords() as $folderAssociatedKeyword)
-        {
+        foreach ($this->getFolderAssociatedKeywords() as $folderAssociatedKeyword) {
             $folderId[] = $folderAssociatedKeyword->getFolderId();
         }
 
@@ -47,8 +45,7 @@ class Keyword extends BaseKeyword
     {
         $categoryId = array();
 
-        foreach($this->getCategoryAssociatedKeywords() as $categoryAssociatedKeyword)
-        {
+        foreach ($this->getCategoryAssociatedKeywords() as $categoryAssociatedKeyword) {
             $categoryId[] = $categoryAssociatedKeyword->getCategoryId();
         }
 
@@ -61,8 +58,7 @@ class Keyword extends BaseKeyword
     {
         $productId = array();
 
-        foreach($this->getProductAssociatedKeywords() as $productAssociatedKeyword)
-        {
+        foreach ($this->getProductAssociatedKeywords() as $productAssociatedKeyword) {
             $productId[] = $productAssociatedKeyword->getProductId();
         }
 
@@ -89,7 +85,7 @@ class Keyword extends BaseKeyword
             $this->setPosition($this->getNextPosition())->save($con);
             $con->commit();
 
-        } catch(\Exception $ex) {
+        } catch (\Exception $ex) {
 
             $con->rollback();
             throw $ex;

@@ -71,10 +71,11 @@ class KeywordController extends AbstractCrudController
         );
     }
 
-    public function viewAction(){
-
-        if(null !== $this->getExistingObject()){
+    public function viewAction()
+    {
+        if (null !== $this->getExistingObject()) {
             $keyword = $this->getExistingObject();
+
             return $this->render('keyword-view', array('keyword_id' => $keyword->getId()));
         }
     }
@@ -349,7 +350,7 @@ class KeywordController extends AbstractCrudController
     /**
      * Hydrate the update form for this object, before passing it to the update template
      *
-     * @param unknown $object
+     * @param  unknown                               $object
      * @return \Keyword\Form\KeywordModificationForm
      */
     protected function hydrateObjectForm($object)
@@ -373,7 +374,7 @@ class KeywordController extends AbstractCrudController
     /**
      * Creates the creation event with the provided form data
      *
-     * @param unknown $formData
+     * @param  unknown                      $formData
      * @return \Keyword\Event\KeywordEvents
      */
     protected function getCreationEvent($formData)
@@ -425,7 +426,7 @@ class KeywordController extends AbstractCrudController
     /**
      * Return true if the event contains the object, e.g. the action has updated the object in the event.
      *
-     * @param \Keyword\Event\KeywordEvents $event
+     * @param  \Keyword\Event\KeywordEvents $event
      * @return bool
      */
     protected function eventContainsObject($event)

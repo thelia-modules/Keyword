@@ -4,7 +4,6 @@ namespace Keyword\Model;
 
 use Keyword\Model\Base\ProductAssociatedKeywordQuery as BaseProductAssociatedKeywordQuery;
 
-
 /**
  * Skeleton subclass for performing query and update operations on the 'product_associated_keyword' table.
  *

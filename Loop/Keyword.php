@@ -93,11 +93,9 @@ class Keyword extends BaseI18nLoop implements PropelSearchLoopInterface
             $search->filterById($id, Criteria::IN);
         }
 
-
         $visible = $this->getVisible();
 
         if ($visible !== BooleanOrBothType::ANY) $search->filterByVisible($visible ? 1 : 0);
-
 
         $orders  = $this->getOrder();
 
@@ -155,22 +153,22 @@ class Keyword extends BaseI18nLoop implements PropelSearchLoopInterface
             $loopResultRow = new LoopResultRow($keyword);
 
             $contentId = array();
-            foreach($keyword->getContents() as $content){
+            foreach ($keyword->getContents() as $content) {
                 $contentId[] = $content->getId();
             }
 
             $folderId = array();
-            foreach($keyword->getFolders() as $folder){
+            foreach ($keyword->getFolders() as $folder) {
                 $folderId[] = $folder->getId();
             }
 
             $categoryId = array();
-            foreach($keyword->getCategories() as $category){
+            foreach ($keyword->getCategories() as $category) {
                 $categoryId[] = $category->getId();
             }
 
             $productId = array();
-            foreach($keyword->getProducts() as $product){
+            foreach ($keyword->getProducts() as $product) {
                 $productId[] = $product->getId();
             }
 

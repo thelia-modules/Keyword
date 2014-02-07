@@ -41,10 +41,10 @@ use Thelia\Type;
  * @package Keyword\Loop
  * @author Michaël Espeche <mespeche@openstudio.fr>
  */
-class KeywordFolder extends Folder{
-
-    protected function getArgDefinitions(){
-
+class KeywordFolder extends Folder
+{
+    protected function getArgDefinitions()
+    {
         $argument = parent::getArgDefinitions();
 
         $argument->addArgument(
@@ -60,8 +60,8 @@ class KeywordFolder extends Folder{
 
     }
 
-    public function buildModelCriteria(){
-
+    public function buildModelCriteria()
+    {
         $search = parent::buildModelCriteria();
 
         $keyword = KeywordQuery::create();
@@ -70,27 +70,24 @@ class KeywordFolder extends Folder{
         ;
 
         // If Keyword doesn't exist
-        if(true === $results->isEmpty()) {
+        if (true === $results->isEmpty()) {
             return null;
         }
 
         $folderIds = array();
 
-        foreach($results as $result)
-        {
+        foreach ($results as $result) {
             // If any content is associated with keyword
-            if(true === $result->getFolders()->isEmpty()) {
+            if (true === $result->getFolders()->isEmpty()) {
                 return null;
             }
 
-            foreach($result->getFolders() as $folder)
-            {
+            foreach ($result->getFolders() as $folder) {
                 $folderIds[] = $folder->getId();
             }
         }
 
-        if(!empty($folderIds))
-        {
+        if (!empty($folderIds)) {
             $search->filterById($folderIds, Criteria::IN);
         }
 

@@ -27,7 +27,6 @@ use Propel\Runtime\Connection\ConnectionInterface;
 use Thelia\Install\Database;
 use Thelia\Module\BaseModule;
 
-
 class Keyword extends BaseModule
 {
     public function postActivation(ConnectionInterface $con = null)

@@ -4,7 +4,6 @@ namespace Keyword\Model;
 
 use Keyword\Model\Base\KeywordI18nQuery as BaseKeywordI18nQuery;
 
-
 /**
  * Skeleton subclass for performing query and update operations on the 'keyword_i18n' table.
  *

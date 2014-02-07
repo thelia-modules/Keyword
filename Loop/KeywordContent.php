@@ -41,10 +41,10 @@ use Thelia\Type;
  * @package Keyword\Loop
  * @author Michaël Espeche <mespeche@openstudio.fr>
  */
-class KeywordContent extends Content{
-
-    protected function getArgDefinitions(){
-
+class KeywordContent extends Content
+{
+    protected function getArgDefinitions()
+    {
         $argument = parent::getArgDefinitions();
 
         $argument->addArgument(
@@ -60,8 +60,8 @@ class KeywordContent extends Content{
 
     }
 
-    public function buildModelCriteria(){
-
+    public function buildModelCriteria()
+    {
         $search = parent::buildModelCriteria();
 
         $keyword = KeywordQuery::create();
@@ -70,27 +70,24 @@ class KeywordContent extends Content{
         ;
 
         // If Keyword doesn't exist
-        if(true === $results->isEmpty()) {
+        if (true === $results->isEmpty()) {
             return null;
         }
 
         $contentIds = array();
 
-        foreach($results as $result)
-        {
+        foreach ($results as $result) {
             // If any content is associated with keyword
-            if(true === $result->getContents()->isEmpty()) {
+            if (true === $result->getContents()->isEmpty()) {
                 return null;
             }
 
-            foreach($result->getContents() as $content)
-            {
+            foreach ($result->getContents() as $content) {
                 $contentIds[] = $content->getId();
             }
         }
 
-        if(!empty($contentIds))
-        {
+        if (!empty($contentIds)) {
             $search->filterById($contentIds, Criteria::IN);
         }
 

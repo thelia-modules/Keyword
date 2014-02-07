@@ -4,7 +4,6 @@ namespace Keyword\Model;
 
 use Keyword\Model\Base\KeywordQuery as BaseKeywordQuery;
 
-
 /**
  * Skeleton subclass for performing query and update operations on the 'keyword' table.
  *

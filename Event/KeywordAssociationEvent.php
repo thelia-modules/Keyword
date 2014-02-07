@@ -59,7 +59,7 @@ class KeywordAssociationEvent extends ActionEvent
     protected $product;
 
     /**
-     * @param array  $keyword_list     the list of keywords
+     * @param array $keyword_list the list of keywords
      */
     public function __construct($keyword_list)
     {
@@ -98,23 +98,28 @@ class KeywordAssociationEvent extends ActionEvent
         $this->product = $product;
     }
 
-    public function getKeywordList(){
+    public function getKeywordList()
+    {
         return $this->keyword_list;
     }
 
-    public function getFolder(){
+    public function getFolder()
+    {
         return $this->folder;
     }
 
-    public function getContent(){
+    public function getContent()
+    {
         return $this->content;
     }
 
-    public function getCategory(){
+    public function getCategory()
+    {
         return $this->category;
     }
 
-    public function getProduct(){
+    public function getProduct()
+    {
         return $this->product;
     }
 

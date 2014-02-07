@@ -4,7 +4,6 @@ namespace Keyword\Model;
 
 use Keyword\Model\Base\ContentAssociatedKeywordQuery as BaseContentAssociatedKeywordQuery;
 
-
 /**
  * Skeleton subclass for performing query and update operations on the 'content_associated_keyword' table.
  *

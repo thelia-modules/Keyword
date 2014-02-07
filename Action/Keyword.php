@@ -52,7 +52,7 @@ use Thelia\Core\Event\UpdatePositionEvent;
  * @package Keyword\Action
  * @author Michaël Espeche <mespeche@openstudio.fr>
  */
-class Keyword extends BaseAction implements EventSubscriberInterface
+class Keyword implements EventSubscriberInterface
 {
 
     public function updateKeywordFolderAssociation(KeywordAssociationEvent $event)
@@ -262,7 +262,6 @@ class Keyword extends BaseAction implements EventSubscriberInterface
      */
     public static function getSubscribedEvents()
     {
-
         return array(
             KeywordEvents::KEYWORD_UPDATE_FOLDER_ASSOCIATION    => array('updateKeywordFolderAssociation', 128),
             KeywordEvents::KEYWORD_UPDATE_CONTENT_ASSOCIATION   => array('updateKeywordContentAssociation', 128),

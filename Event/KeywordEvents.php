@@ -74,14 +74,13 @@ class KeywordEvents extends ActionEvent
      */
     const KEYWORD_UPDATE_PRODUCT_ASSOCIATION = "keyword.action.updateProductAssociation";
 
-
     protected $locale;
     protected $title;
     protected $code;
     protected $visible;
     protected $keyword;
 
-    function __construct($title, $code, $visible, $locale)
+    public function __construct($title, $code, $visible, $locale)
     {
         $this->title = $title;
         $this->code = $code;
@@ -109,6 +108,7 @@ class KeywordEvents extends ActionEvent
     public function setTitle($title)
     {
         $this->title = $title;
+
         return $this;
     }
 
@@ -128,6 +128,7 @@ class KeywordEvents extends ActionEvent
     public function setCode($code)
     {
         $this->code = $code;
+
         return $this;
     }
 
@@ -160,7 +161,7 @@ class KeywordEvents extends ActionEvent
     }
 
     /**
-     * @param \Keyword\Model\Keyword $keyword
+     * @param  \Keyword\Model\Keyword $keyword
      * @return $this
      */
     public function setKeyword(Keyword $keyword)

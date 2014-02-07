@@ -24,7 +24,6 @@ namespace Keyword\Form;
 
 use Keyword\Model\KeywordQuery;
 use Thelia\Form\BaseForm;
-use Symfony\Component\Validator\Constraints;
 
 class KeywordContentModificationForm extends BaseForm
 {

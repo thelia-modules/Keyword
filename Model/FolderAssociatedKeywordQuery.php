@@ -4,7 +4,6 @@ namespace Keyword\Model;
 
 use Keyword\Model\Base\FolderAssociatedKeywordQuery as BaseFolderAssociatedKeywordQuery;
 
-
 /**
  * Skeleton subclass for performing query and update operations on the 'folder_associated_keyword' table.
  *

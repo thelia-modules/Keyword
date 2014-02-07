@@ -34,7 +34,8 @@ class KeywordToggleVisibilityEvent  extends KeywordEvents
 {
     protected $keyword;
 
-    public function __construct(Keyword $keyword){
+    public function __construct(Keyword $keyword)
+    {
         $this->keyword = $keyword;
     }
 
