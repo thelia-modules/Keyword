@@ -148,7 +148,7 @@
         {form_field form=$form field='code'}
         <div class="form-group {if $error}has-error{/if}">
             <label for="{$label_attr.for}" class="control-label">{$label} : </label>
-            <input type="text" id="{$label_attr.for}" name="{$name}" class="form-control" value="{$value}" title="{$label}" placeholder="{intl l='[Keyword]unique identifier'}">
+            <input type="text" id="{$label_attr.for}" required="required" name="{$name}" class="form-control" value="{$value}" title="{$label}" placeholder="{intl l='[Keyword]unique identifier'}">
             <div class="help-block">{intl l='[Keyword]Enter here the unique identifier of the keyword which must be use into your loops'}</div>
         </div>
         {/form_field}

@@ -483,11 +483,16 @@ class KeywordController extends AbstractCrudController
     /**
      * Render the main list template
      *
-     * @param unknown $currentOrder , if any, null otherwise.
+     * @param unknown $currentKeyword , if any, null otherwise.
      */
-    protected function renderListTemplate($currentOrder)
+    protected function renderListTemplate($currentKeyword)
     {
-        // TODO: Implement renderListTemplate() method.
+        return $this->render('module-configure',
+            array(
+                'module_code' => 'Keyword',
+                'code' => 'keyword',
+                'keyword_order' => $currentKeyword
+            ));
     }
 
     protected function getEditionArguments()

@@ -22,7 +22,10 @@
 /*************************************************************************************/
 namespace Keyword\Form;
 
+use Keyword\Model\KeywordQuery;
+use Symfony\Component\Validator\Constraints\Callback;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\ExecutionContextInterface;
 use Thelia\Core\Translation\Translator;
 use Thelia\Form\BaseForm;
 use Symfony\Component\Validator\Constraints;
@@ -42,6 +45,14 @@ class KeywordCreationForm extends BaseForm
                     )
                 ))
             ->add('code', 'text', array(
+                    'constraints' => array(
+                        new NotBlank(),
+                        new Callback(array(
+                            "methods" => array(
+                                array($this, "verifyExistingCode")
+                            )
+                        ))
+                    ),
                     'label' => Translator::getInstance()->trans('[Keyword]Unique identifier'),
                     'label_attr' => array(
                         'for' => 'keyword_code'
@@ -60,6 +71,14 @@ class KeywordCreationForm extends BaseForm
                 ))
 
         ;
+    }
+
+    public function verifyExistingCode($value, ExecutionContextInterface $context)
+    {
+        $keyword = KeywordQuery::getKeywordByCode($value);
+        if ($keyword) {
+            $context->addViolation("This keyword identifier already exist.");
+        }
     }
 
     public function getName()

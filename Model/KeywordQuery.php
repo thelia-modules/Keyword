@@ -17,4 +17,9 @@ use Keyword\Model\Base\KeywordQuery as BaseKeywordQuery;
 class KeywordQuery extends BaseKeywordQuery
 {
 
+    public static function getKeywordByCode($code)
+    {
+        return self::create()->findOneByCode($code);
+    }
+
 } // KeywordQuery
