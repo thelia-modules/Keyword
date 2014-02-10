@@ -2,12 +2,12 @@
 <module>
     <fullnamespace>Keyword\Keyword</fullnamespace>
     <descriptive locale="fr_FR">
-        <title>Keyword</title>
+        <title>Mots clés</title>
     </descriptive>
     <descriptive locale="en_US">
         <title>Keyword</title>
     </descriptive>
-    <version>1.0</version>
+    <version>1.0.1</version>
     <author>
         <name>Michaël Espeche</name>
         <email>mespeche@openstudio.fr</email>
