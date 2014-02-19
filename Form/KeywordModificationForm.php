@@ -23,7 +23,9 @@
 
 namespace Keyword\Form;
 
+use Keyword\Model\KeywordQuery;
 use Symfony\Component\Validator\Constraints\GreaterThan;
+use Symfony\Component\Validator\ExecutionContextInterface;
 use Thelia\Form\StandardDescriptionFieldsTrait;
 
 /**
@@ -46,6 +48,20 @@ class KeywordModificationForm extends KeywordCreationForm
         // Add standard description fields, excluding title and locale, which a re defined in parent class
         $this->addStandardDescFields(array('title', 'locale'));
     }
+
+    public function verifyExistingCode($value, ExecutionContextInterface $context)
+    {
+        $keywordId = $this->getRequest()->get('keyword_id');
+        $keywordUpdated = KeywordQuery::create()->findPk($keywordId);
+
+        // If the sent code isn't identical to the keyword code being updated
+        if($keywordUpdated->getCode() !== $value){
+
+            // Check if code keyword with this code exist
+            parent::verifyExistingCode($value, $context);
+        }
+    }
+
 
     public function getName()
     {
