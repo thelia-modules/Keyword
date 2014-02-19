@@ -55,13 +55,12 @@ class KeywordModificationForm extends KeywordCreationForm
         $keywordUpdated = KeywordQuery::create()->findPk($keywordId);
 
         // If the sent code isn't identical to the keyword code being updated
-        if($keywordUpdated->getCode() !== $value){
+        if ($keywordUpdated->getCode() !== $value) {
 
             // Check if code keyword with this code exist
             parent::verifyExistingCode($value, $context);
         }
     }
-
 
     public function getName()
     {
