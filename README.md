@@ -11,7 +11,7 @@ You can download the .zip file of this module or create a git submodule into you
 
 ```
 cd /path-to-thelia
-git submodule add https://github.com/thelia-modules/keyword.git local/modules/Keyword
+git submodule add https://github.com/thelia-modules/Keyword.git local/modules/Keyword
 ```
 
 Next, go to your Thelia admin panel for module activation.
