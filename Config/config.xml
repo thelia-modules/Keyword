@@ -10,6 +10,7 @@
         <loop name="keyword_category" class="Keyword\Loop\KeywordCategory" />
         <loop name="keyword_product" class="Keyword\Loop\KeywordProduct" />
         <loop name="keyword" class="Keyword\Loop\Keyword" />
+        <loop name="keyword_group" class="Keyword\Loop\KeywordGroup" />
     </loops>
 
     <forms>
