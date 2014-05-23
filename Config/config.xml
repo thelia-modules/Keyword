@@ -17,6 +17,9 @@
         <form name="keyword.admin.content.modification" class="Keyword\Form\KeywordContentModificationForm"/>
         <form name="keyword.admin.category.modification" class="Keyword\Form\KeywordCategoryModificationForm"/>
         <form name="keyword.admin.product.modification" class="Keyword\Form\KeywordProductModificationForm"/>
+
+        <form name="keyword.group.admin.creation" class="Keyword\Form\KeywordGroupCreationForm"/>
+
         <form name="keyword.admin.creation" class="Keyword\Form\KeywordCreationForm"/>
         <form name="keyword.admin.modification" class="Keyword\Form\KeywordModificationForm"/>
     </forms>
