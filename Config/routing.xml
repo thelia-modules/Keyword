@@ -51,4 +51,7 @@
         <default key="_controller">Keyword\Controller\Admin\KeywordController::viewAction</default>
     </route>
 
+    <route id="admin.keyword.group.create" path="/admin/module/Keyword/group/create">
+        <default key="_controller">Keyword\Controller\Admin\KeywordGroupController::createAction</default>
+    </route>
 </routes>
