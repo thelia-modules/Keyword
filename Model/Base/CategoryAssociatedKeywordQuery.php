@@ -25,14 +25,10 @@ use Thelia\Model\Category;
  * @method     ChildCategoryAssociatedKeywordQuery orderByCategoryId($order = Criteria::ASC) Order by the category_id column
  * @method     ChildCategoryAssociatedKeywordQuery orderByKeywordId($order = Criteria::ASC) Order by the keyword_id column
  * @method     ChildCategoryAssociatedKeywordQuery orderByPosition($order = Criteria::ASC) Order by the position column
- * @method     ChildCategoryAssociatedKeywordQuery orderByCreatedAt($order = Criteria::ASC) Order by the created_at column
- * @method     ChildCategoryAssociatedKeywordQuery orderByUpdatedAt($order = Criteria::ASC) Order by the updated_at column
  *
  * @method     ChildCategoryAssociatedKeywordQuery groupByCategoryId() Group by the category_id column
  * @method     ChildCategoryAssociatedKeywordQuery groupByKeywordId() Group by the keyword_id column
  * @method     ChildCategoryAssociatedKeywordQuery groupByPosition() Group by the position column
- * @method     ChildCategoryAssociatedKeywordQuery groupByCreatedAt() Group by the created_at column
- * @method     ChildCategoryAssociatedKeywordQuery groupByUpdatedAt() Group by the updated_at column
  *
  * @method     ChildCategoryAssociatedKeywordQuery leftJoin($relation) Adds a LEFT JOIN clause to the query
  * @method     ChildCategoryAssociatedKeywordQuery rightJoin($relation) Adds a RIGHT JOIN clause to the query
@@ -52,14 +48,10 @@ use Thelia\Model\Category;
  * @method     ChildCategoryAssociatedKeyword findOneByCategoryId(int $category_id) Return the first ChildCategoryAssociatedKeyword filtered by the category_id column
  * @method     ChildCategoryAssociatedKeyword findOneByKeywordId(int $keyword_id) Return the first ChildCategoryAssociatedKeyword filtered by the keyword_id column
  * @method     ChildCategoryAssociatedKeyword findOneByPosition(int $position) Return the first ChildCategoryAssociatedKeyword filtered by the position column
- * @method     ChildCategoryAssociatedKeyword findOneByCreatedAt(string $created_at) Return the first ChildCategoryAssociatedKeyword filtered by the created_at column
- * @method     ChildCategoryAssociatedKeyword findOneByUpdatedAt(string $updated_at) Return the first ChildCategoryAssociatedKeyword filtered by the updated_at column
  *
  * @method     array findByCategoryId(int $category_id) Return ChildCategoryAssociatedKeyword objects filtered by the category_id column
  * @method     array findByKeywordId(int $keyword_id) Return ChildCategoryAssociatedKeyword objects filtered by the keyword_id column
  * @method     array findByPosition(int $position) Return ChildCategoryAssociatedKeyword objects filtered by the position column
- * @method     array findByCreatedAt(string $created_at) Return ChildCategoryAssociatedKeyword objects filtered by the created_at column
- * @method     array findByUpdatedAt(string $updated_at) Return ChildCategoryAssociatedKeyword objects filtered by the updated_at column
  *
  */
 abstract class CategoryAssociatedKeywordQuery extends ModelCriteria
@@ -148,7 +140,7 @@ abstract class CategoryAssociatedKeywordQuery extends ModelCriteria
      */
     protected function findPkSimple($key, $con)
     {
-        $sql = 'SELECT CATEGORY_ID, KEYWORD_ID, POSITION, CREATED_AT, UPDATED_AT FROM category_associated_keyword WHERE CATEGORY_ID = :p0 AND KEYWORD_ID = :p1';
+        $sql = 'SELECT CATEGORY_ID, KEYWORD_ID, POSITION FROM category_associated_keyword WHERE CATEGORY_ID = :p0 AND KEYWORD_ID = :p1';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key[0], PDO::PARAM_INT);
@@ -374,92 +366,6 @@ abstract class CategoryAssociatedKeywordQuery extends ModelCriteria
         }
 
         return $this->addUsingAlias(CategoryAssociatedKeywordTableMap::POSITION, $position, $comparison);
-    }
-
-    /**
-     * Filter the query on the created_at column
-     *
-     * Example usage:
-     * <code>
-     * $query->filterByCreatedAt('2011-03-14'); // WHERE created_at = '2011-03-14'
-     * $query->filterByCreatedAt('now'); // WHERE created_at = '2011-03-14'
-     * $query->filterByCreatedAt(array('max' => 'yesterday')); // WHERE created_at > '2011-03-13'
-     * </code>
-     *
-     * @param     mixed $createdAt The value to use as filter.
-     *              Values can be integers (unix timestamps), DateTime objects, or strings.
-     *              Empty strings are treated as NULL.
-     *              Use scalar values for equality.
-     *              Use array values for in_array() equivalent.
-     *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
-     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
-     *
-     * @return ChildCategoryAssociatedKeywordQuery The current query, for fluid interface
-     */
-    public function filterByCreatedAt($createdAt = null, $comparison = null)
-    {
-        if (is_array($createdAt)) {
-            $useMinMax = false;
-            if (isset($createdAt['min'])) {
-                $this->addUsingAlias(CategoryAssociatedKeywordTableMap::CREATED_AT, $createdAt['min'], Criteria::GREATER_EQUAL);
-                $useMinMax = true;
-            }
-            if (isset($createdAt['max'])) {
-                $this->addUsingAlias(CategoryAssociatedKeywordTableMap::CREATED_AT, $createdAt['max'], Criteria::LESS_EQUAL);
-                $useMinMax = true;
-            }
-            if ($useMinMax) {
-                return $this;
-            }
-            if (null === $comparison) {
-                $comparison = Criteria::IN;
-            }
-        }
-
-        return $this->addUsingAlias(CategoryAssociatedKeywordTableMap::CREATED_AT, $createdAt, $comparison);
-    }
-
-    /**
-     * Filter the query on the updated_at column
-     *
-     * Example usage:
-     * <code>
-     * $query->filterByUpdatedAt('2011-03-14'); // WHERE updated_at = '2011-03-14'
-     * $query->filterByUpdatedAt('now'); // WHERE updated_at = '2011-03-14'
-     * $query->filterByUpdatedAt(array('max' => 'yesterday')); // WHERE updated_at > '2011-03-13'
-     * </code>
-     *
-     * @param     mixed $updatedAt The value to use as filter.
-     *              Values can be integers (unix timestamps), DateTime objects, or strings.
-     *              Empty strings are treated as NULL.
-     *              Use scalar values for equality.
-     *              Use array values for in_array() equivalent.
-     *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
-     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
-     *
-     * @return ChildCategoryAssociatedKeywordQuery The current query, for fluid interface
-     */
-    public function filterByUpdatedAt($updatedAt = null, $comparison = null)
-    {
-        if (is_array($updatedAt)) {
-            $useMinMax = false;
-            if (isset($updatedAt['min'])) {
-                $this->addUsingAlias(CategoryAssociatedKeywordTableMap::UPDATED_AT, $updatedAt['min'], Criteria::GREATER_EQUAL);
-                $useMinMax = true;
-            }
-            if (isset($updatedAt['max'])) {
-                $this->addUsingAlias(CategoryAssociatedKeywordTableMap::UPDATED_AT, $updatedAt['max'], Criteria::LESS_EQUAL);
-                $useMinMax = true;
-            }
-            if ($useMinMax) {
-                return $this;
-            }
-            if (null === $comparison) {
-                $comparison = Criteria::IN;
-            }
-        }
-
-        return $this->addUsingAlias(CategoryAssociatedKeywordTableMap::UPDATED_AT, $updatedAt, $comparison);
     }
 
     /**
@@ -703,72 +609,6 @@ abstract class CategoryAssociatedKeywordQuery extends ModelCriteria
             $con->rollBack();
             throw $e;
         }
-    }
-
-    // timestampable behavior
-
-    /**
-     * Filter by the latest updated
-     *
-     * @param      int $nbDays Maximum age of the latest update in days
-     *
-     * @return     ChildCategoryAssociatedKeywordQuery The current query, for fluid interface
-     */
-    public function recentlyUpdated($nbDays = 7)
-    {
-        return $this->addUsingAlias(CategoryAssociatedKeywordTableMap::UPDATED_AT, time() - $nbDays * 24 * 60 * 60, Criteria::GREATER_EQUAL);
-    }
-
-    /**
-     * Filter by the latest created
-     *
-     * @param      int $nbDays Maximum age of in days
-     *
-     * @return     ChildCategoryAssociatedKeywordQuery The current query, for fluid interface
-     */
-    public function recentlyCreated($nbDays = 7)
-    {
-        return $this->addUsingAlias(CategoryAssociatedKeywordTableMap::CREATED_AT, time() - $nbDays * 24 * 60 * 60, Criteria::GREATER_EQUAL);
-    }
-
-    /**
-     * Order by update date desc
-     *
-     * @return     ChildCategoryAssociatedKeywordQuery The current query, for fluid interface
-     */
-    public function lastUpdatedFirst()
-    {
-        return $this->addDescendingOrderByColumn(CategoryAssociatedKeywordTableMap::UPDATED_AT);
-    }
-
-    /**
-     * Order by update date asc
-     *
-     * @return     ChildCategoryAssociatedKeywordQuery The current query, for fluid interface
-     */
-    public function firstUpdatedFirst()
-    {
-        return $this->addAscendingOrderByColumn(CategoryAssociatedKeywordTableMap::UPDATED_AT);
-    }
-
-    /**
-     * Order by create date desc
-     *
-     * @return     ChildCategoryAssociatedKeywordQuery The current query, for fluid interface
-     */
-    public function lastCreatedFirst()
-    {
-        return $this->addDescendingOrderByColumn(CategoryAssociatedKeywordTableMap::CREATED_AT);
-    }
-
-    /**
-     * Order by create date asc
-     *
-     * @return     ChildCategoryAssociatedKeywordQuery The current query, for fluid interface
-     */
-    public function firstCreatedFirst()
-    {
-        return $this->addAscendingOrderByColumn(CategoryAssociatedKeywordTableMap::CREATED_AT);
     }
 
 } // CategoryAssociatedKeywordQuery

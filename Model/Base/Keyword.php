@@ -12,6 +12,8 @@ use Keyword\Model\ContentAssociatedKeywordQuery as ChildContentAssociatedKeyword
 use Keyword\Model\FolderAssociatedKeyword as ChildFolderAssociatedKeyword;
 use Keyword\Model\FolderAssociatedKeywordQuery as ChildFolderAssociatedKeywordQuery;
 use Keyword\Model\Keyword as ChildKeyword;
+use Keyword\Model\KeywordGroupAssociatedKeyword as ChildKeywordGroupAssociatedKeyword;
+use Keyword\Model\KeywordGroupAssociatedKeywordQuery as ChildKeywordGroupAssociatedKeywordQuery;
 use Keyword\Model\KeywordI18n as ChildKeywordI18n;
 use Keyword\Model\KeywordI18nQuery as ChildKeywordI18nQuery;
 use Keyword\Model\KeywordQuery as ChildKeywordQuery;
@@ -102,6 +104,12 @@ abstract class Keyword implements ActiveRecordInterface
     protected $updated_at;
 
     /**
+     * @var        ObjectCollection|ChildKeywordGroupAssociatedKeyword[] Collection to store aggregation of ChildKeywordGroupAssociatedKeyword objects.
+     */
+    protected $collKeywordGroupAssociatedKeywords;
+    protected $collKeywordGroupAssociatedKeywordsPartial;
+
+    /**
      * @var        ObjectCollection|ChildContentAssociatedKeyword[] Collection to store aggregation of ChildContentAssociatedKeyword objects.
      */
     protected $collContentAssociatedKeywords;
@@ -152,6 +160,12 @@ abstract class Keyword implements ActiveRecordInterface
      * @var        array[ChildKeywordI18n]
      */
     protected $currentTranslations;
+
+    /**
+     * An array of objects scheduled for deletion.
+     * @var ObjectCollection
+     */
+    protected $keywordGroupAssociatedKeywordsScheduledForDeletion = null;
 
     /**
      * An array of objects scheduled for deletion.
@@ -780,6 +794,8 @@ abstract class Keyword implements ActiveRecordInterface
 
         if ($deep) {  // also de-associate any related objects?
 
+            $this->collKeywordGroupAssociatedKeywords = null;
+
             $this->collContentAssociatedKeywords = null;
 
             $this->collFolderAssociatedKeywords = null;
@@ -921,6 +937,23 @@ abstract class Keyword implements ActiveRecordInterface
                 }
                 $affectedRows += 1;
                 $this->resetModified();
+            }
+
+            if ($this->keywordGroupAssociatedKeywordsScheduledForDeletion !== null) {
+                if (!$this->keywordGroupAssociatedKeywordsScheduledForDeletion->isEmpty()) {
+                    \Keyword\Model\KeywordGroupAssociatedKeywordQuery::create()
+                        ->filterByPrimaryKeys($this->keywordGroupAssociatedKeywordsScheduledForDeletion->getPrimaryKeys(false))
+                        ->delete($con);
+                    $this->keywordGroupAssociatedKeywordsScheduledForDeletion = null;
+                }
+            }
+
+                if ($this->collKeywordGroupAssociatedKeywords !== null) {
+            foreach ($this->collKeywordGroupAssociatedKeywords as $referrerFK) {
+                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
+                        $affectedRows += $referrerFK->save($con);
+                    }
+                }
             }
 
             if ($this->contentAssociatedKeywordsScheduledForDeletion !== null) {
@@ -1203,6 +1236,9 @@ abstract class Keyword implements ActiveRecordInterface
         }
 
         if ($includeForeignObjects) {
+            if (null !== $this->collKeywordGroupAssociatedKeywords) {
+                $result['KeywordGroupAssociatedKeywords'] = $this->collKeywordGroupAssociatedKeywords->toArray(null, true, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+            }
             if (null !== $this->collContentAssociatedKeywords) {
                 $result['ContentAssociatedKeywords'] = $this->collContentAssociatedKeywords->toArray(null, true, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
             }
@@ -1391,6 +1427,12 @@ abstract class Keyword implements ActiveRecordInterface
             // the getter/setter methods for fkey referrer objects.
             $copyObj->setNew(false);
 
+            foreach ($this->getKeywordGroupAssociatedKeywords() as $relObj) {
+                if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
+                    $copyObj->addKeywordGroupAssociatedKeyword($relObj->copy($deepCopy));
+                }
+            }
+
             foreach ($this->getContentAssociatedKeywords() as $relObj) {
                 if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
                     $copyObj->addContentAssociatedKeyword($relObj->copy($deepCopy));
@@ -1462,6 +1504,9 @@ abstract class Keyword implements ActiveRecordInterface
      */
     public function initRelation($relationName)
     {
+        if ('KeywordGroupAssociatedKeyword' == $relationName) {
+            return $this->initKeywordGroupAssociatedKeywords();
+        }
         if ('ContentAssociatedKeyword' == $relationName) {
             return $this->initContentAssociatedKeywords();
         }
@@ -1477,6 +1522,252 @@ abstract class Keyword implements ActiveRecordInterface
         if ('KeywordI18n' == $relationName) {
             return $this->initKeywordI18ns();
         }
+    }
+
+    /**
+     * Clears out the collKeywordGroupAssociatedKeywords collection
+     *
+     * This does not modify the database; however, it will remove any associated objects, causing
+     * them to be refetched by subsequent calls to accessor method.
+     *
+     * @return void
+     * @see        addKeywordGroupAssociatedKeywords()
+     */
+    public function clearKeywordGroupAssociatedKeywords()
+    {
+        $this->collKeywordGroupAssociatedKeywords = null; // important to set this to NULL since that means it is uninitialized
+    }
+
+    /**
+     * Reset is the collKeywordGroupAssociatedKeywords collection loaded partially.
+     */
+    public function resetPartialKeywordGroupAssociatedKeywords($v = true)
+    {
+        $this->collKeywordGroupAssociatedKeywordsPartial = $v;
+    }
+
+    /**
+     * Initializes the collKeywordGroupAssociatedKeywords collection.
+     *
+     * By default this just sets the collKeywordGroupAssociatedKeywords collection to an empty array (like clearcollKeywordGroupAssociatedKeywords());
+     * however, you may wish to override this method in your stub class to provide setting appropriate
+     * to your application -- for example, setting the initial array to the values stored in database.
+     *
+     * @param      boolean $overrideExisting If set to true, the method call initializes
+     *                                        the collection even if it is not empty
+     *
+     * @return void
+     */
+    public function initKeywordGroupAssociatedKeywords($overrideExisting = true)
+    {
+        if (null !== $this->collKeywordGroupAssociatedKeywords && !$overrideExisting) {
+            return;
+        }
+        $this->collKeywordGroupAssociatedKeywords = new ObjectCollection();
+        $this->collKeywordGroupAssociatedKeywords->setModel('\Keyword\Model\KeywordGroupAssociatedKeyword');
+    }
+
+    /**
+     * Gets an array of ChildKeywordGroupAssociatedKeyword objects which contain a foreign key that references this object.
+     *
+     * If the $criteria is not null, it is used to always fetch the results from the database.
+     * Otherwise the results are fetched from the database the first time, then cached.
+     * Next time the same method is called without $criteria, the cached collection is returned.
+     * If this ChildKeyword is new, it will return
+     * an empty collection or the current collection; the criteria is ignored on a new object.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @return Collection|ChildKeywordGroupAssociatedKeyword[] List of ChildKeywordGroupAssociatedKeyword objects
+     * @throws PropelException
+     */
+    public function getKeywordGroupAssociatedKeywords($criteria = null, ConnectionInterface $con = null)
+    {
+        $partial = $this->collKeywordGroupAssociatedKeywordsPartial && !$this->isNew();
+        if (null === $this->collKeywordGroupAssociatedKeywords || null !== $criteria  || $partial) {
+            if ($this->isNew() && null === $this->collKeywordGroupAssociatedKeywords) {
+                // return empty collection
+                $this->initKeywordGroupAssociatedKeywords();
+            } else {
+                $collKeywordGroupAssociatedKeywords = ChildKeywordGroupAssociatedKeywordQuery::create(null, $criteria)
+                    ->filterByKeyword($this)
+                    ->find($con);
+
+                if (null !== $criteria) {
+                    if (false !== $this->collKeywordGroupAssociatedKeywordsPartial && count($collKeywordGroupAssociatedKeywords)) {
+                        $this->initKeywordGroupAssociatedKeywords(false);
+
+                        foreach ($collKeywordGroupAssociatedKeywords as $obj) {
+                            if (false == $this->collKeywordGroupAssociatedKeywords->contains($obj)) {
+                                $this->collKeywordGroupAssociatedKeywords->append($obj);
+                            }
+                        }
+
+                        $this->collKeywordGroupAssociatedKeywordsPartial = true;
+                    }
+
+                    reset($collKeywordGroupAssociatedKeywords);
+
+                    return $collKeywordGroupAssociatedKeywords;
+                }
+
+                if ($partial && $this->collKeywordGroupAssociatedKeywords) {
+                    foreach ($this->collKeywordGroupAssociatedKeywords as $obj) {
+                        if ($obj->isNew()) {
+                            $collKeywordGroupAssociatedKeywords[] = $obj;
+                        }
+                    }
+                }
+
+                $this->collKeywordGroupAssociatedKeywords = $collKeywordGroupAssociatedKeywords;
+                $this->collKeywordGroupAssociatedKeywordsPartial = false;
+            }
+        }
+
+        return $this->collKeywordGroupAssociatedKeywords;
+    }
+
+    /**
+     * Sets a collection of KeywordGroupAssociatedKeyword objects related by a one-to-many relationship
+     * to the current object.
+     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
+     * and new objects from the given Propel collection.
+     *
+     * @param      Collection $keywordGroupAssociatedKeywords A Propel collection.
+     * @param      ConnectionInterface $con Optional connection object
+     * @return   ChildKeyword The current object (for fluent API support)
+     */
+    public function setKeywordGroupAssociatedKeywords(Collection $keywordGroupAssociatedKeywords, ConnectionInterface $con = null)
+    {
+        $keywordGroupAssociatedKeywordsToDelete = $this->getKeywordGroupAssociatedKeywords(new Criteria(), $con)->diff($keywordGroupAssociatedKeywords);
+
+
+        //since at least one column in the foreign key is at the same time a PK
+        //we can not just set a PK to NULL in the lines below. We have to store
+        //a backup of all values, so we are able to manipulate these items based on the onDelete value later.
+        $this->keywordGroupAssociatedKeywordsScheduledForDeletion = clone $keywordGroupAssociatedKeywordsToDelete;
+
+        foreach ($keywordGroupAssociatedKeywordsToDelete as $keywordGroupAssociatedKeywordRemoved) {
+            $keywordGroupAssociatedKeywordRemoved->setKeyword(null);
+        }
+
+        $this->collKeywordGroupAssociatedKeywords = null;
+        foreach ($keywordGroupAssociatedKeywords as $keywordGroupAssociatedKeyword) {
+            $this->addKeywordGroupAssociatedKeyword($keywordGroupAssociatedKeyword);
+        }
+
+        $this->collKeywordGroupAssociatedKeywords = $keywordGroupAssociatedKeywords;
+        $this->collKeywordGroupAssociatedKeywordsPartial = false;
+
+        return $this;
+    }
+
+    /**
+     * Returns the number of related KeywordGroupAssociatedKeyword objects.
+     *
+     * @param      Criteria $criteria
+     * @param      boolean $distinct
+     * @param      ConnectionInterface $con
+     * @return int             Count of related KeywordGroupAssociatedKeyword objects.
+     * @throws PropelException
+     */
+    public function countKeywordGroupAssociatedKeywords(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
+    {
+        $partial = $this->collKeywordGroupAssociatedKeywordsPartial && !$this->isNew();
+        if (null === $this->collKeywordGroupAssociatedKeywords || null !== $criteria || $partial) {
+            if ($this->isNew() && null === $this->collKeywordGroupAssociatedKeywords) {
+                return 0;
+            }
+
+            if ($partial && !$criteria) {
+                return count($this->getKeywordGroupAssociatedKeywords());
+            }
+
+            $query = ChildKeywordGroupAssociatedKeywordQuery::create(null, $criteria);
+            if ($distinct) {
+                $query->distinct();
+            }
+
+            return $query
+                ->filterByKeyword($this)
+                ->count($con);
+        }
+
+        return count($this->collKeywordGroupAssociatedKeywords);
+    }
+
+    /**
+     * Method called to associate a ChildKeywordGroupAssociatedKeyword object to this object
+     * through the ChildKeywordGroupAssociatedKeyword foreign key attribute.
+     *
+     * @param    ChildKeywordGroupAssociatedKeyword $l ChildKeywordGroupAssociatedKeyword
+     * @return   \Keyword\Model\Keyword The current object (for fluent API support)
+     */
+    public function addKeywordGroupAssociatedKeyword(ChildKeywordGroupAssociatedKeyword $l)
+    {
+        if ($this->collKeywordGroupAssociatedKeywords === null) {
+            $this->initKeywordGroupAssociatedKeywords();
+            $this->collKeywordGroupAssociatedKeywordsPartial = true;
+        }
+
+        if (!in_array($l, $this->collKeywordGroupAssociatedKeywords->getArrayCopy(), true)) { // only add it if the **same** object is not already associated
+            $this->doAddKeywordGroupAssociatedKeyword($l);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param KeywordGroupAssociatedKeyword $keywordGroupAssociatedKeyword The keywordGroupAssociatedKeyword object to add.
+     */
+    protected function doAddKeywordGroupAssociatedKeyword($keywordGroupAssociatedKeyword)
+    {
+        $this->collKeywordGroupAssociatedKeywords[]= $keywordGroupAssociatedKeyword;
+        $keywordGroupAssociatedKeyword->setKeyword($this);
+    }
+
+    /**
+     * @param  KeywordGroupAssociatedKeyword $keywordGroupAssociatedKeyword The keywordGroupAssociatedKeyword object to remove.
+     * @return ChildKeyword The current object (for fluent API support)
+     */
+    public function removeKeywordGroupAssociatedKeyword($keywordGroupAssociatedKeyword)
+    {
+        if ($this->getKeywordGroupAssociatedKeywords()->contains($keywordGroupAssociatedKeyword)) {
+            $this->collKeywordGroupAssociatedKeywords->remove($this->collKeywordGroupAssociatedKeywords->search($keywordGroupAssociatedKeyword));
+            if (null === $this->keywordGroupAssociatedKeywordsScheduledForDeletion) {
+                $this->keywordGroupAssociatedKeywordsScheduledForDeletion = clone $this->collKeywordGroupAssociatedKeywords;
+                $this->keywordGroupAssociatedKeywordsScheduledForDeletion->clear();
+            }
+            $this->keywordGroupAssociatedKeywordsScheduledForDeletion[]= clone $keywordGroupAssociatedKeyword;
+            $keywordGroupAssociatedKeyword->setKeyword(null);
+        }
+
+        return $this;
+    }
+
+
+    /**
+     * If this collection has already been initialized with
+     * an identical criteria, it returns the collection.
+     * Otherwise if this Keyword is new, it will return
+     * an empty collection; or if this Keyword has previously
+     * been saved, it will retrieve related KeywordGroupAssociatedKeywords from storage.
+     *
+     * This method is protected by default in order to keep the public
+     * api reasonable.  You can provide public methods for those you
+     * actually need in Keyword.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
+     * @return Collection|ChildKeywordGroupAssociatedKeyword[] List of ChildKeywordGroupAssociatedKeyword objects
+     */
+    public function getKeywordGroupAssociatedKeywordsJoinKeywordGroup($criteria = null, $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    {
+        $query = ChildKeywordGroupAssociatedKeywordQuery::create(null, $criteria);
+        $query->joinWith('KeywordGroup', $joinBehavior);
+
+        return $this->getKeywordGroupAssociatedKeywords($query, $con);
     }
 
     /**
@@ -2718,6 +3009,11 @@ abstract class Keyword implements ActiveRecordInterface
     public function clearAllReferences($deep = false)
     {
         if ($deep) {
+            if ($this->collKeywordGroupAssociatedKeywords) {
+                foreach ($this->collKeywordGroupAssociatedKeywords as $o) {
+                    $o->clearAllReferences($deep);
+                }
+            }
             if ($this->collContentAssociatedKeywords) {
                 foreach ($this->collContentAssociatedKeywords as $o) {
                     $o->clearAllReferences($deep);
@@ -2749,6 +3045,7 @@ abstract class Keyword implements ActiveRecordInterface
         $this->currentLocale = 'en_US';
         $this->currentTranslations = null;
 
+        $this->collKeywordGroupAssociatedKeywords = null;
         $this->collContentAssociatedKeywords = null;
         $this->collFolderAssociatedKeywords = null;
         $this->collCategoryAssociatedKeywords = null;

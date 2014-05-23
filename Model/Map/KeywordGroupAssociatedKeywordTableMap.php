@@ -2,8 +2,8 @@
 
 namespace Keyword\Model\Map;
 
-use Keyword\Model\Keyword;
-use Keyword\Model\KeywordQuery;
+use Keyword\Model\KeywordGroupAssociatedKeyword;
+use Keyword\Model\KeywordGroupAssociatedKeywordQuery;
 use Propel\Runtime\Propel;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\ActiveQuery\InstancePoolTrait;
@@ -16,7 +16,7 @@ use Propel\Runtime\Map\TableMapTrait;
 
 
 /**
- * This class defines the structure of the 'keyword' table.
+ * This class defines the structure of the 'keyword_group_associated_keyword' table.
  *
  *
  *
@@ -26,14 +26,14 @@ use Propel\Runtime\Map\TableMapTrait;
  * (i.e. if it's a text column type).
  *
  */
-class KeywordTableMap extends TableMap
+class KeywordGroupAssociatedKeywordTableMap extends TableMap
 {
     use InstancePoolTrait;
     use TableMapTrait;
     /**
      * The (dot-path) name of this class
      */
-    const CLASS_NAME = 'Keyword.Model.Map.KeywordTableMap';
+    const CLASS_NAME = 'Keyword.Model.Map.KeywordGroupAssociatedKeywordTableMap';
 
     /**
      * The default database name for this class
@@ -43,22 +43,22 @@ class KeywordTableMap extends TableMap
     /**
      * The table name for this class
      */
-    const TABLE_NAME = 'keyword';
+    const TABLE_NAME = 'keyword_group_associated_keyword';
 
     /**
      * The related Propel class for this table
      */
-    const OM_CLASS = '\\Keyword\\Model\\Keyword';
+    const OM_CLASS = '\\Keyword\\Model\\KeywordGroupAssociatedKeyword';
 
     /**
      * A class that can be returned by this tableMap
      */
-    const CLASS_DEFAULT = 'Keyword.Model.Keyword';
+    const CLASS_DEFAULT = 'Keyword.Model.KeywordGroupAssociatedKeyword';
 
     /**
      * The total number of columns
      */
-    const NUM_COLUMNS = 6;
+    const NUM_COLUMNS = 5;
 
     /**
      * The number of lazy-loaded columns
@@ -68,51 +68,37 @@ class KeywordTableMap extends TableMap
     /**
      * The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS)
      */
-    const NUM_HYDRATE_COLUMNS = 6;
+    const NUM_HYDRATE_COLUMNS = 5;
 
     /**
-     * the column name for the ID field
+     * the column name for the KEYWORD_GROUP_ID field
      */
-    const ID = 'keyword.ID';
+    const KEYWORD_GROUP_ID = 'keyword_group_associated_keyword.KEYWORD_GROUP_ID';
 
     /**
-     * the column name for the VISIBLE field
+     * the column name for the KEYWORD_ID field
      */
-    const VISIBLE = 'keyword.VISIBLE';
+    const KEYWORD_ID = 'keyword_group_associated_keyword.KEYWORD_ID';
 
     /**
      * the column name for the POSITION field
      */
-    const POSITION = 'keyword.POSITION';
-
-    /**
-     * the column name for the CODE field
-     */
-    const CODE = 'keyword.CODE';
+    const POSITION = 'keyword_group_associated_keyword.POSITION';
 
     /**
      * the column name for the CREATED_AT field
      */
-    const CREATED_AT = 'keyword.CREATED_AT';
+    const CREATED_AT = 'keyword_group_associated_keyword.CREATED_AT';
 
     /**
      * the column name for the UPDATED_AT field
      */
-    const UPDATED_AT = 'keyword.UPDATED_AT';
+    const UPDATED_AT = 'keyword_group_associated_keyword.UPDATED_AT';
 
     /**
      * The default string format for model objects of the related table
      */
     const DEFAULT_STRING_FORMAT = 'YAML';
-
-    // i18n behavior
-
-    /**
-     * The default locale to use for translations.
-     *
-     * @var string
-     */
-    const DEFAULT_LOCALE = 'en_US';
 
     /**
      * holds an array of fieldnames
@@ -121,12 +107,12 @@ class KeywordTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('Id', 'Visible', 'Position', 'Code', 'CreatedAt', 'UpdatedAt', ),
-        self::TYPE_STUDLYPHPNAME => array('id', 'visible', 'position', 'code', 'createdAt', 'updatedAt', ),
-        self::TYPE_COLNAME       => array(KeywordTableMap::ID, KeywordTableMap::VISIBLE, KeywordTableMap::POSITION, KeywordTableMap::CODE, KeywordTableMap::CREATED_AT, KeywordTableMap::UPDATED_AT, ),
-        self::TYPE_RAW_COLNAME   => array('ID', 'VISIBLE', 'POSITION', 'CODE', 'CREATED_AT', 'UPDATED_AT', ),
-        self::TYPE_FIELDNAME     => array('id', 'visible', 'position', 'code', 'created_at', 'updated_at', ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, )
+        self::TYPE_PHPNAME       => array('KeywordGroupId', 'KeywordId', 'Position', 'CreatedAt', 'UpdatedAt', ),
+        self::TYPE_STUDLYPHPNAME => array('keywordGroupId', 'keywordId', 'position', 'createdAt', 'updatedAt', ),
+        self::TYPE_COLNAME       => array(KeywordGroupAssociatedKeywordTableMap::KEYWORD_GROUP_ID, KeywordGroupAssociatedKeywordTableMap::KEYWORD_ID, KeywordGroupAssociatedKeywordTableMap::POSITION, KeywordGroupAssociatedKeywordTableMap::CREATED_AT, KeywordGroupAssociatedKeywordTableMap::UPDATED_AT, ),
+        self::TYPE_RAW_COLNAME   => array('KEYWORD_GROUP_ID', 'KEYWORD_ID', 'POSITION', 'CREATED_AT', 'UPDATED_AT', ),
+        self::TYPE_FIELDNAME     => array('keyword_group_id', 'keyword_id', 'position', 'created_at', 'updated_at', ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, )
     );
 
     /**
@@ -136,12 +122,12 @@ class KeywordTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('Id' => 0, 'Visible' => 1, 'Position' => 2, 'Code' => 3, 'CreatedAt' => 4, 'UpdatedAt' => 5, ),
-        self::TYPE_STUDLYPHPNAME => array('id' => 0, 'visible' => 1, 'position' => 2, 'code' => 3, 'createdAt' => 4, 'updatedAt' => 5, ),
-        self::TYPE_COLNAME       => array(KeywordTableMap::ID => 0, KeywordTableMap::VISIBLE => 1, KeywordTableMap::POSITION => 2, KeywordTableMap::CODE => 3, KeywordTableMap::CREATED_AT => 4, KeywordTableMap::UPDATED_AT => 5, ),
-        self::TYPE_RAW_COLNAME   => array('ID' => 0, 'VISIBLE' => 1, 'POSITION' => 2, 'CODE' => 3, 'CREATED_AT' => 4, 'UPDATED_AT' => 5, ),
-        self::TYPE_FIELDNAME     => array('id' => 0, 'visible' => 1, 'position' => 2, 'code' => 3, 'created_at' => 4, 'updated_at' => 5, ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, )
+        self::TYPE_PHPNAME       => array('KeywordGroupId' => 0, 'KeywordId' => 1, 'Position' => 2, 'CreatedAt' => 3, 'UpdatedAt' => 4, ),
+        self::TYPE_STUDLYPHPNAME => array('keywordGroupId' => 0, 'keywordId' => 1, 'position' => 2, 'createdAt' => 3, 'updatedAt' => 4, ),
+        self::TYPE_COLNAME       => array(KeywordGroupAssociatedKeywordTableMap::KEYWORD_GROUP_ID => 0, KeywordGroupAssociatedKeywordTableMap::KEYWORD_ID => 1, KeywordGroupAssociatedKeywordTableMap::POSITION => 2, KeywordGroupAssociatedKeywordTableMap::CREATED_AT => 3, KeywordGroupAssociatedKeywordTableMap::UPDATED_AT => 4, ),
+        self::TYPE_RAW_COLNAME   => array('KEYWORD_GROUP_ID' => 0, 'KEYWORD_ID' => 1, 'POSITION' => 2, 'CREATED_AT' => 3, 'UPDATED_AT' => 4, ),
+        self::TYPE_FIELDNAME     => array('keyword_group_id' => 0, 'keyword_id' => 1, 'position' => 2, 'created_at' => 3, 'updated_at' => 4, ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, )
     );
 
     /**
@@ -154,16 +140,15 @@ class KeywordTableMap extends TableMap
     public function initialize()
     {
         // attributes
-        $this->setName('keyword');
-        $this->setPhpName('Keyword');
-        $this->setClassName('\\Keyword\\Model\\Keyword');
+        $this->setName('keyword_group_associated_keyword');
+        $this->setPhpName('KeywordGroupAssociatedKeyword');
+        $this->setClassName('\\Keyword\\Model\\KeywordGroupAssociatedKeyword');
         $this->setPackage('Keyword.Model');
-        $this->setUseIdGenerator(true);
+        $this->setUseIdGenerator(false);
         // columns
-        $this->addPrimaryKey('ID', 'Id', 'INTEGER', true, null, null);
-        $this->addColumn('VISIBLE', 'Visible', 'TINYINT', false, null, null);
-        $this->addColumn('POSITION', 'Position', 'INTEGER', false, null, null);
-        $this->addColumn('CODE', 'Code', 'VARCHAR', false, 255, null);
+        $this->addForeignPrimaryKey('KEYWORD_GROUP_ID', 'KeywordGroupId', 'INTEGER' , 'keyword_group', 'ID', true, null, null);
+        $this->addForeignPrimaryKey('KEYWORD_ID', 'KeywordId', 'INTEGER' , 'keyword', 'ID', true, null, null);
+        $this->addColumn('POSITION', 'Position', 'INTEGER', true, null, null);
         $this->addColumn('CREATED_AT', 'CreatedAt', 'TIMESTAMP', false, null, null);
         $this->addColumn('UPDATED_AT', 'UpdatedAt', 'TIMESTAMP', false, null, null);
     } // initialize()
@@ -173,12 +158,8 @@ class KeywordTableMap extends TableMap
      */
     public function buildRelations()
     {
-        $this->addRelation('KeywordGroupAssociatedKeyword', '\\Keyword\\Model\\KeywordGroupAssociatedKeyword', RelationMap::ONE_TO_MANY, array('id' => 'keyword_id', ), 'CASCADE', 'RESTRICT', 'KeywordGroupAssociatedKeywords');
-        $this->addRelation('ContentAssociatedKeyword', '\\Keyword\\Model\\ContentAssociatedKeyword', RelationMap::ONE_TO_MANY, array('id' => 'keyword_id', ), 'CASCADE', 'RESTRICT', 'ContentAssociatedKeywords');
-        $this->addRelation('FolderAssociatedKeyword', '\\Keyword\\Model\\FolderAssociatedKeyword', RelationMap::ONE_TO_MANY, array('id' => 'keyword_id', ), 'CASCADE', 'RESTRICT', 'FolderAssociatedKeywords');
-        $this->addRelation('CategoryAssociatedKeyword', '\\Keyword\\Model\\CategoryAssociatedKeyword', RelationMap::ONE_TO_MANY, array('id' => 'keyword_id', ), 'CASCADE', 'RESTRICT', 'CategoryAssociatedKeywords');
-        $this->addRelation('ProductAssociatedKeyword', '\\Keyword\\Model\\ProductAssociatedKeyword', RelationMap::ONE_TO_MANY, array('id' => 'keyword_id', ), 'CASCADE', 'RESTRICT', 'ProductAssociatedKeywords');
-        $this->addRelation('KeywordI18n', '\\Keyword\\Model\\KeywordI18n', RelationMap::ONE_TO_MANY, array('id' => 'id', ), 'CASCADE', null, 'KeywordI18ns');
+        $this->addRelation('KeywordGroup', '\\Keyword\\Model\\KeywordGroup', RelationMap::MANY_TO_ONE, array('keyword_group_id' => 'id', ), 'CASCADE', 'RESTRICT');
+        $this->addRelation('Keyword', '\\Keyword\\Model\\Keyword', RelationMap::MANY_TO_ONE, array('keyword_id' => 'id', ), 'CASCADE', 'RESTRICT');
     } // buildRelations()
 
     /**
@@ -191,23 +172,61 @@ class KeywordTableMap extends TableMap
     {
         return array(
             'timestampable' => array('create_column' => 'created_at', 'update_column' => 'updated_at', ),
-            'i18n' => array('i18n_table' => '%TABLE%_i18n', 'i18n_phpname' => '%PHPNAME%I18n', 'i18n_columns' => 'title, description, chapo, postscriptum', 'locale_column' => 'locale', 'locale_length' => '5', 'default_locale' => '', 'locale_alias' => '', ),
         );
     } // getBehaviors()
+
     /**
-     * Method to invalidate the instance pool of all tables related to keyword     * by a foreign key with ON DELETE CASCADE
+     * Adds an object to the instance pool.
+     *
+     * Propel keeps cached copies of objects in an instance pool when they are retrieved
+     * from the database. In some cases you may need to explicitly add objects
+     * to the cache in order to ensure that the same objects are always returned by find*()
+     * and findPk*() calls.
+     *
+     * @param \Keyword\Model\KeywordGroupAssociatedKeyword $obj A \Keyword\Model\KeywordGroupAssociatedKeyword object.
+     * @param string $key             (optional) key to use for instance map (for performance boost if key was already calculated externally).
      */
-    public static function clearRelatedInstancePool()
+    public static function addInstanceToPool($obj, $key = null)
     {
-        // Invalidate objects in ".$this->getClassNameFromBuilder($joinedTableTableMapBuilder)." instance pool,
-        // since one or more of them may be deleted by ON DELETE CASCADE/SETNULL rule.
-                KeywordGroupAssociatedKeywordTableMap::clearInstancePool();
-                ContentAssociatedKeywordTableMap::clearInstancePool();
-                FolderAssociatedKeywordTableMap::clearInstancePool();
-                CategoryAssociatedKeywordTableMap::clearInstancePool();
-                ProductAssociatedKeywordTableMap::clearInstancePool();
-                KeywordI18nTableMap::clearInstancePool();
+        if (Propel::isInstancePoolingEnabled()) {
+            if (null === $key) {
+                $key = serialize(array((string) $obj->getKeywordGroupId(), (string) $obj->getKeywordId()));
+            } // if key === null
+            self::$instances[$key] = $obj;
+        }
+    }
+
+    /**
+     * Removes an object from the instance pool.
+     *
+     * Propel keeps cached copies of objects in an instance pool when they are retrieved
+     * from the database.  In some cases -- especially when you override doDelete
+     * methods in your stub classes -- you may need to explicitly remove objects
+     * from the cache in order to prevent returning objects that no longer exist.
+     *
+     * @param mixed $value A \Keyword\Model\KeywordGroupAssociatedKeyword object or a primary key value.
+     */
+    public static function removeInstanceFromPool($value)
+    {
+        if (Propel::isInstancePoolingEnabled() && null !== $value) {
+            if (is_object($value) && $value instanceof \Keyword\Model\KeywordGroupAssociatedKeyword) {
+                $key = serialize(array((string) $value->getKeywordGroupId(), (string) $value->getKeywordId()));
+
+            } elseif (is_array($value) && count($value) === 2) {
+                // assume we've been passed a primary key";
+                $key = serialize(array((string) $value[0], (string) $value[1]));
+            } elseif ($value instanceof Criteria) {
+                self::$instances = [];
+
+                return;
+            } else {
+                $e = new PropelException("Invalid value passed to removeInstanceFromPool().  Expected primary key or \Keyword\Model\KeywordGroupAssociatedKeyword object; got " . (is_object($value) ? get_class($value) . ' object.' : var_export($value, true)));
+                throw $e;
             }
+
+            unset(self::$instances[$key]);
+        }
+    }
 
     /**
      * Retrieves a string version of the primary key from the DB resultset row that can be used to uniquely identify a row in this table.
@@ -223,11 +242,11 @@ class KeywordTableMap extends TableMap
     public static function getPrimaryKeyHashFromRow($row, $offset = 0, $indexType = TableMap::TYPE_NUM)
     {
         // If the PK cannot be derived from the row, return NULL.
-        if ($row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)] === null) {
+        if ($row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('KeywordGroupId', TableMap::TYPE_PHPNAME, $indexType)] === null && $row[TableMap::TYPE_NUM == $indexType ? 1 + $offset : static::translateFieldName('KeywordId', TableMap::TYPE_PHPNAME, $indexType)] === null) {
             return null;
         }
 
-        return (string) $row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)];
+        return serialize(array((string) $row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('KeywordGroupId', TableMap::TYPE_PHPNAME, $indexType)], (string) $row[TableMap::TYPE_NUM == $indexType ? 1 + $offset : static::translateFieldName('KeywordId', TableMap::TYPE_PHPNAME, $indexType)]));
     }
 
     /**
@@ -245,11 +264,7 @@ class KeywordTableMap extends TableMap
     public static function getPrimaryKeyFromRow($row, $offset = 0, $indexType = TableMap::TYPE_NUM)
     {
 
-            return (int) $row[
-                            $indexType == TableMap::TYPE_NUM
-                            ? 0 + $offset
-                            : self::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)
-                        ];
+            return $pks;
     }
 
     /**
@@ -265,7 +280,7 @@ class KeywordTableMap extends TableMap
      */
     public static function getOMClass($withPrefix = true)
     {
-        return $withPrefix ? KeywordTableMap::CLASS_DEFAULT : KeywordTableMap::OM_CLASS;
+        return $withPrefix ? KeywordGroupAssociatedKeywordTableMap::CLASS_DEFAULT : KeywordGroupAssociatedKeywordTableMap::OM_CLASS;
     }
 
     /**
@@ -279,21 +294,21 @@ class KeywordTableMap extends TableMap
      *
      * @throws PropelException Any exceptions caught during processing will be
      *         rethrown wrapped into a PropelException.
-     * @return array (Keyword object, last column rank)
+     * @return array (KeywordGroupAssociatedKeyword object, last column rank)
      */
     public static function populateObject($row, $offset = 0, $indexType = TableMap::TYPE_NUM)
     {
-        $key = KeywordTableMap::getPrimaryKeyHashFromRow($row, $offset, $indexType);
-        if (null !== ($obj = KeywordTableMap::getInstanceFromPool($key))) {
+        $key = KeywordGroupAssociatedKeywordTableMap::getPrimaryKeyHashFromRow($row, $offset, $indexType);
+        if (null !== ($obj = KeywordGroupAssociatedKeywordTableMap::getInstanceFromPool($key))) {
             // We no longer rehydrate the object, since this can cause data loss.
             // See http://www.propelorm.org/ticket/509
             // $obj->hydrate($row, $offset, true); // rehydrate
-            $col = $offset + KeywordTableMap::NUM_HYDRATE_COLUMNS;
+            $col = $offset + KeywordGroupAssociatedKeywordTableMap::NUM_HYDRATE_COLUMNS;
         } else {
-            $cls = KeywordTableMap::OM_CLASS;
+            $cls = KeywordGroupAssociatedKeywordTableMap::OM_CLASS;
             $obj = new $cls();
             $col = $obj->hydrate($row, $offset, false, $indexType);
-            KeywordTableMap::addInstanceToPool($obj, $key);
+            KeywordGroupAssociatedKeywordTableMap::addInstanceToPool($obj, $key);
         }
 
         return array($obj, $col);
@@ -316,8 +331,8 @@ class KeywordTableMap extends TableMap
         $cls = static::getOMClass(false);
         // populate the object(s)
         while ($row = $dataFetcher->fetch()) {
-            $key = KeywordTableMap::getPrimaryKeyHashFromRow($row, 0, $dataFetcher->getIndexType());
-            if (null !== ($obj = KeywordTableMap::getInstanceFromPool($key))) {
+            $key = KeywordGroupAssociatedKeywordTableMap::getPrimaryKeyHashFromRow($row, 0, $dataFetcher->getIndexType());
+            if (null !== ($obj = KeywordGroupAssociatedKeywordTableMap::getInstanceFromPool($key))) {
                 // We no longer rehydrate the object, since this can cause data loss.
                 // See http://www.propelorm.org/ticket/509
                 // $obj->hydrate($row, 0, true); // rehydrate
@@ -326,7 +341,7 @@ class KeywordTableMap extends TableMap
                 $obj = new $cls();
                 $obj->hydrate($row);
                 $results[] = $obj;
-                KeywordTableMap::addInstanceToPool($obj, $key);
+                KeywordGroupAssociatedKeywordTableMap::addInstanceToPool($obj, $key);
             } // if key exists
         }
 
@@ -347,17 +362,15 @@ class KeywordTableMap extends TableMap
     public static function addSelectColumns(Criteria $criteria, $alias = null)
     {
         if (null === $alias) {
-            $criteria->addSelectColumn(KeywordTableMap::ID);
-            $criteria->addSelectColumn(KeywordTableMap::VISIBLE);
-            $criteria->addSelectColumn(KeywordTableMap::POSITION);
-            $criteria->addSelectColumn(KeywordTableMap::CODE);
-            $criteria->addSelectColumn(KeywordTableMap::CREATED_AT);
-            $criteria->addSelectColumn(KeywordTableMap::UPDATED_AT);
+            $criteria->addSelectColumn(KeywordGroupAssociatedKeywordTableMap::KEYWORD_GROUP_ID);
+            $criteria->addSelectColumn(KeywordGroupAssociatedKeywordTableMap::KEYWORD_ID);
+            $criteria->addSelectColumn(KeywordGroupAssociatedKeywordTableMap::POSITION);
+            $criteria->addSelectColumn(KeywordGroupAssociatedKeywordTableMap::CREATED_AT);
+            $criteria->addSelectColumn(KeywordGroupAssociatedKeywordTableMap::UPDATED_AT);
         } else {
-            $criteria->addSelectColumn($alias . '.ID');
-            $criteria->addSelectColumn($alias . '.VISIBLE');
+            $criteria->addSelectColumn($alias . '.KEYWORD_GROUP_ID');
+            $criteria->addSelectColumn($alias . '.KEYWORD_ID');
             $criteria->addSelectColumn($alias . '.POSITION');
-            $criteria->addSelectColumn($alias . '.CODE');
             $criteria->addSelectColumn($alias . '.CREATED_AT');
             $criteria->addSelectColumn($alias . '.UPDATED_AT');
         }
@@ -372,7 +385,7 @@ class KeywordTableMap extends TableMap
      */
     public static function getTableMap()
     {
-        return Propel::getServiceContainer()->getDatabaseMap(KeywordTableMap::DATABASE_NAME)->getTable(KeywordTableMap::TABLE_NAME);
+        return Propel::getServiceContainer()->getDatabaseMap(KeywordGroupAssociatedKeywordTableMap::DATABASE_NAME)->getTable(KeywordGroupAssociatedKeywordTableMap::TABLE_NAME);
     }
 
     /**
@@ -380,16 +393,16 @@ class KeywordTableMap extends TableMap
      */
     public static function buildTableMap()
     {
-      $dbMap = Propel::getServiceContainer()->getDatabaseMap(KeywordTableMap::DATABASE_NAME);
-      if (!$dbMap->hasTable(KeywordTableMap::TABLE_NAME)) {
-        $dbMap->addTableObject(new KeywordTableMap());
+      $dbMap = Propel::getServiceContainer()->getDatabaseMap(KeywordGroupAssociatedKeywordTableMap::DATABASE_NAME);
+      if (!$dbMap->hasTable(KeywordGroupAssociatedKeywordTableMap::TABLE_NAME)) {
+        $dbMap->addTableObject(new KeywordGroupAssociatedKeywordTableMap());
       }
     }
 
     /**
-     * Performs a DELETE on the database, given a Keyword or Criteria object OR a primary key value.
+     * Performs a DELETE on the database, given a KeywordGroupAssociatedKeyword or Criteria object OR a primary key value.
      *
-     * @param mixed               $values Criteria or Keyword object or primary key or array of primary keys
+     * @param mixed               $values Criteria or KeywordGroupAssociatedKeyword object or primary key or array of primary keys
      *              which is used to create the DELETE statement
      * @param ConnectionInterface $con the connection to use
      * @return int The number of affected rows (if supported by underlying database driver).  This includes CASCADE-related rows
@@ -400,25 +413,35 @@ class KeywordTableMap extends TableMap
      public static function doDelete($values, ConnectionInterface $con = null)
      {
         if (null === $con) {
-            $con = Propel::getServiceContainer()->getWriteConnection(KeywordTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getWriteConnection(KeywordGroupAssociatedKeywordTableMap::DATABASE_NAME);
         }
 
         if ($values instanceof Criteria) {
             // rename for clarity
             $criteria = $values;
-        } elseif ($values instanceof \Keyword\Model\Keyword) { // it's a model object
+        } elseif ($values instanceof \Keyword\Model\KeywordGroupAssociatedKeyword) { // it's a model object
             // create criteria based on pk values
             $criteria = $values->buildPkeyCriteria();
         } else { // it's a primary key, or an array of pks
-            $criteria = new Criteria(KeywordTableMap::DATABASE_NAME);
-            $criteria->add(KeywordTableMap::ID, (array) $values, Criteria::IN);
+            $criteria = new Criteria(KeywordGroupAssociatedKeywordTableMap::DATABASE_NAME);
+            // primary key is composite; we therefore, expect
+            // the primary key passed to be an array of pkey values
+            if (count($values) == count($values, COUNT_RECURSIVE)) {
+                // array is not multi-dimensional
+                $values = array($values);
+            }
+            foreach ($values as $value) {
+                $criterion = $criteria->getNewCriterion(KeywordGroupAssociatedKeywordTableMap::KEYWORD_GROUP_ID, $value[0]);
+                $criterion->addAnd($criteria->getNewCriterion(KeywordGroupAssociatedKeywordTableMap::KEYWORD_ID, $value[1]));
+                $criteria->addOr($criterion);
+            }
         }
 
-        $query = KeywordQuery::create()->mergeWith($criteria);
+        $query = KeywordGroupAssociatedKeywordQuery::create()->mergeWith($criteria);
 
-        if ($values instanceof Criteria) { KeywordTableMap::clearInstancePool();
+        if ($values instanceof Criteria) { KeywordGroupAssociatedKeywordTableMap::clearInstancePool();
         } elseif (!is_object($values)) { // it's a primary key, or an array of pks
-            foreach ((array) $values as $singleval) { KeywordTableMap::removeInstanceFromPool($singleval);
+            foreach ((array) $values as $singleval) { KeywordGroupAssociatedKeywordTableMap::removeInstanceFromPool($singleval);
             }
         }
 
@@ -426,20 +449,20 @@ class KeywordTableMap extends TableMap
     }
 
     /**
-     * Deletes all rows from the keyword table.
+     * Deletes all rows from the keyword_group_associated_keyword table.
      *
      * @param ConnectionInterface $con the connection to use
      * @return int The number of affected rows (if supported by underlying database driver).
      */
     public static function doDeleteAll(ConnectionInterface $con = null)
     {
-        return KeywordQuery::create()->doDeleteAll($con);
+        return KeywordGroupAssociatedKeywordQuery::create()->doDeleteAll($con);
     }
 
     /**
-     * Performs an INSERT on the database, given a Keyword or Criteria object.
+     * Performs an INSERT on the database, given a KeywordGroupAssociatedKeyword or Criteria object.
      *
-     * @param mixed               $criteria Criteria or Keyword object containing data that is used to create the INSERT statement.
+     * @param mixed               $criteria Criteria or KeywordGroupAssociatedKeyword object containing data that is used to create the INSERT statement.
      * @param ConnectionInterface $con the ConnectionInterface connection to use
      * @return mixed           The new primary key.
      * @throws PropelException Any exceptions caught during processing will be
@@ -448,22 +471,18 @@ class KeywordTableMap extends TableMap
     public static function doInsert($criteria, ConnectionInterface $con = null)
     {
         if (null === $con) {
-            $con = Propel::getServiceContainer()->getWriteConnection(KeywordTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getWriteConnection(KeywordGroupAssociatedKeywordTableMap::DATABASE_NAME);
         }
 
         if ($criteria instanceof Criteria) {
             $criteria = clone $criteria; // rename for clarity
         } else {
-            $criteria = $criteria->buildCriteria(); // build Criteria from Keyword object
-        }
-
-        if ($criteria->containsKey(KeywordTableMap::ID) && $criteria->keyContainsValue(KeywordTableMap::ID) ) {
-            throw new PropelException('Cannot insert a value for auto-increment primary key ('.KeywordTableMap::ID.')');
+            $criteria = $criteria->buildCriteria(); // build Criteria from KeywordGroupAssociatedKeyword object
         }
 
 
         // Set the correct dbName
-        $query = KeywordQuery::create()->mergeWith($criteria);
+        $query = KeywordGroupAssociatedKeywordQuery::create()->mergeWith($criteria);
 
         try {
             // use transaction because $criteria could contain info
@@ -479,7 +498,7 @@ class KeywordTableMap extends TableMap
         return $pk;
     }
 
-} // KeywordTableMap
+} // KeywordGroupAssociatedKeywordTableMap
 // This is the static code needed to register the TableMap for this table with the main Propel class.
 //
-KeywordTableMap::buildTableMap();
+KeywordGroupAssociatedKeywordTableMap::buildTableMap();

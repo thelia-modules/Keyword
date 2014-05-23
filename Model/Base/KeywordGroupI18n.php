@@ -4,10 +4,10 @@ namespace Keyword\Model\Base;
 
 use \Exception;
 use \PDO;
-use Keyword\Model\CategoryAssociatedKeywordQuery as ChildCategoryAssociatedKeywordQuery;
-use Keyword\Model\Keyword as ChildKeyword;
-use Keyword\Model\KeywordQuery as ChildKeywordQuery;
-use Keyword\Model\Map\CategoryAssociatedKeywordTableMap;
+use Keyword\Model\KeywordGroup as ChildKeywordGroup;
+use Keyword\Model\KeywordGroupI18nQuery as ChildKeywordGroupI18nQuery;
+use Keyword\Model\KeywordGroupQuery as ChildKeywordGroupQuery;
+use Keyword\Model\Map\KeywordGroupI18nTableMap;
 use Propel\Runtime\Propel;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\ActiveQuery\ModelCriteria;
@@ -18,15 +18,13 @@ use Propel\Runtime\Exception\BadMethodCallException;
 use Propel\Runtime\Exception\PropelException;
 use Propel\Runtime\Map\TableMap;
 use Propel\Runtime\Parser\AbstractParser;
-use Thelia\Model\CategoryQuery;
-use Thelia\Model\Category as ChildCategory;
 
-abstract class CategoryAssociatedKeyword implements ActiveRecordInterface
+abstract class KeywordGroupI18n implements ActiveRecordInterface
 {
     /**
      * TableMap class name
      */
-    const TABLE_MAP = '\\Keyword\\Model\\Map\\CategoryAssociatedKeywordTableMap';
+    const TABLE_MAP = '\\Keyword\\Model\\Map\\KeywordGroupI18nTableMap';
 
 
     /**
@@ -56,32 +54,46 @@ abstract class CategoryAssociatedKeyword implements ActiveRecordInterface
     protected $virtualColumns = array();
 
     /**
-     * The value for the category_id field.
+     * The value for the id field.
      * @var        int
      */
-    protected $category_id;
+    protected $id;
 
     /**
-     * The value for the keyword_id field.
-     * @var        int
+     * The value for the locale field.
+     * Note: this column has a database default value of: 'en_US'
+     * @var        string
      */
-    protected $keyword_id;
+    protected $locale;
 
     /**
-     * The value for the position field.
-     * @var        int
+     * The value for the title field.
+     * @var        string
      */
-    protected $position;
+    protected $title;
 
     /**
-     * @var        Category
+     * The value for the description field.
+     * @var        string
      */
-    protected $aCategory;
+    protected $description;
 
     /**
-     * @var        Keyword
+     * The value for the chapo field.
+     * @var        string
      */
-    protected $aKeyword;
+    protected $chapo;
+
+    /**
+     * The value for the postscriptum field.
+     * @var        string
+     */
+    protected $postscriptum;
+
+    /**
+     * @var        KeywordGroup
+     */
+    protected $aKeywordGroup;
 
     /**
      * Flag to prevent endless save loop, if this object is referenced
@@ -92,10 +104,23 @@ abstract class CategoryAssociatedKeyword implements ActiveRecordInterface
     protected $alreadyInSave = false;
 
     /**
-     * Initializes internal state of Keyword\Model\Base\CategoryAssociatedKeyword object.
+     * Applies default values to this object.
+     * This method should be called from the object's constructor (or
+     * equivalent initialization method).
+     * @see __construct()
+     */
+    public function applyDefaultValues()
+    {
+        $this->locale = 'en_US';
+    }
+
+    /**
+     * Initializes internal state of Keyword\Model\Base\KeywordGroupI18n object.
+     * @see applyDefaults()
      */
     public function __construct()
     {
+        $this->applyDefaultValues();
     }
 
     /**
@@ -187,9 +212,9 @@ abstract class CategoryAssociatedKeyword implements ActiveRecordInterface
     }
 
     /**
-     * Compares this with another <code>CategoryAssociatedKeyword</code> instance.  If
-     * <code>obj</code> is an instance of <code>CategoryAssociatedKeyword</code>, delegates to
-     * <code>equals(CategoryAssociatedKeyword)</code>.  Otherwise, returns <code>false</code>.
+     * Compares this with another <code>KeywordGroupI18n</code> instance.  If
+     * <code>obj</code> is an instance of <code>KeywordGroupI18n</code>, delegates to
+     * <code>equals(KeywordGroupI18n)</code>.  Otherwise, returns <code>false</code>.
      *
      * @param  mixed   $obj The object to compare to.
      * @return boolean Whether equal to the object specified.
@@ -272,7 +297,7 @@ abstract class CategoryAssociatedKeyword implements ActiveRecordInterface
      * @param string $name  The virtual column name
      * @param mixed  $value The value to give to the virtual column
      *
-     * @return CategoryAssociatedKeyword The current object, for fluid interface
+     * @return KeywordGroupI18n The current object, for fluid interface
      */
     public function setVirtualColumn($name, $value)
     {
@@ -304,7 +329,7 @@ abstract class CategoryAssociatedKeyword implements ActiveRecordInterface
      *                       or a format name ('XML', 'YAML', 'JSON', 'CSV')
      * @param string $data The source data to import from
      *
-     * @return CategoryAssociatedKeyword The current object, for fluid interface
+     * @return KeywordGroupI18n The current object, for fluid interface
      */
     public function importFrom($parser, $data)
     {
@@ -350,108 +375,200 @@ abstract class CategoryAssociatedKeyword implements ActiveRecordInterface
     }
 
     /**
-     * Get the [category_id] column value.
+     * Get the [id] column value.
      *
      * @return   int
      */
-    public function getCategoryId()
+    public function getId()
     {
 
-        return $this->category_id;
+        return $this->id;
     }
 
     /**
-     * Get the [keyword_id] column value.
+     * Get the [locale] column value.
      *
-     * @return   int
+     * @return   string
      */
-    public function getKeywordId()
+    public function getLocale()
     {
 
-        return $this->keyword_id;
+        return $this->locale;
     }
 
     /**
-     * Get the [position] column value.
+     * Get the [title] column value.
      *
-     * @return   int
+     * @return   string
      */
-    public function getPosition()
+    public function getTitle()
     {
 
-        return $this->position;
+        return $this->title;
     }
 
     /**
-     * Set the value of [category_id] column.
+     * Get the [description] column value.
+     *
+     * @return   string
+     */
+    public function getDescription()
+    {
+
+        return $this->description;
+    }
+
+    /**
+     * Get the [chapo] column value.
+     *
+     * @return   string
+     */
+    public function getChapo()
+    {
+
+        return $this->chapo;
+    }
+
+    /**
+     * Get the [postscriptum] column value.
+     *
+     * @return   string
+     */
+    public function getPostscriptum()
+    {
+
+        return $this->postscriptum;
+    }
+
+    /**
+     * Set the value of [id] column.
      *
      * @param      int $v new value
-     * @return   \Keyword\Model\CategoryAssociatedKeyword The current object (for fluent API support)
+     * @return   \Keyword\Model\KeywordGroupI18n The current object (for fluent API support)
      */
-    public function setCategoryId($v)
+    public function setId($v)
     {
         if ($v !== null) {
             $v = (int) $v;
         }
 
-        if ($this->category_id !== $v) {
-            $this->category_id = $v;
-            $this->modifiedColumns[CategoryAssociatedKeywordTableMap::CATEGORY_ID] = true;
+        if ($this->id !== $v) {
+            $this->id = $v;
+            $this->modifiedColumns[KeywordGroupI18nTableMap::ID] = true;
         }
 
-        if ($this->aCategory !== null && $this->aCategory->getId() !== $v) {
-            $this->aCategory = null;
+        if ($this->aKeywordGroup !== null && $this->aKeywordGroup->getId() !== $v) {
+            $this->aKeywordGroup = null;
         }
 
 
         return $this;
-    } // setCategoryId()
+    } // setId()
 
     /**
-     * Set the value of [keyword_id] column.
+     * Set the value of [locale] column.
      *
-     * @param      int $v new value
-     * @return   \Keyword\Model\CategoryAssociatedKeyword The current object (for fluent API support)
+     * @param      string $v new value
+     * @return   \Keyword\Model\KeywordGroupI18n The current object (for fluent API support)
      */
-    public function setKeywordId($v)
+    public function setLocale($v)
     {
         if ($v !== null) {
-            $v = (int) $v;
+            $v = (string) $v;
         }
 
-        if ($this->keyword_id !== $v) {
-            $this->keyword_id = $v;
-            $this->modifiedColumns[CategoryAssociatedKeywordTableMap::KEYWORD_ID] = true;
-        }
-
-        if ($this->aKeyword !== null && $this->aKeyword->getId() !== $v) {
-            $this->aKeyword = null;
+        if ($this->locale !== $v) {
+            $this->locale = $v;
+            $this->modifiedColumns[KeywordGroupI18nTableMap::LOCALE] = true;
         }
 
 
         return $this;
-    } // setKeywordId()
+    } // setLocale()
 
     /**
-     * Set the value of [position] column.
+     * Set the value of [title] column.
      *
-     * @param      int $v new value
-     * @return   \Keyword\Model\CategoryAssociatedKeyword The current object (for fluent API support)
+     * @param      string $v new value
+     * @return   \Keyword\Model\KeywordGroupI18n The current object (for fluent API support)
      */
-    public function setPosition($v)
+    public function setTitle($v)
     {
         if ($v !== null) {
-            $v = (int) $v;
+            $v = (string) $v;
         }
 
-        if ($this->position !== $v) {
-            $this->position = $v;
-            $this->modifiedColumns[CategoryAssociatedKeywordTableMap::POSITION] = true;
+        if ($this->title !== $v) {
+            $this->title = $v;
+            $this->modifiedColumns[KeywordGroupI18nTableMap::TITLE] = true;
         }
 
 
         return $this;
-    } // setPosition()
+    } // setTitle()
+
+    /**
+     * Set the value of [description] column.
+     *
+     * @param      string $v new value
+     * @return   \Keyword\Model\KeywordGroupI18n The current object (for fluent API support)
+     */
+    public function setDescription($v)
+    {
+        if ($v !== null) {
+            $v = (string) $v;
+        }
+
+        if ($this->description !== $v) {
+            $this->description = $v;
+            $this->modifiedColumns[KeywordGroupI18nTableMap::DESCRIPTION] = true;
+        }
+
+
+        return $this;
+    } // setDescription()
+
+    /**
+     * Set the value of [chapo] column.
+     *
+     * @param      string $v new value
+     * @return   \Keyword\Model\KeywordGroupI18n The current object (for fluent API support)
+     */
+    public function setChapo($v)
+    {
+        if ($v !== null) {
+            $v = (string) $v;
+        }
+
+        if ($this->chapo !== $v) {
+            $this->chapo = $v;
+            $this->modifiedColumns[KeywordGroupI18nTableMap::CHAPO] = true;
+        }
+
+
+        return $this;
+    } // setChapo()
+
+    /**
+     * Set the value of [postscriptum] column.
+     *
+     * @param      string $v new value
+     * @return   \Keyword\Model\KeywordGroupI18n The current object (for fluent API support)
+     */
+    public function setPostscriptum($v)
+    {
+        if ($v !== null) {
+            $v = (string) $v;
+        }
+
+        if ($this->postscriptum !== $v) {
+            $this->postscriptum = $v;
+            $this->modifiedColumns[KeywordGroupI18nTableMap::POSTSCRIPTUM] = true;
+        }
+
+
+        return $this;
+    } // setPostscriptum()
 
     /**
      * Indicates whether the columns in this object are only set to default values.
@@ -463,6 +580,10 @@ abstract class CategoryAssociatedKeyword implements ActiveRecordInterface
      */
     public function hasOnlyDefaultValues()
     {
+            if ($this->locale !== 'en_US') {
+                return false;
+            }
+
         // otherwise, everything was equal, so return TRUE
         return true;
     } // hasOnlyDefaultValues()
@@ -490,14 +611,23 @@ abstract class CategoryAssociatedKeyword implements ActiveRecordInterface
         try {
 
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 0 + $startcol : CategoryAssociatedKeywordTableMap::translateFieldName('CategoryId', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->category_id = (null !== $col) ? (int) $col : null;
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 0 + $startcol : KeywordGroupI18nTableMap::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->id = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 1 + $startcol : CategoryAssociatedKeywordTableMap::translateFieldName('KeywordId', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->keyword_id = (null !== $col) ? (int) $col : null;
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 1 + $startcol : KeywordGroupI18nTableMap::translateFieldName('Locale', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->locale = (null !== $col) ? (string) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : CategoryAssociatedKeywordTableMap::translateFieldName('Position', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->position = (null !== $col) ? (int) $col : null;
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : KeywordGroupI18nTableMap::translateFieldName('Title', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->title = (null !== $col) ? (string) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : KeywordGroupI18nTableMap::translateFieldName('Description', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->description = (null !== $col) ? (string) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : KeywordGroupI18nTableMap::translateFieldName('Chapo', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->chapo = (null !== $col) ? (string) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : KeywordGroupI18nTableMap::translateFieldName('Postscriptum', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->postscriptum = (null !== $col) ? (string) $col : null;
             $this->resetModified();
 
             $this->setNew(false);
@@ -506,10 +636,10 @@ abstract class CategoryAssociatedKeyword implements ActiveRecordInterface
                 $this->ensureConsistency();
             }
 
-            return $startcol + 3; // 3 = CategoryAssociatedKeywordTableMap::NUM_HYDRATE_COLUMNS.
+            return $startcol + 6; // 6 = KeywordGroupI18nTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
-            throw new PropelException("Error populating \Keyword\Model\CategoryAssociatedKeyword object", 0, $e);
+            throw new PropelException("Error populating \Keyword\Model\KeywordGroupI18n object", 0, $e);
         }
     }
 
@@ -528,11 +658,8 @@ abstract class CategoryAssociatedKeyword implements ActiveRecordInterface
      */
     public function ensureConsistency()
     {
-        if ($this->aCategory !== null && $this->category_id !== $this->aCategory->getId()) {
-            $this->aCategory = null;
-        }
-        if ($this->aKeyword !== null && $this->keyword_id !== $this->aKeyword->getId()) {
-            $this->aKeyword = null;
+        if ($this->aKeywordGroup !== null && $this->id !== $this->aKeywordGroup->getId()) {
+            $this->aKeywordGroup = null;
         }
     } // ensureConsistency
 
@@ -557,13 +684,13 @@ abstract class CategoryAssociatedKeyword implements ActiveRecordInterface
         }
 
         if ($con === null) {
-            $con = Propel::getServiceContainer()->getReadConnection(CategoryAssociatedKeywordTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getReadConnection(KeywordGroupI18nTableMap::DATABASE_NAME);
         }
 
         // We don't need to alter the object instance pool; we're just modifying this instance
         // already in the pool.
 
-        $dataFetcher = ChildCategoryAssociatedKeywordQuery::create(null, $this->buildPkeyCriteria())->setFormatter(ModelCriteria::FORMAT_STATEMENT)->find($con);
+        $dataFetcher = ChildKeywordGroupI18nQuery::create(null, $this->buildPkeyCriteria())->setFormatter(ModelCriteria::FORMAT_STATEMENT)->find($con);
         $row = $dataFetcher->fetch();
         $dataFetcher->close();
         if (!$row) {
@@ -573,8 +700,7 @@ abstract class CategoryAssociatedKeyword implements ActiveRecordInterface
 
         if ($deep) {  // also de-associate any related objects?
 
-            $this->aCategory = null;
-            $this->aKeyword = null;
+            $this->aKeywordGroup = null;
         } // if (deep)
     }
 
@@ -584,8 +710,8 @@ abstract class CategoryAssociatedKeyword implements ActiveRecordInterface
      * @param      ConnectionInterface $con
      * @return void
      * @throws PropelException
-     * @see CategoryAssociatedKeyword::setDeleted()
-     * @see CategoryAssociatedKeyword::isDeleted()
+     * @see KeywordGroupI18n::setDeleted()
+     * @see KeywordGroupI18n::isDeleted()
      */
     public function delete(ConnectionInterface $con = null)
     {
@@ -594,12 +720,12 @@ abstract class CategoryAssociatedKeyword implements ActiveRecordInterface
         }
 
         if ($con === null) {
-            $con = Propel::getServiceContainer()->getWriteConnection(CategoryAssociatedKeywordTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getWriteConnection(KeywordGroupI18nTableMap::DATABASE_NAME);
         }
 
         $con->beginTransaction();
         try {
-            $deleteQuery = ChildCategoryAssociatedKeywordQuery::create()
+            $deleteQuery = ChildKeywordGroupI18nQuery::create()
                 ->filterByPrimaryKey($this->getPrimaryKey());
             $ret = $this->preDelete($con);
             if ($ret) {
@@ -636,7 +762,7 @@ abstract class CategoryAssociatedKeyword implements ActiveRecordInterface
         }
 
         if ($con === null) {
-            $con = Propel::getServiceContainer()->getWriteConnection(CategoryAssociatedKeywordTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getWriteConnection(KeywordGroupI18nTableMap::DATABASE_NAME);
         }
 
         $con->beginTransaction();
@@ -656,7 +782,7 @@ abstract class CategoryAssociatedKeyword implements ActiveRecordInterface
                     $this->postUpdate($con);
                 }
                 $this->postSave($con);
-                CategoryAssociatedKeywordTableMap::addInstanceToPool($this);
+                KeywordGroupI18nTableMap::addInstanceToPool($this);
             } else {
                 $affectedRows = 0;
             }
@@ -691,18 +817,11 @@ abstract class CategoryAssociatedKeyword implements ActiveRecordInterface
             // method.  This object relates to these object(s) by a
             // foreign key reference.
 
-            if ($this->aCategory !== null) {
-                if ($this->aCategory->isModified() || $this->aCategory->isNew()) {
-                    $affectedRows += $this->aCategory->save($con);
+            if ($this->aKeywordGroup !== null) {
+                if ($this->aKeywordGroup->isModified() || $this->aKeywordGroup->isNew()) {
+                    $affectedRows += $this->aKeywordGroup->save($con);
                 }
-                $this->setCategory($this->aCategory);
-            }
-
-            if ($this->aKeyword !== null) {
-                if ($this->aKeyword->isModified() || $this->aKeyword->isNew()) {
-                    $affectedRows += $this->aKeyword->save($con);
-                }
-                $this->setKeyword($this->aKeyword);
+                $this->setKeywordGroup($this->aKeywordGroup);
             }
 
             if ($this->isNew() || $this->isModified()) {
@@ -738,18 +857,27 @@ abstract class CategoryAssociatedKeyword implements ActiveRecordInterface
 
 
          // check the columns in natural order for more readable SQL queries
-        if ($this->isColumnModified(CategoryAssociatedKeywordTableMap::CATEGORY_ID)) {
-            $modifiedColumns[':p' . $index++]  = 'CATEGORY_ID';
+        if ($this->isColumnModified(KeywordGroupI18nTableMap::ID)) {
+            $modifiedColumns[':p' . $index++]  = 'ID';
         }
-        if ($this->isColumnModified(CategoryAssociatedKeywordTableMap::KEYWORD_ID)) {
-            $modifiedColumns[':p' . $index++]  = 'KEYWORD_ID';
+        if ($this->isColumnModified(KeywordGroupI18nTableMap::LOCALE)) {
+            $modifiedColumns[':p' . $index++]  = 'LOCALE';
         }
-        if ($this->isColumnModified(CategoryAssociatedKeywordTableMap::POSITION)) {
-            $modifiedColumns[':p' . $index++]  = 'POSITION';
+        if ($this->isColumnModified(KeywordGroupI18nTableMap::TITLE)) {
+            $modifiedColumns[':p' . $index++]  = 'TITLE';
+        }
+        if ($this->isColumnModified(KeywordGroupI18nTableMap::DESCRIPTION)) {
+            $modifiedColumns[':p' . $index++]  = 'DESCRIPTION';
+        }
+        if ($this->isColumnModified(KeywordGroupI18nTableMap::CHAPO)) {
+            $modifiedColumns[':p' . $index++]  = 'CHAPO';
+        }
+        if ($this->isColumnModified(KeywordGroupI18nTableMap::POSTSCRIPTUM)) {
+            $modifiedColumns[':p' . $index++]  = 'POSTSCRIPTUM';
         }
 
         $sql = sprintf(
-            'INSERT INTO category_associated_keyword (%s) VALUES (%s)',
+            'INSERT INTO keyword_group_i18n (%s) VALUES (%s)',
             implode(', ', $modifiedColumns),
             implode(', ', array_keys($modifiedColumns))
         );
@@ -758,14 +886,23 @@ abstract class CategoryAssociatedKeyword implements ActiveRecordInterface
             $stmt = $con->prepare($sql);
             foreach ($modifiedColumns as $identifier => $columnName) {
                 switch ($columnName) {
-                    case 'CATEGORY_ID':
-                        $stmt->bindValue($identifier, $this->category_id, PDO::PARAM_INT);
+                    case 'ID':
+                        $stmt->bindValue($identifier, $this->id, PDO::PARAM_INT);
                         break;
-                    case 'KEYWORD_ID':
-                        $stmt->bindValue($identifier, $this->keyword_id, PDO::PARAM_INT);
+                    case 'LOCALE':
+                        $stmt->bindValue($identifier, $this->locale, PDO::PARAM_STR);
                         break;
-                    case 'POSITION':
-                        $stmt->bindValue($identifier, $this->position, PDO::PARAM_INT);
+                    case 'TITLE':
+                        $stmt->bindValue($identifier, $this->title, PDO::PARAM_STR);
+                        break;
+                    case 'DESCRIPTION':
+                        $stmt->bindValue($identifier, $this->description, PDO::PARAM_STR);
+                        break;
+                    case 'CHAPO':
+                        $stmt->bindValue($identifier, $this->chapo, PDO::PARAM_STR);
+                        break;
+                    case 'POSTSCRIPTUM':
+                        $stmt->bindValue($identifier, $this->postscriptum, PDO::PARAM_STR);
                         break;
                 }
             }
@@ -806,7 +943,7 @@ abstract class CategoryAssociatedKeyword implements ActiveRecordInterface
      */
     public function getByName($name, $type = TableMap::TYPE_PHPNAME)
     {
-        $pos = CategoryAssociatedKeywordTableMap::translateFieldName($name, $type, TableMap::TYPE_NUM);
+        $pos = KeywordGroupI18nTableMap::translateFieldName($name, $type, TableMap::TYPE_NUM);
         $field = $this->getByPosition($pos);
 
         return $field;
@@ -823,13 +960,22 @@ abstract class CategoryAssociatedKeyword implements ActiveRecordInterface
     {
         switch ($pos) {
             case 0:
-                return $this->getCategoryId();
+                return $this->getId();
                 break;
             case 1:
-                return $this->getKeywordId();
+                return $this->getLocale();
                 break;
             case 2:
-                return $this->getPosition();
+                return $this->getTitle();
+                break;
+            case 3:
+                return $this->getDescription();
+                break;
+            case 4:
+                return $this->getChapo();
+                break;
+            case 5:
+                return $this->getPostscriptum();
                 break;
             default:
                 return null;
@@ -854,15 +1000,18 @@ abstract class CategoryAssociatedKeyword implements ActiveRecordInterface
      */
     public function toArray($keyType = TableMap::TYPE_PHPNAME, $includeLazyLoadColumns = true, $alreadyDumpedObjects = array(), $includeForeignObjects = false)
     {
-        if (isset($alreadyDumpedObjects['CategoryAssociatedKeyword'][serialize($this->getPrimaryKey())])) {
+        if (isset($alreadyDumpedObjects['KeywordGroupI18n'][serialize($this->getPrimaryKey())])) {
             return '*RECURSION*';
         }
-        $alreadyDumpedObjects['CategoryAssociatedKeyword'][serialize($this->getPrimaryKey())] = true;
-        $keys = CategoryAssociatedKeywordTableMap::getFieldNames($keyType);
+        $alreadyDumpedObjects['KeywordGroupI18n'][serialize($this->getPrimaryKey())] = true;
+        $keys = KeywordGroupI18nTableMap::getFieldNames($keyType);
         $result = array(
-            $keys[0] => $this->getCategoryId(),
-            $keys[1] => $this->getKeywordId(),
-            $keys[2] => $this->getPosition(),
+            $keys[0] => $this->getId(),
+            $keys[1] => $this->getLocale(),
+            $keys[2] => $this->getTitle(),
+            $keys[3] => $this->getDescription(),
+            $keys[4] => $this->getChapo(),
+            $keys[5] => $this->getPostscriptum(),
         );
         $virtualColumns = $this->virtualColumns;
         foreach ($virtualColumns as $key => $virtualColumn) {
@@ -870,11 +1019,8 @@ abstract class CategoryAssociatedKeyword implements ActiveRecordInterface
         }
 
         if ($includeForeignObjects) {
-            if (null !== $this->aCategory) {
-                $result['Category'] = $this->aCategory->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
-            }
-            if (null !== $this->aKeyword) {
-                $result['Keyword'] = $this->aKeyword->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
+            if (null !== $this->aKeywordGroup) {
+                $result['KeywordGroup'] = $this->aKeywordGroup->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
             }
         }
 
@@ -894,7 +1040,7 @@ abstract class CategoryAssociatedKeyword implements ActiveRecordInterface
      */
     public function setByName($name, $value, $type = TableMap::TYPE_PHPNAME)
     {
-        $pos = CategoryAssociatedKeywordTableMap::translateFieldName($name, $type, TableMap::TYPE_NUM);
+        $pos = KeywordGroupI18nTableMap::translateFieldName($name, $type, TableMap::TYPE_NUM);
 
         return $this->setByPosition($pos, $value);
     }
@@ -911,13 +1057,22 @@ abstract class CategoryAssociatedKeyword implements ActiveRecordInterface
     {
         switch ($pos) {
             case 0:
-                $this->setCategoryId($value);
+                $this->setId($value);
                 break;
             case 1:
-                $this->setKeywordId($value);
+                $this->setLocale($value);
                 break;
             case 2:
-                $this->setPosition($value);
+                $this->setTitle($value);
+                break;
+            case 3:
+                $this->setDescription($value);
+                break;
+            case 4:
+                $this->setChapo($value);
+                break;
+            case 5:
+                $this->setPostscriptum($value);
                 break;
         } // switch()
     }
@@ -941,11 +1096,14 @@ abstract class CategoryAssociatedKeyword implements ActiveRecordInterface
      */
     public function fromArray($arr, $keyType = TableMap::TYPE_PHPNAME)
     {
-        $keys = CategoryAssociatedKeywordTableMap::getFieldNames($keyType);
+        $keys = KeywordGroupI18nTableMap::getFieldNames($keyType);
 
-        if (array_key_exists($keys[0], $arr)) $this->setCategoryId($arr[$keys[0]]);
-        if (array_key_exists($keys[1], $arr)) $this->setKeywordId($arr[$keys[1]]);
-        if (array_key_exists($keys[2], $arr)) $this->setPosition($arr[$keys[2]]);
+        if (array_key_exists($keys[0], $arr)) $this->setId($arr[$keys[0]]);
+        if (array_key_exists($keys[1], $arr)) $this->setLocale($arr[$keys[1]]);
+        if (array_key_exists($keys[2], $arr)) $this->setTitle($arr[$keys[2]]);
+        if (array_key_exists($keys[3], $arr)) $this->setDescription($arr[$keys[3]]);
+        if (array_key_exists($keys[4], $arr)) $this->setChapo($arr[$keys[4]]);
+        if (array_key_exists($keys[5], $arr)) $this->setPostscriptum($arr[$keys[5]]);
     }
 
     /**
@@ -955,11 +1113,14 @@ abstract class CategoryAssociatedKeyword implements ActiveRecordInterface
      */
     public function buildCriteria()
     {
-        $criteria = new Criteria(CategoryAssociatedKeywordTableMap::DATABASE_NAME);
+        $criteria = new Criteria(KeywordGroupI18nTableMap::DATABASE_NAME);
 
-        if ($this->isColumnModified(CategoryAssociatedKeywordTableMap::CATEGORY_ID)) $criteria->add(CategoryAssociatedKeywordTableMap::CATEGORY_ID, $this->category_id);
-        if ($this->isColumnModified(CategoryAssociatedKeywordTableMap::KEYWORD_ID)) $criteria->add(CategoryAssociatedKeywordTableMap::KEYWORD_ID, $this->keyword_id);
-        if ($this->isColumnModified(CategoryAssociatedKeywordTableMap::POSITION)) $criteria->add(CategoryAssociatedKeywordTableMap::POSITION, $this->position);
+        if ($this->isColumnModified(KeywordGroupI18nTableMap::ID)) $criteria->add(KeywordGroupI18nTableMap::ID, $this->id);
+        if ($this->isColumnModified(KeywordGroupI18nTableMap::LOCALE)) $criteria->add(KeywordGroupI18nTableMap::LOCALE, $this->locale);
+        if ($this->isColumnModified(KeywordGroupI18nTableMap::TITLE)) $criteria->add(KeywordGroupI18nTableMap::TITLE, $this->title);
+        if ($this->isColumnModified(KeywordGroupI18nTableMap::DESCRIPTION)) $criteria->add(KeywordGroupI18nTableMap::DESCRIPTION, $this->description);
+        if ($this->isColumnModified(KeywordGroupI18nTableMap::CHAPO)) $criteria->add(KeywordGroupI18nTableMap::CHAPO, $this->chapo);
+        if ($this->isColumnModified(KeywordGroupI18nTableMap::POSTSCRIPTUM)) $criteria->add(KeywordGroupI18nTableMap::POSTSCRIPTUM, $this->postscriptum);
 
         return $criteria;
     }
@@ -974,9 +1135,9 @@ abstract class CategoryAssociatedKeyword implements ActiveRecordInterface
      */
     public function buildPkeyCriteria()
     {
-        $criteria = new Criteria(CategoryAssociatedKeywordTableMap::DATABASE_NAME);
-        $criteria->add(CategoryAssociatedKeywordTableMap::CATEGORY_ID, $this->category_id);
-        $criteria->add(CategoryAssociatedKeywordTableMap::KEYWORD_ID, $this->keyword_id);
+        $criteria = new Criteria(KeywordGroupI18nTableMap::DATABASE_NAME);
+        $criteria->add(KeywordGroupI18nTableMap::ID, $this->id);
+        $criteria->add(KeywordGroupI18nTableMap::LOCALE, $this->locale);
 
         return $criteria;
     }
@@ -989,8 +1150,8 @@ abstract class CategoryAssociatedKeyword implements ActiveRecordInterface
     public function getPrimaryKey()
     {
         $pks = array();
-        $pks[0] = $this->getCategoryId();
-        $pks[1] = $this->getKeywordId();
+        $pks[0] = $this->getId();
+        $pks[1] = $this->getLocale();
 
         return $pks;
     }
@@ -1003,8 +1164,8 @@ abstract class CategoryAssociatedKeyword implements ActiveRecordInterface
      */
     public function setPrimaryKey($keys)
     {
-        $this->setCategoryId($keys[0]);
-        $this->setKeywordId($keys[1]);
+        $this->setId($keys[0]);
+        $this->setLocale($keys[1]);
     }
 
     /**
@@ -1014,7 +1175,7 @@ abstract class CategoryAssociatedKeyword implements ActiveRecordInterface
     public function isPrimaryKeyNull()
     {
 
-        return (null === $this->getCategoryId()) && (null === $this->getKeywordId());
+        return (null === $this->getId()) && (null === $this->getLocale());
     }
 
     /**
@@ -1023,16 +1184,19 @@ abstract class CategoryAssociatedKeyword implements ActiveRecordInterface
      * If desired, this method can also make copies of all associated (fkey referrers)
      * objects.
      *
-     * @param      object $copyObj An object of \Keyword\Model\CategoryAssociatedKeyword (or compatible) type.
+     * @param      object $copyObj An object of \Keyword\Model\KeywordGroupI18n (or compatible) type.
      * @param      boolean $deepCopy Whether to also copy all rows that refer (by fkey) to the current row.
      * @param      boolean $makeNew Whether to reset autoincrement PKs and make the object new.
      * @throws PropelException
      */
     public function copyInto($copyObj, $deepCopy = false, $makeNew = true)
     {
-        $copyObj->setCategoryId($this->getCategoryId());
-        $copyObj->setKeywordId($this->getKeywordId());
-        $copyObj->setPosition($this->getPosition());
+        $copyObj->setId($this->getId());
+        $copyObj->setLocale($this->getLocale());
+        $copyObj->setTitle($this->getTitle());
+        $copyObj->setDescription($this->getDescription());
+        $copyObj->setChapo($this->getChapo());
+        $copyObj->setPostscriptum($this->getPostscriptum());
         if ($makeNew) {
             $copyObj->setNew(true);
         }
@@ -1047,7 +1211,7 @@ abstract class CategoryAssociatedKeyword implements ActiveRecordInterface
      * objects.
      *
      * @param      boolean $deepCopy Whether to also copy all rows that refer (by fkey) to the current row.
-     * @return                 \Keyword\Model\CategoryAssociatedKeyword Clone of current object.
+     * @return                 \Keyword\Model\KeywordGroupI18n Clone of current object.
      * @throws PropelException
      */
     public function copy($deepCopy = false)
@@ -1061,26 +1225,26 @@ abstract class CategoryAssociatedKeyword implements ActiveRecordInterface
     }
 
     /**
-     * Declares an association between this object and a ChildCategory object.
+     * Declares an association between this object and a ChildKeywordGroup object.
      *
-     * @param                  ChildCategory $v
-     * @return                 \Keyword\Model\CategoryAssociatedKeyword The current object (for fluent API support)
+     * @param                  ChildKeywordGroup $v
+     * @return                 \Keyword\Model\KeywordGroupI18n The current object (for fluent API support)
      * @throws PropelException
      */
-    public function setCategory(ChildCategory $v = null)
+    public function setKeywordGroup(ChildKeywordGroup $v = null)
     {
         if ($v === null) {
-            $this->setCategoryId(NULL);
+            $this->setId(NULL);
         } else {
-            $this->setCategoryId($v->getId());
+            $this->setId($v->getId());
         }
 
-        $this->aCategory = $v;
+        $this->aKeywordGroup = $v;
 
         // Add binding for other direction of this n:n relationship.
-        // If this object has already been added to the ChildCategory object, it will not be re-added.
+        // If this object has already been added to the ChildKeywordGroup object, it will not be re-added.
         if ($v !== null) {
-            $v->addCategoryAssociatedKeyword($this);
+            $v->addKeywordGroupI18n($this);
         }
 
 
@@ -1089,77 +1253,26 @@ abstract class CategoryAssociatedKeyword implements ActiveRecordInterface
 
 
     /**
-     * Get the associated ChildCategory object
+     * Get the associated ChildKeywordGroup object
      *
      * @param      ConnectionInterface $con Optional Connection object.
-     * @return                 ChildCategory The associated ChildCategory object.
+     * @return                 ChildKeywordGroup The associated ChildKeywordGroup object.
      * @throws PropelException
      */
-    public function getCategory(ConnectionInterface $con = null)
+    public function getKeywordGroup(ConnectionInterface $con = null)
     {
-        if ($this->aCategory === null && ($this->category_id !== null)) {
-            $this->aCategory = CategoryQuery::create()->findPk($this->category_id, $con);
+        if ($this->aKeywordGroup === null && ($this->id !== null)) {
+            $this->aKeywordGroup = ChildKeywordGroupQuery::create()->findPk($this->id, $con);
             /* The following can be used additionally to
                 guarantee the related object contains a reference
                 to this object.  This level of coupling may, however, be
                 undesirable since it could result in an only partially populated collection
                 in the referenced object.
-                $this->aCategory->addCategoryAssociatedKeywords($this);
+                $this->aKeywordGroup->addKeywordGroupI18ns($this);
              */
         }
 
-        return $this->aCategory;
-    }
-
-    /**
-     * Declares an association between this object and a ChildKeyword object.
-     *
-     * @param                  ChildKeyword $v
-     * @return                 \Keyword\Model\CategoryAssociatedKeyword The current object (for fluent API support)
-     * @throws PropelException
-     */
-    public function setKeyword(ChildKeyword $v = null)
-    {
-        if ($v === null) {
-            $this->setKeywordId(NULL);
-        } else {
-            $this->setKeywordId($v->getId());
-        }
-
-        $this->aKeyword = $v;
-
-        // Add binding for other direction of this n:n relationship.
-        // If this object has already been added to the ChildKeyword object, it will not be re-added.
-        if ($v !== null) {
-            $v->addCategoryAssociatedKeyword($this);
-        }
-
-
-        return $this;
-    }
-
-
-    /**
-     * Get the associated ChildKeyword object
-     *
-     * @param      ConnectionInterface $con Optional Connection object.
-     * @return                 ChildKeyword The associated ChildKeyword object.
-     * @throws PropelException
-     */
-    public function getKeyword(ConnectionInterface $con = null)
-    {
-        if ($this->aKeyword === null && ($this->keyword_id !== null)) {
-            $this->aKeyword = ChildKeywordQuery::create()->findPk($this->keyword_id, $con);
-            /* The following can be used additionally to
-                guarantee the related object contains a reference
-                to this object.  This level of coupling may, however, be
-                undesirable since it could result in an only partially populated collection
-                in the referenced object.
-                $this->aKeyword->addCategoryAssociatedKeywords($this);
-             */
-        }
-
-        return $this->aKeyword;
+        return $this->aKeywordGroup;
     }
 
     /**
@@ -1167,11 +1280,15 @@ abstract class CategoryAssociatedKeyword implements ActiveRecordInterface
      */
     public function clear()
     {
-        $this->category_id = null;
-        $this->keyword_id = null;
-        $this->position = null;
+        $this->id = null;
+        $this->locale = null;
+        $this->title = null;
+        $this->description = null;
+        $this->chapo = null;
+        $this->postscriptum = null;
         $this->alreadyInSave = false;
         $this->clearAllReferences();
+        $this->applyDefaultValues();
         $this->resetModified();
         $this->setNew(true);
         $this->setDeleted(false);
@@ -1191,8 +1308,7 @@ abstract class CategoryAssociatedKeyword implements ActiveRecordInterface
         if ($deep) {
         } // if ($deep)
 
-        $this->aCategory = null;
-        $this->aKeyword = null;
+        $this->aKeywordGroup = null;
     }
 
     /**
@@ -1202,7 +1318,7 @@ abstract class CategoryAssociatedKeyword implements ActiveRecordInterface
      */
     public function __toString()
     {
-        return (string) $this->exportTo(CategoryAssociatedKeywordTableMap::DEFAULT_STRING_FORMAT);
+        return (string) $this->exportTo(KeywordGroupI18nTableMap::DEFAULT_STRING_FORMAT);
     }
 
     /**

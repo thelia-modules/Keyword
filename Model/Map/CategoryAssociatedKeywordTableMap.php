@@ -58,7 +58,7 @@ class CategoryAssociatedKeywordTableMap extends TableMap
     /**
      * The total number of columns
      */
-    const NUM_COLUMNS = 5;
+    const NUM_COLUMNS = 3;
 
     /**
      * The number of lazy-loaded columns
@@ -68,7 +68,7 @@ class CategoryAssociatedKeywordTableMap extends TableMap
     /**
      * The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS)
      */
-    const NUM_HYDRATE_COLUMNS = 5;
+    const NUM_HYDRATE_COLUMNS = 3;
 
     /**
      * the column name for the CATEGORY_ID field
@@ -86,16 +86,6 @@ class CategoryAssociatedKeywordTableMap extends TableMap
     const POSITION = 'category_associated_keyword.POSITION';
 
     /**
-     * the column name for the CREATED_AT field
-     */
-    const CREATED_AT = 'category_associated_keyword.CREATED_AT';
-
-    /**
-     * the column name for the UPDATED_AT field
-     */
-    const UPDATED_AT = 'category_associated_keyword.UPDATED_AT';
-
-    /**
      * The default string format for model objects of the related table
      */
     const DEFAULT_STRING_FORMAT = 'YAML';
@@ -107,12 +97,12 @@ class CategoryAssociatedKeywordTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('CategoryId', 'KeywordId', 'Position', 'CreatedAt', 'UpdatedAt', ),
-        self::TYPE_STUDLYPHPNAME => array('categoryId', 'keywordId', 'position', 'createdAt', 'updatedAt', ),
-        self::TYPE_COLNAME       => array(CategoryAssociatedKeywordTableMap::CATEGORY_ID, CategoryAssociatedKeywordTableMap::KEYWORD_ID, CategoryAssociatedKeywordTableMap::POSITION, CategoryAssociatedKeywordTableMap::CREATED_AT, CategoryAssociatedKeywordTableMap::UPDATED_AT, ),
-        self::TYPE_RAW_COLNAME   => array('CATEGORY_ID', 'KEYWORD_ID', 'POSITION', 'CREATED_AT', 'UPDATED_AT', ),
-        self::TYPE_FIELDNAME     => array('category_id', 'keyword_id', 'position', 'created_at', 'updated_at', ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, )
+        self::TYPE_PHPNAME       => array('CategoryId', 'KeywordId', 'Position', ),
+        self::TYPE_STUDLYPHPNAME => array('categoryId', 'keywordId', 'position', ),
+        self::TYPE_COLNAME       => array(CategoryAssociatedKeywordTableMap::CATEGORY_ID, CategoryAssociatedKeywordTableMap::KEYWORD_ID, CategoryAssociatedKeywordTableMap::POSITION, ),
+        self::TYPE_RAW_COLNAME   => array('CATEGORY_ID', 'KEYWORD_ID', 'POSITION', ),
+        self::TYPE_FIELDNAME     => array('category_id', 'keyword_id', 'position', ),
+        self::TYPE_NUM           => array(0, 1, 2, )
     );
 
     /**
@@ -122,12 +112,12 @@ class CategoryAssociatedKeywordTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('CategoryId' => 0, 'KeywordId' => 1, 'Position' => 2, 'CreatedAt' => 3, 'UpdatedAt' => 4, ),
-        self::TYPE_STUDLYPHPNAME => array('categoryId' => 0, 'keywordId' => 1, 'position' => 2, 'createdAt' => 3, 'updatedAt' => 4, ),
-        self::TYPE_COLNAME       => array(CategoryAssociatedKeywordTableMap::CATEGORY_ID => 0, CategoryAssociatedKeywordTableMap::KEYWORD_ID => 1, CategoryAssociatedKeywordTableMap::POSITION => 2, CategoryAssociatedKeywordTableMap::CREATED_AT => 3, CategoryAssociatedKeywordTableMap::UPDATED_AT => 4, ),
-        self::TYPE_RAW_COLNAME   => array('CATEGORY_ID' => 0, 'KEYWORD_ID' => 1, 'POSITION' => 2, 'CREATED_AT' => 3, 'UPDATED_AT' => 4, ),
-        self::TYPE_FIELDNAME     => array('category_id' => 0, 'keyword_id' => 1, 'position' => 2, 'created_at' => 3, 'updated_at' => 4, ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, )
+        self::TYPE_PHPNAME       => array('CategoryId' => 0, 'KeywordId' => 1, 'Position' => 2, ),
+        self::TYPE_STUDLYPHPNAME => array('categoryId' => 0, 'keywordId' => 1, 'position' => 2, ),
+        self::TYPE_COLNAME       => array(CategoryAssociatedKeywordTableMap::CATEGORY_ID => 0, CategoryAssociatedKeywordTableMap::KEYWORD_ID => 1, CategoryAssociatedKeywordTableMap::POSITION => 2, ),
+        self::TYPE_RAW_COLNAME   => array('CATEGORY_ID' => 0, 'KEYWORD_ID' => 1, 'POSITION' => 2, ),
+        self::TYPE_FIELDNAME     => array('category_id' => 0, 'keyword_id' => 1, 'position' => 2, ),
+        self::TYPE_NUM           => array(0, 1, 2, )
     );
 
     /**
@@ -149,8 +139,6 @@ class CategoryAssociatedKeywordTableMap extends TableMap
         $this->addForeignPrimaryKey('CATEGORY_ID', 'CategoryId', 'INTEGER' , 'category', 'ID', true, null, null);
         $this->addForeignPrimaryKey('KEYWORD_ID', 'KeywordId', 'INTEGER' , 'keyword', 'ID', true, null, null);
         $this->addColumn('POSITION', 'Position', 'INTEGER', true, null, null);
-        $this->addColumn('CREATED_AT', 'CreatedAt', 'TIMESTAMP', false, null, null);
-        $this->addColumn('UPDATED_AT', 'UpdatedAt', 'TIMESTAMP', false, null, null);
     } // initialize()
 
     /**
@@ -161,19 +149,6 @@ class CategoryAssociatedKeywordTableMap extends TableMap
         $this->addRelation('Category', '\\Thelia\\Model\\Category', RelationMap::MANY_TO_ONE, array('category_id' => 'id', ), 'CASCADE', 'RESTRICT');
         $this->addRelation('Keyword', '\\Keyword\\Model\\Keyword', RelationMap::MANY_TO_ONE, array('keyword_id' => 'id', ), 'CASCADE', 'RESTRICT');
     } // buildRelations()
-
-    /**
-     *
-     * Gets the list of behaviors registered for this table
-     *
-     * @return array Associative array (name => parameters) of behaviors
-     */
-    public function getBehaviors()
-    {
-        return array(
-            'timestampable' => array('create_column' => 'created_at', 'update_column' => 'updated_at', ),
-        );
-    } // getBehaviors()
 
     /**
      * Adds an object to the instance pool.
@@ -365,14 +340,10 @@ class CategoryAssociatedKeywordTableMap extends TableMap
             $criteria->addSelectColumn(CategoryAssociatedKeywordTableMap::CATEGORY_ID);
             $criteria->addSelectColumn(CategoryAssociatedKeywordTableMap::KEYWORD_ID);
             $criteria->addSelectColumn(CategoryAssociatedKeywordTableMap::POSITION);
-            $criteria->addSelectColumn(CategoryAssociatedKeywordTableMap::CREATED_AT);
-            $criteria->addSelectColumn(CategoryAssociatedKeywordTableMap::UPDATED_AT);
         } else {
             $criteria->addSelectColumn($alias . '.CATEGORY_ID');
             $criteria->addSelectColumn($alias . '.KEYWORD_ID');
             $criteria->addSelectColumn($alias . '.POSITION');
-            $criteria->addSelectColumn($alias . '.CREATED_AT');
-            $criteria->addSelectColumn($alias . '.UPDATED_AT');
         }
     }
 

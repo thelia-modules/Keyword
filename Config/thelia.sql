@@ -4,6 +4,23 @@
 SET FOREIGN_KEY_CHECKS = 0;
 
 -- ---------------------------------------------------------------------
+-- keyword_group
+-- ---------------------------------------------------------------------
+
+DROP TABLE IF EXISTS `keyword_group`;
+
+CREATE TABLE `keyword_group`
+(
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `visible` TINYINT,
+    `position` INTEGER,
+    `code` VARCHAR(255),
+    `created_at` DATETIME,
+    `updated_at` DATETIME,
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB;
+
+-- ---------------------------------------------------------------------
 -- keyword
 -- ---------------------------------------------------------------------
 
@@ -18,6 +35,34 @@ CREATE TABLE `keyword`
     `created_at` DATETIME,
     `updated_at` DATETIME,
     PRIMARY KEY (`id`)
+) ENGINE=InnoDB;
+
+-- ---------------------------------------------------------------------
+-- keyword_group_associated_keyword
+-- ---------------------------------------------------------------------
+
+DROP TABLE IF EXISTS `keyword_group_associated_keyword`;
+
+CREATE TABLE `keyword_group_associated_keyword`
+(
+    `keyword_group_id` INTEGER NOT NULL,
+    `keyword_id` INTEGER NOT NULL,
+    `position` INTEGER NOT NULL,
+    `created_at` DATETIME,
+    `updated_at` DATETIME,
+    PRIMARY KEY (`keyword_group_id`,`keyword_id`),
+    INDEX `idx_keyword_group_associated_keyword_keyword_group_id` (`keyword_group_id`),
+    INDEX `idx_keyword_group_associated_keyword_keyword_id` (`keyword_id`),
+    CONSTRAINT `fk_keyword_group_associated_keyword_keyword_group_id`
+        FOREIGN KEY (`keyword_group_id`)
+        REFERENCES `keyword_group` (`id`)
+        ON UPDATE RESTRICT
+        ON DELETE CASCADE,
+    CONSTRAINT `fk_keyword_group_associated_keyword_keyword_id`
+        FOREIGN KEY (`keyword_id`)
+        REFERENCES `keyword` (`id`)
+        ON UPDATE RESTRICT
+        ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
 -- ---------------------------------------------------------------------
@@ -87,8 +132,6 @@ CREATE TABLE `category_associated_keyword`
     `category_id` INTEGER NOT NULL,
     `keyword_id` INTEGER NOT NULL,
     `position` INTEGER NOT NULL,
-    `created_at` DATETIME,
-    `updated_at` DATETIME,
     PRIMARY KEY (`category_id`,`keyword_id`),
     INDEX `idx_category_associated_keyword_category_id` (`category_id`),
     INDEX `idx_category_associated_keyword_keyword_id` (`keyword_id`),
@@ -129,6 +172,27 @@ CREATE TABLE `product_associated_keyword`
         FOREIGN KEY (`keyword_id`)
         REFERENCES `keyword` (`id`)
         ON UPDATE RESTRICT
+        ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+-- ---------------------------------------------------------------------
+-- keyword_group_i18n
+-- ---------------------------------------------------------------------
+
+DROP TABLE IF EXISTS `keyword_group_i18n`;
+
+CREATE TABLE `keyword_group_i18n`
+(
+    `id` INTEGER NOT NULL,
+    `locale` VARCHAR(5) DEFAULT 'en_US' NOT NULL,
+    `title` VARCHAR(255),
+    `description` LONGTEXT,
+    `chapo` TEXT,
+    `postscriptum` TEXT,
+    PRIMARY KEY (`id`,`locale`),
+    CONSTRAINT `keyword_group_i18n_FK_1`
+        FOREIGN KEY (`id`)
+        REFERENCES `keyword_group` (`id`)
         ON DELETE CASCADE
 ) ENGINE=InnoDB;
 

@@ -2,12 +2,16 @@
 
 namespace Keyword\Model\Base;
 
+use \DateTime;
 use \Exception;
 use \PDO;
-use Keyword\Model\CategoryAssociatedKeywordQuery as ChildCategoryAssociatedKeywordQuery;
 use Keyword\Model\Keyword as ChildKeyword;
+use Keyword\Model\KeywordGroup as ChildKeywordGroup;
+use Keyword\Model\KeywordGroupAssociatedKeyword as ChildKeywordGroupAssociatedKeyword;
+use Keyword\Model\KeywordGroupAssociatedKeywordQuery as ChildKeywordGroupAssociatedKeywordQuery;
+use Keyword\Model\KeywordGroupQuery as ChildKeywordGroupQuery;
 use Keyword\Model\KeywordQuery as ChildKeywordQuery;
-use Keyword\Model\Map\CategoryAssociatedKeywordTableMap;
+use Keyword\Model\Map\KeywordGroupAssociatedKeywordTableMap;
 use Propel\Runtime\Propel;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\ActiveQuery\ModelCriteria;
@@ -18,15 +22,14 @@ use Propel\Runtime\Exception\BadMethodCallException;
 use Propel\Runtime\Exception\PropelException;
 use Propel\Runtime\Map\TableMap;
 use Propel\Runtime\Parser\AbstractParser;
-use Thelia\Model\CategoryQuery;
-use Thelia\Model\Category as ChildCategory;
+use Propel\Runtime\Util\PropelDateTime;
 
-abstract class CategoryAssociatedKeyword implements ActiveRecordInterface
+abstract class KeywordGroupAssociatedKeyword implements ActiveRecordInterface
 {
     /**
      * TableMap class name
      */
-    const TABLE_MAP = '\\Keyword\\Model\\Map\\CategoryAssociatedKeywordTableMap';
+    const TABLE_MAP = '\\Keyword\\Model\\Map\\KeywordGroupAssociatedKeywordTableMap';
 
 
     /**
@@ -56,10 +59,10 @@ abstract class CategoryAssociatedKeyword implements ActiveRecordInterface
     protected $virtualColumns = array();
 
     /**
-     * The value for the category_id field.
+     * The value for the keyword_group_id field.
      * @var        int
      */
-    protected $category_id;
+    protected $keyword_group_id;
 
     /**
      * The value for the keyword_id field.
@@ -74,9 +77,21 @@ abstract class CategoryAssociatedKeyword implements ActiveRecordInterface
     protected $position;
 
     /**
-     * @var        Category
+     * The value for the created_at field.
+     * @var        string
      */
-    protected $aCategory;
+    protected $created_at;
+
+    /**
+     * The value for the updated_at field.
+     * @var        string
+     */
+    protected $updated_at;
+
+    /**
+     * @var        KeywordGroup
+     */
+    protected $aKeywordGroup;
 
     /**
      * @var        Keyword
@@ -92,7 +107,7 @@ abstract class CategoryAssociatedKeyword implements ActiveRecordInterface
     protected $alreadyInSave = false;
 
     /**
-     * Initializes internal state of Keyword\Model\Base\CategoryAssociatedKeyword object.
+     * Initializes internal state of Keyword\Model\Base\KeywordGroupAssociatedKeyword object.
      */
     public function __construct()
     {
@@ -187,9 +202,9 @@ abstract class CategoryAssociatedKeyword implements ActiveRecordInterface
     }
 
     /**
-     * Compares this with another <code>CategoryAssociatedKeyword</code> instance.  If
-     * <code>obj</code> is an instance of <code>CategoryAssociatedKeyword</code>, delegates to
-     * <code>equals(CategoryAssociatedKeyword)</code>.  Otherwise, returns <code>false</code>.
+     * Compares this with another <code>KeywordGroupAssociatedKeyword</code> instance.  If
+     * <code>obj</code> is an instance of <code>KeywordGroupAssociatedKeyword</code>, delegates to
+     * <code>equals(KeywordGroupAssociatedKeyword)</code>.  Otherwise, returns <code>false</code>.
      *
      * @param  mixed   $obj The object to compare to.
      * @return boolean Whether equal to the object specified.
@@ -272,7 +287,7 @@ abstract class CategoryAssociatedKeyword implements ActiveRecordInterface
      * @param string $name  The virtual column name
      * @param mixed  $value The value to give to the virtual column
      *
-     * @return CategoryAssociatedKeyword The current object, for fluid interface
+     * @return KeywordGroupAssociatedKeyword The current object, for fluid interface
      */
     public function setVirtualColumn($name, $value)
     {
@@ -304,7 +319,7 @@ abstract class CategoryAssociatedKeyword implements ActiveRecordInterface
      *                       or a format name ('XML', 'YAML', 'JSON', 'CSV')
      * @param string $data The source data to import from
      *
-     * @return CategoryAssociatedKeyword The current object, for fluid interface
+     * @return KeywordGroupAssociatedKeyword The current object, for fluid interface
      */
     public function importFrom($parser, $data)
     {
@@ -350,14 +365,14 @@ abstract class CategoryAssociatedKeyword implements ActiveRecordInterface
     }
 
     /**
-     * Get the [category_id] column value.
+     * Get the [keyword_group_id] column value.
      *
      * @return   int
      */
-    public function getCategoryId()
+    public function getKeywordGroupId()
     {
 
-        return $this->category_id;
+        return $this->keyword_group_id;
     }
 
     /**
@@ -383,35 +398,75 @@ abstract class CategoryAssociatedKeyword implements ActiveRecordInterface
     }
 
     /**
-     * Set the value of [category_id] column.
+     * Get the [optionally formatted] temporal [created_at] column value.
+     *
+     *
+     * @param      string $format The date/time format string (either date()-style or strftime()-style).
+     *                            If format is NULL, then the raw \DateTime object will be returned.
+     *
+     * @return mixed Formatted date/time value as string or \DateTime object (if format is NULL), NULL if column is NULL, and 0 if column value is 0000-00-00 00:00:00
+     *
+     * @throws PropelException - if unable to parse/validate the date/time value.
+     */
+    public function getCreatedAt($format = NULL)
+    {
+        if ($format === null) {
+            return $this->created_at;
+        } else {
+            return $this->created_at instanceof \DateTime ? $this->created_at->format($format) : null;
+        }
+    }
+
+    /**
+     * Get the [optionally formatted] temporal [updated_at] column value.
+     *
+     *
+     * @param      string $format The date/time format string (either date()-style or strftime()-style).
+     *                            If format is NULL, then the raw \DateTime object will be returned.
+     *
+     * @return mixed Formatted date/time value as string or \DateTime object (if format is NULL), NULL if column is NULL, and 0 if column value is 0000-00-00 00:00:00
+     *
+     * @throws PropelException - if unable to parse/validate the date/time value.
+     */
+    public function getUpdatedAt($format = NULL)
+    {
+        if ($format === null) {
+            return $this->updated_at;
+        } else {
+            return $this->updated_at instanceof \DateTime ? $this->updated_at->format($format) : null;
+        }
+    }
+
+    /**
+     * Set the value of [keyword_group_id] column.
      *
      * @param      int $v new value
-     * @return   \Keyword\Model\CategoryAssociatedKeyword The current object (for fluent API support)
+     * @return   \Keyword\Model\KeywordGroupAssociatedKeyword The current object (for fluent API support)
      */
-    public function setCategoryId($v)
+    public function setKeywordGroupId($v)
     {
         if ($v !== null) {
             $v = (int) $v;
         }
 
-        if ($this->category_id !== $v) {
-            $this->category_id = $v;
-            $this->modifiedColumns[CategoryAssociatedKeywordTableMap::CATEGORY_ID] = true;
+        if ($this->keyword_group_id !== $v) {
+            $this->keyword_group_id = $v;
+            $this->modifiedColumns[KeywordGroupAssociatedKeywordTableMap::KEYWORD_GROUP_ID] = true;
         }
 
-        if ($this->aCategory !== null && $this->aCategory->getId() !== $v) {
-            $this->aCategory = null;
+        if ($this->aKeywordGroup !== null && $this->aKeywordGroup->getId() !== $v) {
+            $this->aKeywordGroup = null;
         }
 
 
         return $this;
-    } // setCategoryId()
+    } // setKeywordGroupId()
 
     /**
      * Set the value of [keyword_id] column.
      *
      * @param      int $v new value
-     * @return   \Keyword\Model\CategoryAssociatedKeyword The current object (for fluent API support)
+     * @return   \Keyword\Model\KeywordGroupAssociatedKeyword The current object (for fluent API support)
      */
     public function setKeywordId($v)
     {
@@ -421,7 +476,7 @@ abstract class CategoryAssociatedKeyword implements ActiveRecordInterface
 
         if ($this->keyword_id !== $v) {
             $this->keyword_id = $v;
-            $this->modifiedColumns[CategoryAssociatedKeywordTableMap::KEYWORD_ID] = true;
+            $this->modifiedColumns[KeywordGroupAssociatedKeywordTableMap::KEYWORD_ID] = true;
         }
 
         if ($this->aKeyword !== null && $this->aKeyword->getId() !== $v) {
@@ -436,7 +491,7 @@ abstract class CategoryAssociatedKeyword implements ActiveRecordInterface
      * Set the value of [position] column.
      *
      * @param      int $v new value
-     * @return   \Keyword\Model\CategoryAssociatedKeyword The current object (for fluent API support)
+     * @return   \Keyword\Model\KeywordGroupAssociatedKeyword The current object (for fluent API support)
      */
     public function setPosition($v)
     {
@@ -446,12 +501,54 @@ abstract class CategoryAssociatedKeyword implements ActiveRecordInterface
 
         if ($this->position !== $v) {
             $this->position = $v;
-            $this->modifiedColumns[CategoryAssociatedKeywordTableMap::POSITION] = true;
+            $this->modifiedColumns[KeywordGroupAssociatedKeywordTableMap::POSITION] = true;
         }
 
 
         return $this;
     } // setPosition()
+
+    /**
+     * Sets the value of [created_at] column to a normalized version of the date/time value specified.
+     *
+     * @param      mixed $v string, integer (timestamp), or \DateTime value.
+     *               Empty strings are treated as NULL.
+     * @return   \Keyword\Model\KeywordGroupAssociatedKeyword The current object (for fluent API support)
+     */
+    public function setCreatedAt($v)
+    {
+        $dt = PropelDateTime::newInstance($v, null, '\DateTime');
+        if ($this->created_at !== null || $dt !== null) {
+            if ($dt !== $this->created_at) {
+                $this->created_at = $dt;
+                $this->modifiedColumns[KeywordGroupAssociatedKeywordTableMap::CREATED_AT] = true;
+            }
+        } // if either are not null
+
+
+        return $this;
+    } // setCreatedAt()
+
+    /**
+     * Sets the value of [updated_at] column to a normalized version of the date/time value specified.
+     *
+     * @param      mixed $v string, integer (timestamp), or \DateTime value.
+     *               Empty strings are treated as NULL.
+     * @return   \Keyword\Model\KeywordGroupAssociatedKeyword The current object (for fluent API support)
+     */
+    public function setUpdatedAt($v)
+    {
+        $dt = PropelDateTime::newInstance($v, null, '\DateTime');
+        if ($this->updated_at !== null || $dt !== null) {
+            if ($dt !== $this->updated_at) {
+                $this->updated_at = $dt;
+                $this->modifiedColumns[KeywordGroupAssociatedKeywordTableMap::UPDATED_AT] = true;
+            }
+        } // if either are not null
+
+
+        return $this;
+    } // setUpdatedAt()
 
     /**
      * Indicates whether the columns in this object are only set to default values.
@@ -490,14 +587,26 @@ abstract class CategoryAssociatedKeyword implements ActiveRecordInterface
         try {
 
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 0 + $startcol : CategoryAssociatedKeywordTableMap::translateFieldName('CategoryId', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->category_id = (null !== $col) ? (int) $col : null;
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 0 + $startcol : KeywordGroupAssociatedKeywordTableMap::translateFieldName('KeywordGroupId', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->keyword_group_id = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 1 + $startcol : CategoryAssociatedKeywordTableMap::translateFieldName('KeywordId', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 1 + $startcol : KeywordGroupAssociatedKeywordTableMap::translateFieldName('KeywordId', TableMap::TYPE_PHPNAME, $indexType)];
             $this->keyword_id = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : CategoryAssociatedKeywordTableMap::translateFieldName('Position', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : KeywordGroupAssociatedKeywordTableMap::translateFieldName('Position', TableMap::TYPE_PHPNAME, $indexType)];
             $this->position = (null !== $col) ? (int) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : KeywordGroupAssociatedKeywordTableMap::translateFieldName('CreatedAt', TableMap::TYPE_PHPNAME, $indexType)];
+            if ($col === '0000-00-00 00:00:00') {
+                $col = null;
+            }
+            $this->created_at = (null !== $col) ? PropelDateTime::newInstance($col, null, '\DateTime') : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : KeywordGroupAssociatedKeywordTableMap::translateFieldName('UpdatedAt', TableMap::TYPE_PHPNAME, $indexType)];
+            if ($col === '0000-00-00 00:00:00') {
+                $col = null;
+            }
+            $this->updated_at = (null !== $col) ? PropelDateTime::newInstance($col, null, '\DateTime') : null;
             $this->resetModified();
 
             $this->setNew(false);
@@ -506,10 +615,10 @@ abstract class CategoryAssociatedKeyword implements ActiveRecordInterface
                 $this->ensureConsistency();
             }
 
-            return $startcol + 3; // 3 = CategoryAssociatedKeywordTableMap::NUM_HYDRATE_COLUMNS.
+            return $startcol + 5; // 5 = KeywordGroupAssociatedKeywordTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
-            throw new PropelException("Error populating \Keyword\Model\CategoryAssociatedKeyword object", 0, $e);
+            throw new PropelException("Error populating \Keyword\Model\KeywordGroupAssociatedKeyword object", 0, $e);
         }
     }
 
@@ -528,8 +637,8 @@ abstract class CategoryAssociatedKeyword implements ActiveRecordInterface
      */
     public function ensureConsistency()
     {
-        if ($this->aCategory !== null && $this->category_id !== $this->aCategory->getId()) {
-            $this->aCategory = null;
+        if ($this->aKeywordGroup !== null && $this->keyword_group_id !== $this->aKeywordGroup->getId()) {
+            $this->aKeywordGroup = null;
         }
         if ($this->aKeyword !== null && $this->keyword_id !== $this->aKeyword->getId()) {
             $this->aKeyword = null;
@@ -557,13 +666,13 @@ abstract class CategoryAssociatedKeyword implements ActiveRecordInterface
         }
 
         if ($con === null) {
-            $con = Propel::getServiceContainer()->getReadConnection(CategoryAssociatedKeywordTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getReadConnection(KeywordGroupAssociatedKeywordTableMap::DATABASE_NAME);
         }
 
         // We don't need to alter the object instance pool; we're just modifying this instance
         // already in the pool.
 
-        $dataFetcher = ChildCategoryAssociatedKeywordQuery::create(null, $this->buildPkeyCriteria())->setFormatter(ModelCriteria::FORMAT_STATEMENT)->find($con);
+        $dataFetcher = ChildKeywordGroupAssociatedKeywordQuery::create(null, $this->buildPkeyCriteria())->setFormatter(ModelCriteria::FORMAT_STATEMENT)->find($con);
         $row = $dataFetcher->fetch();
         $dataFetcher->close();
         if (!$row) {
@@ -573,7 +682,7 @@ abstract class CategoryAssociatedKeyword implements ActiveRecordInterface
 
         if ($deep) {  // also de-associate any related objects?
 
-            $this->aCategory = null;
+            $this->aKeywordGroup = null;
             $this->aKeyword = null;
         } // if (deep)
     }
@@ -584,8 +693,8 @@ abstract class CategoryAssociatedKeyword implements ActiveRecordInterface
      * @param      ConnectionInterface $con
      * @return void
      * @throws PropelException
-     * @see CategoryAssociatedKeyword::setDeleted()
-     * @see CategoryAssociatedKeyword::isDeleted()
+     * @see KeywordGroupAssociatedKeyword::setDeleted()
+     * @see KeywordGroupAssociatedKeyword::isDeleted()
      */
     public function delete(ConnectionInterface $con = null)
     {
@@ -594,12 +703,12 @@ abstract class CategoryAssociatedKeyword implements ActiveRecordInterface
         }
 
         if ($con === null) {
-            $con = Propel::getServiceContainer()->getWriteConnection(CategoryAssociatedKeywordTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getWriteConnection(KeywordGroupAssociatedKeywordTableMap::DATABASE_NAME);
         }
 
         $con->beginTransaction();
         try {
-            $deleteQuery = ChildCategoryAssociatedKeywordQuery::create()
+            $deleteQuery = ChildKeywordGroupAssociatedKeywordQuery::create()
                 ->filterByPrimaryKey($this->getPrimaryKey());
             $ret = $this->preDelete($con);
             if ($ret) {
@@ -636,7 +745,7 @@ abstract class CategoryAssociatedKeyword implements ActiveRecordInterface
         }
 
         if ($con === null) {
-            $con = Propel::getServiceContainer()->getWriteConnection(CategoryAssociatedKeywordTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getWriteConnection(KeywordGroupAssociatedKeywordTableMap::DATABASE_NAME);
         }
 
         $con->beginTransaction();
@@ -645,8 +754,19 @@ abstract class CategoryAssociatedKeyword implements ActiveRecordInterface
             $ret = $this->preSave($con);
             if ($isInsert) {
                 $ret = $ret && $this->preInsert($con);
+                // timestampable behavior
+                if (!$this->isColumnModified(KeywordGroupAssociatedKeywordTableMap::CREATED_AT)) {
+                    $this->setCreatedAt(time());
+                }
+                if (!$this->isColumnModified(KeywordGroupAssociatedKeywordTableMap::UPDATED_AT)) {
+                    $this->setUpdatedAt(time());
+                }
             } else {
                 $ret = $ret && $this->preUpdate($con);
+                // timestampable behavior
+                if ($this->isModified() && !$this->isColumnModified(KeywordGroupAssociatedKeywordTableMap::UPDATED_AT)) {
+                    $this->setUpdatedAt(time());
+                }
             }
             if ($ret) {
                 $affectedRows = $this->doSave($con);
@@ -656,7 +776,7 @@ abstract class CategoryAssociatedKeyword implements ActiveRecordInterface
                     $this->postUpdate($con);
                 }
                 $this->postSave($con);
-                CategoryAssociatedKeywordTableMap::addInstanceToPool($this);
+                KeywordGroupAssociatedKeywordTableMap::addInstanceToPool($this);
             } else {
                 $affectedRows = 0;
             }
@@ -691,11 +811,11 @@ abstract class CategoryAssociatedKeyword implements ActiveRecordInterface
             // method.  This object relates to these object(s) by a
             // foreign key reference.
 
-            if ($this->aCategory !== null) {
-                if ($this->aCategory->isModified() || $this->aCategory->isNew()) {
-                    $affectedRows += $this->aCategory->save($con);
+            if ($this->aKeywordGroup !== null) {
+                if ($this->aKeywordGroup->isModified() || $this->aKeywordGroup->isNew()) {
+                    $affectedRows += $this->aKeywordGroup->save($con);
                 }
-                $this->setCategory($this->aCategory);
+                $this->setKeywordGroup($this->aKeywordGroup);
             }
 
             if ($this->aKeyword !== null) {
@@ -738,18 +858,24 @@ abstract class CategoryAssociatedKeyword implements ActiveRecordInterface
 
 
          // check the columns in natural order for more readable SQL queries
-        if ($this->isColumnModified(CategoryAssociatedKeywordTableMap::CATEGORY_ID)) {
-            $modifiedColumns[':p' . $index++]  = 'CATEGORY_ID';
+        if ($this->isColumnModified(KeywordGroupAssociatedKeywordTableMap::KEYWORD_GROUP_ID)) {
+            $modifiedColumns[':p' . $index++]  = 'KEYWORD_GROUP_ID';
         }
-        if ($this->isColumnModified(CategoryAssociatedKeywordTableMap::KEYWORD_ID)) {
+        if ($this->isColumnModified(KeywordGroupAssociatedKeywordTableMap::KEYWORD_ID)) {
             $modifiedColumns[':p' . $index++]  = 'KEYWORD_ID';
         }
-        if ($this->isColumnModified(CategoryAssociatedKeywordTableMap::POSITION)) {
+        if ($this->isColumnModified(KeywordGroupAssociatedKeywordTableMap::POSITION)) {
             $modifiedColumns[':p' . $index++]  = 'POSITION';
+        }
+        if ($this->isColumnModified(KeywordGroupAssociatedKeywordTableMap::CREATED_AT)) {
+            $modifiedColumns[':p' . $index++]  = 'CREATED_AT';
+        }
+        if ($this->isColumnModified(KeywordGroupAssociatedKeywordTableMap::UPDATED_AT)) {
+            $modifiedColumns[':p' . $index++]  = 'UPDATED_AT';
         }
 
         $sql = sprintf(
-            'INSERT INTO category_associated_keyword (%s) VALUES (%s)',
+            'INSERT INTO keyword_group_associated_keyword (%s) VALUES (%s)',
             implode(', ', $modifiedColumns),
             implode(', ', array_keys($modifiedColumns))
         );
@@ -758,14 +884,20 @@ abstract class CategoryAssociatedKeyword implements ActiveRecordInterface
             $stmt = $con->prepare($sql);
             foreach ($modifiedColumns as $identifier => $columnName) {
                 switch ($columnName) {
-                    case 'CATEGORY_ID':
-                        $stmt->bindValue($identifier, $this->category_id, PDO::PARAM_INT);
+                    case 'KEYWORD_GROUP_ID':
+                        $stmt->bindValue($identifier, $this->keyword_group_id, PDO::PARAM_INT);
                         break;
                     case 'KEYWORD_ID':
                         $stmt->bindValue($identifier, $this->keyword_id, PDO::PARAM_INT);
                         break;
                     case 'POSITION':
                         $stmt->bindValue($identifier, $this->position, PDO::PARAM_INT);
+                        break;
+                    case 'CREATED_AT':
+                        $stmt->bindValue($identifier, $this->created_at ? $this->created_at->format("Y-m-d H:i:s") : null, PDO::PARAM_STR);
+                        break;
+                    case 'UPDATED_AT':
+                        $stmt->bindValue($identifier, $this->updated_at ? $this->updated_at->format("Y-m-d H:i:s") : null, PDO::PARAM_STR);
                         break;
                 }
             }
@@ -806,7 +938,7 @@ abstract class CategoryAssociatedKeyword implements ActiveRecordInterface
      */
     public function getByName($name, $type = TableMap::TYPE_PHPNAME)
     {
-        $pos = CategoryAssociatedKeywordTableMap::translateFieldName($name, $type, TableMap::TYPE_NUM);
+        $pos = KeywordGroupAssociatedKeywordTableMap::translateFieldName($name, $type, TableMap::TYPE_NUM);
         $field = $this->getByPosition($pos);
 
         return $field;
@@ -823,13 +955,19 @@ abstract class CategoryAssociatedKeyword implements ActiveRecordInterface
     {
         switch ($pos) {
             case 0:
-                return $this->getCategoryId();
+                return $this->getKeywordGroupId();
                 break;
             case 1:
                 return $this->getKeywordId();
                 break;
             case 2:
                 return $this->getPosition();
+                break;
+            case 3:
+                return $this->getCreatedAt();
+                break;
+            case 4:
+                return $this->getUpdatedAt();
                 break;
             default:
                 return null;
@@ -854,15 +992,17 @@ abstract class CategoryAssociatedKeyword implements ActiveRecordInterface
      */
     public function toArray($keyType = TableMap::TYPE_PHPNAME, $includeLazyLoadColumns = true, $alreadyDumpedObjects = array(), $includeForeignObjects = false)
     {
-        if (isset($alreadyDumpedObjects['CategoryAssociatedKeyword'][serialize($this->getPrimaryKey())])) {
+        if (isset($alreadyDumpedObjects['KeywordGroupAssociatedKeyword'][serialize($this->getPrimaryKey())])) {
             return '*RECURSION*';
         }
-        $alreadyDumpedObjects['CategoryAssociatedKeyword'][serialize($this->getPrimaryKey())] = true;
-        $keys = CategoryAssociatedKeywordTableMap::getFieldNames($keyType);
+        $alreadyDumpedObjects['KeywordGroupAssociatedKeyword'][serialize($this->getPrimaryKey())] = true;
+        $keys = KeywordGroupAssociatedKeywordTableMap::getFieldNames($keyType);
         $result = array(
-            $keys[0] => $this->getCategoryId(),
+            $keys[0] => $this->getKeywordGroupId(),
             $keys[1] => $this->getKeywordId(),
             $keys[2] => $this->getPosition(),
+            $keys[3] => $this->getCreatedAt(),
+            $keys[4] => $this->getUpdatedAt(),
         );
         $virtualColumns = $this->virtualColumns;
         foreach ($virtualColumns as $key => $virtualColumn) {
@@ -870,8 +1010,8 @@ abstract class CategoryAssociatedKeyword implements ActiveRecordInterface
         }
 
         if ($includeForeignObjects) {
-            if (null !== $this->aCategory) {
-                $result['Category'] = $this->aCategory->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
+            if (null !== $this->aKeywordGroup) {
+                $result['KeywordGroup'] = $this->aKeywordGroup->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
             }
             if (null !== $this->aKeyword) {
                 $result['Keyword'] = $this->aKeyword->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
@@ -894,7 +1034,7 @@ abstract class CategoryAssociatedKeyword implements ActiveRecordInterface
      */
     public function setByName($name, $value, $type = TableMap::TYPE_PHPNAME)
     {
-        $pos = CategoryAssociatedKeywordTableMap::translateFieldName($name, $type, TableMap::TYPE_NUM);
+        $pos = KeywordGroupAssociatedKeywordTableMap::translateFieldName($name, $type, TableMap::TYPE_NUM);
 
         return $this->setByPosition($pos, $value);
     }
@@ -911,13 +1051,19 @@ abstract class CategoryAssociatedKeyword implements ActiveRecordInterface
     {
         switch ($pos) {
             case 0:
-                $this->setCategoryId($value);
+                $this->setKeywordGroupId($value);
                 break;
             case 1:
                 $this->setKeywordId($value);
                 break;
             case 2:
                 $this->setPosition($value);
+                break;
+            case 3:
+                $this->setCreatedAt($value);
+                break;
+            case 4:
+                $this->setUpdatedAt($value);
                 break;
         } // switch()
     }
@@ -941,11 +1087,13 @@ abstract class CategoryAssociatedKeyword implements ActiveRecordInterface
      */
     public function fromArray($arr, $keyType = TableMap::TYPE_PHPNAME)
     {
-        $keys = CategoryAssociatedKeywordTableMap::getFieldNames($keyType);
+        $keys = KeywordGroupAssociatedKeywordTableMap::getFieldNames($keyType);
 
-        if (array_key_exists($keys[0], $arr)) $this->setCategoryId($arr[$keys[0]]);
+        if (array_key_exists($keys[0], $arr)) $this->setKeywordGroupId($arr[$keys[0]]);
         if (array_key_exists($keys[1], $arr)) $this->setKeywordId($arr[$keys[1]]);
         if (array_key_exists($keys[2], $arr)) $this->setPosition($arr[$keys[2]]);
+        if (array_key_exists($keys[3], $arr)) $this->setCreatedAt($arr[$keys[3]]);
+        if (array_key_exists($keys[4], $arr)) $this->setUpdatedAt($arr[$keys[4]]);
     }
 
     /**
@@ -955,11 +1103,13 @@ abstract class CategoryAssociatedKeyword implements ActiveRecordInterface
      */
     public function buildCriteria()
     {
-        $criteria = new Criteria(CategoryAssociatedKeywordTableMap::DATABASE_NAME);
+        $criteria = new Criteria(KeywordGroupAssociatedKeywordTableMap::DATABASE_NAME);
 
-        if ($this->isColumnModified(CategoryAssociatedKeywordTableMap::CATEGORY_ID)) $criteria->add(CategoryAssociatedKeywordTableMap::CATEGORY_ID, $this->category_id);
-        if ($this->isColumnModified(CategoryAssociatedKeywordTableMap::KEYWORD_ID)) $criteria->add(CategoryAssociatedKeywordTableMap::KEYWORD_ID, $this->keyword_id);
-        if ($this->isColumnModified(CategoryAssociatedKeywordTableMap::POSITION)) $criteria->add(CategoryAssociatedKeywordTableMap::POSITION, $this->position);
+        if ($this->isColumnModified(KeywordGroupAssociatedKeywordTableMap::KEYWORD_GROUP_ID)) $criteria->add(KeywordGroupAssociatedKeywordTableMap::KEYWORD_GROUP_ID, $this->keyword_group_id);
+        if ($this->isColumnModified(KeywordGroupAssociatedKeywordTableMap::KEYWORD_ID)) $criteria->add(KeywordGroupAssociatedKeywordTableMap::KEYWORD_ID, $this->keyword_id);
+        if ($this->isColumnModified(KeywordGroupAssociatedKeywordTableMap::POSITION)) $criteria->add(KeywordGroupAssociatedKeywordTableMap::POSITION, $this->position);
+        if ($this->isColumnModified(KeywordGroupAssociatedKeywordTableMap::CREATED_AT)) $criteria->add(KeywordGroupAssociatedKeywordTableMap::CREATED_AT, $this->created_at);
+        if ($this->isColumnModified(KeywordGroupAssociatedKeywordTableMap::UPDATED_AT)) $criteria->add(KeywordGroupAssociatedKeywordTableMap::UPDATED_AT, $this->updated_at);
 
         return $criteria;
     }
@@ -974,9 +1124,9 @@ abstract class CategoryAssociatedKeyword implements ActiveRecordInterface
      */
     public function buildPkeyCriteria()
     {
-        $criteria = new Criteria(CategoryAssociatedKeywordTableMap::DATABASE_NAME);
-        $criteria->add(CategoryAssociatedKeywordTableMap::CATEGORY_ID, $this->category_id);
-        $criteria->add(CategoryAssociatedKeywordTableMap::KEYWORD_ID, $this->keyword_id);
+        $criteria = new Criteria(KeywordGroupAssociatedKeywordTableMap::DATABASE_NAME);
+        $criteria->add(KeywordGroupAssociatedKeywordTableMap::KEYWORD_GROUP_ID, $this->keyword_group_id);
+        $criteria->add(KeywordGroupAssociatedKeywordTableMap::KEYWORD_ID, $this->keyword_id);
 
         return $criteria;
     }
@@ -989,7 +1139,7 @@ abstract class CategoryAssociatedKeyword implements ActiveRecordInterface
     public function getPrimaryKey()
     {
         $pks = array();
-        $pks[0] = $this->getCategoryId();
+        $pks[0] = $this->getKeywordGroupId();
         $pks[1] = $this->getKeywordId();
 
         return $pks;
@@ -1003,7 +1153,7 @@ abstract class CategoryAssociatedKeyword implements ActiveRecordInterface
      */
     public function setPrimaryKey($keys)
     {
-        $this->setCategoryId($keys[0]);
+        $this->setKeywordGroupId($keys[0]);
         $this->setKeywordId($keys[1]);
     }
 
@@ -1014,7 +1164,7 @@ abstract class CategoryAssociatedKeyword implements ActiveRecordInterface
     public function isPrimaryKeyNull()
     {
 
-        return (null === $this->getCategoryId()) && (null === $this->getKeywordId());
+        return (null === $this->getKeywordGroupId()) && (null === $this->getKeywordId());
     }
 
     /**
@@ -1023,16 +1173,18 @@ abstract class CategoryAssociatedKeyword implements ActiveRecordInterface
      * If desired, this method can also make copies of all associated (fkey referrers)
      * objects.
      *
-     * @param      object $copyObj An object of \Keyword\Model\CategoryAssociatedKeyword (or compatible) type.
+     * @param      object $copyObj An object of \Keyword\Model\KeywordGroupAssociatedKeyword (or compatible) type.
      * @param      boolean $deepCopy Whether to also copy all rows that refer (by fkey) to the current row.
      * @param      boolean $makeNew Whether to reset autoincrement PKs and make the object new.
      * @throws PropelException
      */
     public function copyInto($copyObj, $deepCopy = false, $makeNew = true)
     {
-        $copyObj->setCategoryId($this->getCategoryId());
+        $copyObj->setKeywordGroupId($this->getKeywordGroupId());
         $copyObj->setKeywordId($this->getKeywordId());
         $copyObj->setPosition($this->getPosition());
+        $copyObj->setCreatedAt($this->getCreatedAt());
+        $copyObj->setUpdatedAt($this->getUpdatedAt());
         if ($makeNew) {
             $copyObj->setNew(true);
         }
@@ -1047,7 +1199,7 @@ abstract class CategoryAssociatedKeyword implements ActiveRecordInterface
      * objects.
      *
      * @param      boolean $deepCopy Whether to also copy all rows that refer (by fkey) to the current row.
-     * @return                 \Keyword\Model\CategoryAssociatedKeyword Clone of current object.
+     * @return                 \Keyword\Model\KeywordGroupAssociatedKeyword Clone of current object.
      * @throws PropelException
      */
     public function copy($deepCopy = false)
@@ -1061,26 +1213,26 @@ abstract class CategoryAssociatedKeyword implements ActiveRecordInterface
     }
 
     /**
-     * Declares an association between this object and a ChildCategory object.
+     * Declares an association between this object and a ChildKeywordGroup object.
      *
-     * @param                  ChildCategory $v
-     * @return                 \Keyword\Model\CategoryAssociatedKeyword The current object (for fluent API support)
+     * @param                  ChildKeywordGroup $v
+     * @return                 \Keyword\Model\KeywordGroupAssociatedKeyword The current object (for fluent API support)
      * @throws PropelException
      */
-    public function setCategory(ChildCategory $v = null)
+    public function setKeywordGroup(ChildKeywordGroup $v = null)
     {
         if ($v === null) {
-            $this->setCategoryId(NULL);
+            $this->setKeywordGroupId(NULL);
         } else {
-            $this->setCategoryId($v->getId());
+            $this->setKeywordGroupId($v->getId());
         }
 
-        $this->aCategory = $v;
+        $this->aKeywordGroup = $v;
 
         // Add binding for other direction of this n:n relationship.
-        // If this object has already been added to the ChildCategory object, it will not be re-added.
+        // If this object has already been added to the ChildKeywordGroup object, it will not be re-added.
         if ($v !== null) {
-            $v->addCategoryAssociatedKeyword($this);
+            $v->addKeywordGroupAssociatedKeyword($this);
         }
 
 
@@ -1089,33 +1241,33 @@ abstract class CategoryAssociatedKeyword implements ActiveRecordInterface
 
 
     /**
-     * Get the associated ChildCategory object
+     * Get the associated ChildKeywordGroup object
      *
      * @param      ConnectionInterface $con Optional Connection object.
-     * @return                 ChildCategory The associated ChildCategory object.
+     * @return                 ChildKeywordGroup The associated ChildKeywordGroup object.
      * @throws PropelException
      */
-    public function getCategory(ConnectionInterface $con = null)
+    public function getKeywordGroup(ConnectionInterface $con = null)
     {
-        if ($this->aCategory === null && ($this->category_id !== null)) {
-            $this->aCategory = CategoryQuery::create()->findPk($this->category_id, $con);
+        if ($this->aKeywordGroup === null && ($this->keyword_group_id !== null)) {
+            $this->aKeywordGroup = ChildKeywordGroupQuery::create()->findPk($this->keyword_group_id, $con);
             /* The following can be used additionally to
                 guarantee the related object contains a reference
                 to this object.  This level of coupling may, however, be
                 undesirable since it could result in an only partially populated collection
                 in the referenced object.
-                $this->aCategory->addCategoryAssociatedKeywords($this);
+                $this->aKeywordGroup->addKeywordGroupAssociatedKeywords($this);
              */
         }
 
-        return $this->aCategory;
+        return $this->aKeywordGroup;
     }
 
     /**
      * Declares an association between this object and a ChildKeyword object.
      *
      * @param                  ChildKeyword $v
-     * @return                 \Keyword\Model\CategoryAssociatedKeyword The current object (for fluent API support)
+     * @return                 \Keyword\Model\KeywordGroupAssociatedKeyword The current object (for fluent API support)
      * @throws PropelException
      */
     public function setKeyword(ChildKeyword $v = null)
@@ -1131,7 +1283,7 @@ abstract class CategoryAssociatedKeyword implements ActiveRecordInterface
         // Add binding for other direction of this n:n relationship.
         // If this object has already been added to the ChildKeyword object, it will not be re-added.
         if ($v !== null) {
-            $v->addCategoryAssociatedKeyword($this);
+            $v->addKeywordGroupAssociatedKeyword($this);
         }
 
 
@@ -1155,7 +1307,7 @@ abstract class CategoryAssociatedKeyword implements ActiveRecordInterface
                 to this object.  This level of coupling may, however, be
                 undesirable since it could result in an only partially populated collection
                 in the referenced object.
-                $this->aKeyword->addCategoryAssociatedKeywords($this);
+                $this->aKeyword->addKeywordGroupAssociatedKeywords($this);
              */
         }
 
@@ -1167,9 +1319,11 @@ abstract class CategoryAssociatedKeyword implements ActiveRecordInterface
      */
     public function clear()
     {
-        $this->category_id = null;
+        $this->keyword_group_id = null;
         $this->keyword_id = null;
         $this->position = null;
+        $this->created_at = null;
+        $this->updated_at = null;
         $this->alreadyInSave = false;
         $this->clearAllReferences();
         $this->resetModified();
@@ -1191,7 +1345,7 @@ abstract class CategoryAssociatedKeyword implements ActiveRecordInterface
         if ($deep) {
         } // if ($deep)
 
-        $this->aCategory = null;
+        $this->aKeywordGroup = null;
         $this->aKeyword = null;
     }
 
@@ -1202,7 +1356,21 @@ abstract class CategoryAssociatedKeyword implements ActiveRecordInterface
      */
     public function __toString()
     {
-        return (string) $this->exportTo(CategoryAssociatedKeywordTableMap::DEFAULT_STRING_FORMAT);
+        return (string) $this->exportTo(KeywordGroupAssociatedKeywordTableMap::DEFAULT_STRING_FORMAT);
+    }
+
+    // timestampable behavior
+
+    /**
+     * Mark the current object so that the update date doesn't get updated during next save
+     *
+     * @return     ChildKeywordGroupAssociatedKeyword The current object (for fluent API support)
+     */
+    public function keepUpdateDateUnchanged()
+    {
+        $this->modifiedColumns[KeywordGroupAssociatedKeywordTableMap::UPDATED_AT] = true;
+
+        return $this;
     }
 
     /**
