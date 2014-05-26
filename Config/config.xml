@@ -20,6 +20,7 @@
         <form name="keyword.admin.product.modification" class="Keyword\Form\KeywordProductModificationForm"/>
 
         <form name="keyword.group.admin.creation" class="Keyword\Form\KeywordGroupCreationForm"/>
+        <form name="keyword.group.admin.modification" class="Keyword\Form\KeywordGroupModificationForm"/>
 
         <form name="keyword.admin.creation" class="Keyword\Form\KeywordCreationForm"/>
         <form name="keyword.admin.modification" class="Keyword\Form\KeywordModificationForm"/>
@@ -27,6 +28,10 @@
 
     <services>
         <service id="keyword.action" class="Keyword\Action\Keyword">
+            <tag name="kernel.event_subscriber"/>
+        </service>
+
+        <service id="keywordGroup.action" class="Keyword\Action\KeywordGroup">
             <tag name="kernel.event_subscriber"/>
         </service>
     </services>

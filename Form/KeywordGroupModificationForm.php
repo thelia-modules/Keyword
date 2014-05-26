@@ -20,69 +20,50 @@
 /*	    along with this program. If not, see <http://www.gnu.org/licenses/>.         */
 /*                                                                                   */
 /*************************************************************************************/
+
 namespace Keyword\Form;
 
 use Keyword\Model\KeywordGroupQuery;
-use Symfony\Component\Validator\Constraints\Callback;
-use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\GreaterThan;
 use Symfony\Component\Validator\ExecutionContextInterface;
-use Thelia\Core\Translation\Translator;
-use Thelia\Form\BaseForm;
-use Symfony\Component\Validator\Constraints;
+use Thelia\Form\StandardDescriptionFieldsTrait;
 
-class KeywordGroupCreationForm extends BaseForm
+/**
+ * Class KeywordGroupModificationForm
+ * @package Thelia\Form
+ * @author Michaël Espeche <mespeche@openstudio.fr>
+ */
+class KeywordGroupModificationForm extends KeywordGroupCreationForm
 {
+    use StandardDescriptionFieldsTrait;
+
     protected function buildForm()
     {
-        $this->formBuilder
-            ->add('title', 'text', array(
-                    'constraints' => array(
-                        new NotBlank()
-                    ),
-                    'label' => Translator::getInstance()->trans('Title'),
-                    'label_attr' => array(
-                        'for' => 'keyword_title'
-                    )
-                ))
-            ->add('code', 'text', array(
-                    'constraints' => array(
-                        new NotBlank(),
-                        new Callback(array(
-                            "methods" => array(
-                                array($this, "verifyExistingCode")
-                            )
-                        ))
-                    ),
-                    'label' => Translator::getInstance()->trans('[Keyword]Unique identifier'),
-                    'label_attr' => array(
-                        'for' => 'keyword_code'
-                    )
-                ))
-            ->add('visible', 'integer', array(
-                    'label' => Translator::getInstance()->trans('Visible ?'),
-                    'label_attr' => array(
-                        'for' => 'keyword_visible'
-                    )
-                ))
-            ->add("locale", "text", array(
-                    "constraints" => array(
-                        new NotBlank()
-                    )
-                ))
+        parent::buildForm();
 
+        $this->formBuilder
+            ->add("id", "hidden", array("constraints" => array(new GreaterThan(array('value' => 0)))))
         ;
+
+        // Add standard description fields, excluding title and locale, which a re defined in parent class
+        $this->addStandardDescFields(array('title', 'locale'));
     }
 
     public function verifyExistingCode($value, ExecutionContextInterface $context)
     {
-        $keywordGroup = KeywordGroupQuery::getKeywordGroupByCode($value);
-        if ($keywordGroup) {
-            $context->addViolation("This keyword group identifier already exist.");
+        $keywordGroupId = $this->getRequest()->get('keyword_group_id');
+        $keywordGroupUpdated = KeywordGroupQuery::create()->findPk($keywordGroupId);
+
+        // If the sent code isn't identical to the keyword group code being updated
+        if ($keywordGroupUpdated->getCode() !== $value) {
+
+            // Check if code keyword with this code exist
+            parent::verifyExistingCode($value, $context);
         }
     }
 
     public function getName()
     {
-        return 'admin_keyword_group_creation';
+        return "admin_keyword_group_modification";
     }
 }

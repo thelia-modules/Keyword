@@ -17,5 +17,8 @@ use Keyword\Model\Base\KeywordGroupQuery as BaseKeywordGroupQuery;
  */
 class KeywordGroupQuery extends BaseKeywordGroupQuery
 {
-
+    public static function getKeywordGroupByCode($code)
+    {
+        return self::create()->findOneByCode($code);
+    }
 } // KeywordGroupQuery
