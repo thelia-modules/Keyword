@@ -179,6 +179,7 @@ class KeywordTableMap extends TableMap
         $this->addRelation('CategoryAssociatedKeyword', '\\Keyword\\Model\\CategoryAssociatedKeyword', RelationMap::ONE_TO_MANY, array('id' => 'keyword_id', ), 'CASCADE', 'RESTRICT', 'CategoryAssociatedKeywords');
         $this->addRelation('ProductAssociatedKeyword', '\\Keyword\\Model\\ProductAssociatedKeyword', RelationMap::ONE_TO_MANY, array('id' => 'keyword_id', ), 'CASCADE', 'RESTRICT', 'ProductAssociatedKeywords');
         $this->addRelation('KeywordI18n', '\\Keyword\\Model\\KeywordI18n', RelationMap::ONE_TO_MANY, array('id' => 'id', ), 'CASCADE', null, 'KeywordI18ns');
+        $this->addRelation('KeywordGroup', '\\Keyword\\Model\\KeywordGroup', RelationMap::MANY_TO_MANY, array(), 'CASCADE', 'RESTRICT', 'KeywordGroups');
     } // buildRelations()
 
     /**

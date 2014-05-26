@@ -175,6 +175,7 @@ class KeywordGroupTableMap extends TableMap
     {
         $this->addRelation('KeywordGroupAssociatedKeyword', '\\Keyword\\Model\\KeywordGroupAssociatedKeyword', RelationMap::ONE_TO_MANY, array('id' => 'keyword_group_id', ), 'CASCADE', 'RESTRICT', 'KeywordGroupAssociatedKeywords');
         $this->addRelation('KeywordGroupI18n', '\\Keyword\\Model\\KeywordGroupI18n', RelationMap::ONE_TO_MANY, array('id' => 'id', ), 'CASCADE', null, 'KeywordGroupI18ns');
+        $this->addRelation('Keyword', '\\Keyword\\Model\\Keyword', RelationMap::MANY_TO_MANY, array(), 'CASCADE', 'RESTRICT', 'Keywords');
     } // buildRelations()
 
     /**

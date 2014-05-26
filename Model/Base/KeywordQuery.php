@@ -934,6 +934,23 @@ abstract class KeywordQuery extends ModelCriteria
     }
 
     /**
+     * Filter the query by a related KeywordGroup object
+     * using the keyword_group_associated_keyword table as cross reference
+     *
+     * @param KeywordGroup $keywordGroup the related object to use as filter
+     * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return ChildKeywordQuery The current query, for fluid interface
+     */
+    public function filterByKeywordGroup($keywordGroup, $comparison = Criteria::EQUAL)
+    {
+        return $this
+            ->useKeywordGroupAssociatedKeywordQuery()
+            ->filterByKeywordGroup($keywordGroup, $comparison)
+            ->endUse();
+    }
+
+    /**
      * Exclude object from result
      *
      * @param   ChildKeyword $keyword Object to remove from the list of results

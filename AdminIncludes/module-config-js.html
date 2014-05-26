@@ -13,6 +13,10 @@
             $('#keyword_delete_id').val($(this).data('id'));
         });
 
+        $('a.keyword-group-delete').click(function(ev) {
+            $('#keyword_group_delete_id').val($(this).data('id'));
+        });
+
         {* Inline editing of object position using bootstrap-editable *}
 
         $('.keywordPositionChange').editable({

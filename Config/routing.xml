@@ -62,4 +62,8 @@
     <route id="admin.keyword.group.save" path="/admin/module/Keyword/group/save">
         <default key="_controller">Keyword\Controller\Admin\KeywordGroupController::processUpdateAction</default>
     </route>
+
+    <route id="admin.keyword.group.view" path="/admin/module/Keyword/group/view">
+        <default key="_controller">Keyword\Controller\Admin\KeywordGroupController::viewAction</default>
+    </route>
 </routes>

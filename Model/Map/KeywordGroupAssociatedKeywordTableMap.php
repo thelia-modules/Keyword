@@ -145,6 +145,7 @@ class KeywordGroupAssociatedKeywordTableMap extends TableMap
         $this->setClassName('\\Keyword\\Model\\KeywordGroupAssociatedKeyword');
         $this->setPackage('Keyword.Model');
         $this->setUseIdGenerator(false);
+        $this->setIsCrossRef(true);
         // columns
         $this->addForeignPrimaryKey('KEYWORD_GROUP_ID', 'KeywordGroupId', 'INTEGER' , 'keyword_group', 'ID', true, null, null);
         $this->addForeignPrimaryKey('KEYWORD_ID', 'KeywordId', 'INTEGER' , 'keyword', 'ID', true, null, null);

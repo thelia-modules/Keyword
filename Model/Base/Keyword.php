@@ -12,8 +12,10 @@ use Keyword\Model\ContentAssociatedKeywordQuery as ChildContentAssociatedKeyword
 use Keyword\Model\FolderAssociatedKeyword as ChildFolderAssociatedKeyword;
 use Keyword\Model\FolderAssociatedKeywordQuery as ChildFolderAssociatedKeywordQuery;
 use Keyword\Model\Keyword as ChildKeyword;
+use Keyword\Model\KeywordGroup as ChildKeywordGroup;
 use Keyword\Model\KeywordGroupAssociatedKeyword as ChildKeywordGroupAssociatedKeyword;
 use Keyword\Model\KeywordGroupAssociatedKeywordQuery as ChildKeywordGroupAssociatedKeywordQuery;
+use Keyword\Model\KeywordGroupQuery as ChildKeywordGroupQuery;
 use Keyword\Model\KeywordI18n as ChildKeywordI18n;
 use Keyword\Model\KeywordI18nQuery as ChildKeywordI18nQuery;
 use Keyword\Model\KeywordQuery as ChildKeywordQuery;
@@ -140,6 +142,11 @@ abstract class Keyword implements ActiveRecordInterface
     protected $collKeywordI18nsPartial;
 
     /**
+     * @var        ChildKeywordGroup[] Collection to store aggregation of ChildKeywordGroup objects.
+     */
+    protected $collKeywordGroups;
+
+    /**
      * Flag to prevent endless save loop, if this object is referenced
      * by another object which falls in this transaction.
      *
@@ -160,6 +167,12 @@ abstract class Keyword implements ActiveRecordInterface
      * @var        array[ChildKeywordI18n]
      */
     protected $currentTranslations;
+
+    /**
+     * An array of objects scheduled for deletion.
+     * @var ObjectCollection
+     */
+    protected $keywordGroupsScheduledForDeletion = null;
 
     /**
      * An array of objects scheduled for deletion.
@@ -806,6 +819,7 @@ abstract class Keyword implements ActiveRecordInterface
 
             $this->collKeywordI18ns = null;
 
+            $this->collKeywordGroups = null;
         } // if (deep)
     }
 
@@ -937,6 +951,33 @@ abstract class Keyword implements ActiveRecordInterface
                 }
                 $affectedRows += 1;
                 $this->resetModified();
+            }
+
+            if ($this->keywordGroupsScheduledForDeletion !== null) {
+                if (!$this->keywordGroupsScheduledForDeletion->isEmpty()) {
+                    $pks = array();
+                    $pk  = $this->getPrimaryKey();
+                    foreach ($this->keywordGroupsScheduledForDeletion->getPrimaryKeys(false) as $remotePk) {
+                        $pks[] = array($remotePk, $pk);
+                    }
+
+                    KeywordGroupAssociatedKeywordQuery::create()
+                        ->filterByPrimaryKeys($pks)
+                        ->delete($con);
+                    $this->keywordGroupsScheduledForDeletion = null;
+                }
+
+                foreach ($this->getKeywordGroups() as $keywordGroup) {
+                    if ($keywordGroup->isModified()) {
+                        $keywordGroup->save($con);
+                    }
+                }
+            } elseif ($this->collKeywordGroups) {
+                foreach ($this->collKeywordGroups as $keywordGroup) {
+                    if ($keywordGroup->isModified()) {
+                        $keywordGroup->save($con);
+                    }
+                }
             }
 
             if ($this->keywordGroupAssociatedKeywordsScheduledForDeletion !== null) {
@@ -2980,6 +3021,189 @@ abstract class Keyword implements ActiveRecordInterface
     }
 
     /**
+     * Clears out the collKeywordGroups collection
+     *
+     * This does not modify the database; however, it will remove any associated objects, causing
+     * them to be refetched by subsequent calls to accessor method.
+     *
+     * @return void
+     * @see        addKeywordGroups()
+     */
+    public function clearKeywordGroups()
+    {
+        $this->collKeywordGroups = null; // important to set this to NULL since that means it is uninitialized
+        $this->collKeywordGroupsPartial = null;
+    }
+
+    /**
+     * Initializes the collKeywordGroups collection.
+     *
+     * By default this just sets the collKeywordGroups collection to an empty collection (like clearKeywordGroups());
+     * however, you may wish to override this method in your stub class to provide setting appropriate
+     * to your application -- for example, setting the initial array to the values stored in database.
+     *
+     * @return void
+     */
+    public function initKeywordGroups()
+    {
+        $this->collKeywordGroups = new ObjectCollection();
+        $this->collKeywordGroups->setModel('\Keyword\Model\KeywordGroup');
+    }
+
+    /**
+     * Gets a collection of ChildKeywordGroup objects related by a many-to-many relationship
+     * to the current object by way of the keyword_group_associated_keyword cross-reference table.
+     *
+     * If the $criteria is not null, it is used to always fetch the results from the database.
+     * Otherwise the results are fetched from the database the first time, then cached.
+     * Next time the same method is called without $criteria, the cached collection is returned.
+     * If this ChildKeyword is new, it will return
+     * an empty collection or the current collection; the criteria is ignored on a new object.
+     *
+     * @param      Criteria $criteria Optional query object to filter the query
+     * @param      ConnectionInterface $con Optional connection object
+     *
+     * @return ObjectCollection|ChildKeywordGroup[] List of ChildKeywordGroup objects
+     */
+    public function getKeywordGroups($criteria = null, ConnectionInterface $con = null)
+    {
+        if (null === $this->collKeywordGroups || null !== $criteria) {
+            if ($this->isNew() && null === $this->collKeywordGroups) {
+                // return empty collection
+                $this->initKeywordGroups();
+            } else {
+                $collKeywordGroups = ChildKeywordGroupQuery::create(null, $criteria)
+                    ->filterByKeyword($this)
+                    ->find($con);
+                if (null !== $criteria) {
+                    return $collKeywordGroups;
+                }
+                $this->collKeywordGroups = $collKeywordGroups;
+            }
+        }
+
+        return $this->collKeywordGroups;
+    }
+
+    /**
+     * Sets a collection of KeywordGroup objects related by a many-to-many relationship
+     * to the current object by way of the keyword_group_associated_keyword cross-reference table.
+     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
+     * and new objects from the given Propel collection.
+     *
+     * @param  Collection $keywordGroups A Propel collection.
+     * @param  ConnectionInterface $con Optional connection object
+     * @return ChildKeyword The current object (for fluent API support)
+     */
+    public function setKeywordGroups(Collection $keywordGroups, ConnectionInterface $con = null)
+    {
+        $this->clearKeywordGroups();
+        $currentKeywordGroups = $this->getKeywordGroups();
+
+        $this->keywordGroupsScheduledForDeletion = $currentKeywordGroups->diff($keywordGroups);
+
+        foreach ($keywordGroups as $keywordGroup) {
+            if (!$currentKeywordGroups->contains($keywordGroup)) {
+                $this->doAddKeywordGroup($keywordGroup);
+            }
+        }
+
+        $this->collKeywordGroups = $keywordGroups;
+
+        return $this;
+    }
+
+    /**
+     * Gets the number of ChildKeywordGroup objects related by a many-to-many relationship
+     * to the current object by way of the keyword_group_associated_keyword cross-reference table.
+     *
+     * @param      Criteria $criteria Optional query object to filter the query
+     * @param      boolean $distinct Set to true to force count distinct
+     * @param      ConnectionInterface $con Optional connection object
+     *
+     * @return int the number of related ChildKeywordGroup objects
+     */
+    public function countKeywordGroups($criteria = null, $distinct = false, ConnectionInterface $con = null)
+    {
+        if (null === $this->collKeywordGroups || null !== $criteria) {
+            if ($this->isNew() && null === $this->collKeywordGroups) {
+                return 0;
+            } else {
+                $query = ChildKeywordGroupQuery::create(null, $criteria);
+                if ($distinct) {
+                    $query->distinct();
+                }
+
+                return $query
+                    ->filterByKeyword($this)
+                    ->count($con);
+            }
+        } else {
+            return count($this->collKeywordGroups);
+        }
+    }
+
+    /**
+     * Associate a ChildKeywordGroup object to this object
+     * through the keyword_group_associated_keyword cross reference table.
+     *
+     * @param  ChildKeywordGroup $keywordGroup The ChildKeywordGroupAssociatedKeyword object to relate
+     * @return ChildKeyword The current object (for fluent API support)
+     */
+    public function addKeywordGroup(ChildKeywordGroup $keywordGroup)
+    {
+        if ($this->collKeywordGroups === null) {
+            $this->initKeywordGroups();
+        }
+
+        if (!$this->collKeywordGroups->contains($keywordGroup)) { // only add it if the **same** object is not already associated
+            $this->doAddKeywordGroup($keywordGroup);
+            $this->collKeywordGroups[] = $keywordGroup;
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param    KeywordGroup $keywordGroup The keywordGroup object to add.
+     */
+    protected function doAddKeywordGroup($keywordGroup)
+    {
+        $keywordGroupAssociatedKeyword = new ChildKeywordGroupAssociatedKeyword();
+        $keywordGroupAssociatedKeyword->setKeywordGroup($keywordGroup);
+        $this->addKeywordGroupAssociatedKeyword($keywordGroupAssociatedKeyword);
+        // set the back reference to this object directly as using provided method either results
+        // in endless loop or in multiple relations
+        if (!$keywordGroup->getKeywords()->contains($this)) {
+            $foreignCollection   = $keywordGroup->getKeywords();
+            $foreignCollection[] = $this;
+        }
+    }
+
+    /**
+     * Remove a ChildKeywordGroup object to this object
+     * through the keyword_group_associated_keyword cross reference table.
+     *
+     * @param ChildKeywordGroup $keywordGroup The ChildKeywordGroupAssociatedKeyword object to relate
+     * @return ChildKeyword The current object (for fluent API support)
+     */
+    public function removeKeywordGroup(ChildKeywordGroup $keywordGroup)
+    {
+        if ($this->getKeywordGroups()->contains($keywordGroup)) {
+            $this->collKeywordGroups->remove($this->collKeywordGroups->search($keywordGroup));
+
+            if (null === $this->keywordGroupsScheduledForDeletion) {
+                $this->keywordGroupsScheduledForDeletion = clone $this->collKeywordGroups;
+                $this->keywordGroupsScheduledForDeletion->clear();
+            }
+
+            $this->keywordGroupsScheduledForDeletion[] = $keywordGroup;
+        }
+
+        return $this;
+    }
+
+    /**
      * Clears the current object and sets all attributes to their default values
      */
     public function clear()
@@ -3039,6 +3263,11 @@ abstract class Keyword implements ActiveRecordInterface
                     $o->clearAllReferences($deep);
                 }
             }
+            if ($this->collKeywordGroups) {
+                foreach ($this->collKeywordGroups as $o) {
+                    $o->clearAllReferences($deep);
+                }
+            }
         } // if ($deep)
 
         // i18n behavior
@@ -3051,6 +3280,7 @@ abstract class Keyword implements ActiveRecordInterface
         $this->collCategoryAssociatedKeywords = null;
         $this->collProductAssociatedKeywords = null;
         $this->collKeywordI18ns = null;
+        $this->collKeywordGroups = null;
     }
 
     /**

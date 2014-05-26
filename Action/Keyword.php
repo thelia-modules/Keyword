@@ -38,6 +38,9 @@ use Keyword\Model\ContentAssociatedKeywordQuery;
 use Keyword\Model\FolderAssociatedKeyword;
 use Keyword\Model\FolderAssociatedKeywordQuery;
 
+use Keyword\Model\KeywordGroup;
+use Keyword\Model\KeywordGroupAssociatedKeyword;
+use Keyword\Model\KeywordGroupQuery;
 use Keyword\Model\KeywordQuery;
 use Keyword\Model\ProductAssociatedKeyword;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -187,9 +190,13 @@ class Keyword implements EventSubscriberInterface
             ->setLocale($event->getLocale())
             ->setTitle($event->getTitle())
             ->setCode($event->getCode())
-            ->setVisible($event->getVisible())
-            ->create()
-        ;
+            ->setVisible($event->getVisible());
+
+        $keywordGroup = KeywordGroupQuery::create()->findById($event->getKeywordGroup());
+
+        $keyword->setKeywordGroups($keywordGroup);
+
+        $keyword->create();
 
         $event->setKeyword($keyword);
     }

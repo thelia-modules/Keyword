@@ -380,7 +380,7 @@ class KeywordController extends AbstractCrudController
     protected function getCreationEvent($formData)
     {
 
-        $keywordCreateEvent = new KeywordEvents($formData['title'], $formData['code'], $formData['visible'], $formData['locale']);
+        $keywordCreateEvent = new KeywordEvents($formData['title'], $formData['code'], $formData['visible'], $formData['locale'], $formData['keyword_group']);
 
         return $keywordCreateEvent;
 

@@ -79,13 +79,15 @@ class KeywordEvents extends ActionEvent
     protected $code;
     protected $visible;
     protected $keyword;
+    protected $keywordGroup;
 
-    public function __construct($title, $code, $visible, $locale)
+    public function __construct($title, $code, $visible, $locale, $keywordGroup)
     {
         $this->title = $title;
         $this->code = $code;
         $this->visible = $visible;
         $this->locale = $locale;
+        $this->keywordGroup = $keywordGroup;
     }
 
     public function getLocale()
@@ -158,6 +160,24 @@ class KeywordEvents extends ActionEvent
     public function getVisible()
     {
         return $this->visible;
+    }
+
+    /**
+     * @param mixed $keywordGroup
+     */
+    public function setKeywordGroup($keywordGroup)
+    {
+        $this->keywordGroup = $keywordGroup;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getKeywordGroup()
+    {
+        return $this->keywordGroup;
     }
 
     /**

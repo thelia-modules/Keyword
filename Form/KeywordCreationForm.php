@@ -24,6 +24,7 @@ namespace Keyword\Form;
 
 use Keyword\Model\KeywordQuery;
 use Symfony\Component\Validator\Constraints\Callback;
+use Symfony\Component\Validator\Constraints\GreaterThan;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\ExecutionContextInterface;
 use Thelia\Core\Translation\Translator;
@@ -56,6 +57,13 @@ class KeywordCreationForm extends BaseForm
                     'label' => Translator::getInstance()->trans('[Keyword]Unique identifier'),
                     'label_attr' => array(
                         'for' => 'keyword_code'
+                    )
+                ))
+            ->add("keyword_group", "integer", array(
+                    "constraints" => array(
+                        new GreaterThan(array(
+                            'value' => 0
+                        ))
                     )
                 ))
             ->add('visible', 'integer', array(

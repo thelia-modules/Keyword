@@ -33,7 +33,7 @@
         </behavior>
     </table>
 
-    <table name="keyword_group_associated_keyword" namespace="Keyword\Model">
+    <table name="keyword_group_associated_keyword" isCrossRef="true" namespace="Keyword\Model">
         <column name="keyword_group_id" primaryKey="true" required="true" type="INTEGER" />
         <column name="keyword_id" primaryKey="true" required="true" type="INTEGER" />
         <column name="position" required="true" type="INTEGER" />

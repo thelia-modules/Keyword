@@ -23,6 +23,7 @@
 
 namespace Keyword\Loop;
 
+use Keyword\Model\Base\KeywordGroupAssociatedKeywordQuery;
 use Keyword\Model\KeywordQuery;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Thelia\Core\Template\Element\BaseI18nLoop;
@@ -70,6 +71,12 @@ class Keyword extends BaseI18nLoop implements PropelSearchLoopInterface
                     new Type\EnumListType(array('alpha', 'alpha-reverse', 'manual', 'manual_reverse', 'random', 'given_id'))
                 ),
                 'alpha'
+            ),
+            new Argument(
+                'keyword_group',
+                new TypeCollection(
+                    new Type\IntListType()
+                )
             )
         );
     }
@@ -78,6 +85,14 @@ class Keyword extends BaseI18nLoop implements PropelSearchLoopInterface
     {
 
         $search = KeywordQuery::create();
+
+        /* If keyword group criteria filter by keyword group code */
+        if ($this->getKeywordGroup()) {
+
+            $keywordGroup = KeywordGroupAssociatedKeywordQuery::create()->findByKeywordGroupId($this->getKeywordGroup());
+
+            $search->filterByKeywordGroupAssociatedKeyword($keywordGroup);
+        }
 
         /* If keyword criteria filter by keyword code */
         if ($this->getKeyword()) {

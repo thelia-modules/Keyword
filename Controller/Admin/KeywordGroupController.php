@@ -56,6 +56,15 @@ class KeywordGroupController extends AbstractCrudController
         );
     }
 
+    public function viewAction()
+    {
+        if (null !== $this->getExistingObject()) {
+            $keywordGroup = $this->getExistingObject();
+
+            return $this->render('keyword-group-view', array('keyword_group_id' => $keywordGroup->getId()));
+        }
+    }
+
     /**
      * Return the creation form for this object
      */
