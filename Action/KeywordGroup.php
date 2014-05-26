@@ -23,6 +23,7 @@
 
 namespace Keyword\Action;
 
+use Keyword\Event\KeywordGroupDeleteEvent;
 use Keyword\Event\KeywordGroupEvents;
 
 use Keyword\Event\KeywordGroupUpdateEvent;
@@ -75,6 +76,16 @@ class KeywordGroup implements EventSubscriberInterface
         }
     }
 
+    public function deleteKeywordGroup(KeywordGroupDeleteEvent $event)
+    {
+        if (null !== $keywordGroup = KeywordGroupQuery::create()->findPk($event->getKeywordGroupId())) {
+
+            $keywordGroup->delete();
+
+            $event->setKeywordGroup($keywordGroup);
+        }
+    }
+
     /**
      * Returns an array of event names this subscriber wants to listen to.
      *
@@ -99,7 +110,8 @@ class KeywordGroup implements EventSubscriberInterface
     {
         return array(
             KeywordGroupEvents::KEYWORD_GROUP_CREATE => array('createKeywordGroup', 128),
-            KeywordGroupEvents::KEYWORD_GROUP_UPDATE => array('updateKeywordGroup', 128)
+            KeywordGroupEvents::KEYWORD_GROUP_UPDATE => array('updateKeywordGroup', 128),
+            KeywordGroupEvents::KEYWORD_GROUP_DELETE => array('deleteKeywordGroup', 128)
         );
     }
 }

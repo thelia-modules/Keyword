@@ -23,6 +23,7 @@
 
 namespace Keyword\Controller\Admin;
 
+use Keyword\Event\KeywordGroupDeleteEvent;
 use Keyword\Event\KeywordGroupEvents;
 use Keyword\Event\KeywordGroupUpdateEvent;
 use Keyword\Form\KeywordGroupCreationForm;
@@ -50,7 +51,7 @@ class KeywordGroupController extends AbstractCrudController
 
             KeywordGroupEvents::KEYWORD_GROUP_CREATE,
             KeywordGroupEvents::KEYWORD_GROUP_UPDATE,
-            null,
+            KeywordGroupEvents::KEYWORD_GROUP_DELETE,
             null,
             null
         );
@@ -145,7 +146,7 @@ class KeywordGroupController extends AbstractCrudController
      */
     protected function getDeleteEvent()
     {
-        // TODO: Implement getDeleteEvent() method.
+        return new KeywordGroupDeleteEvent($this->getRequest()->get('keyword_group_id'), 0);
     }
 
     /**

@@ -66,4 +66,8 @@
     <route id="admin.keyword.group.view" path="/admin/module/Keyword/group/view">
         <default key="_controller">Keyword\Controller\Admin\KeywordGroupController::viewAction</default>
     </route>
+
+    <route id="admin.keyword.group.delete" path="/admin/module/Keyword/group/delete">
+        <default key="_controller">Keyword\Controller\Admin\KeywordGroupController::deleteAction</default>
+    </route>
 </routes>
