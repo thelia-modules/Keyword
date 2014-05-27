@@ -8,7 +8,7 @@ use Propel\Runtime\Propel;
 
 class KeywordGroup extends BaseKeywordGroup
 {
-
+    use \Thelia\Model\Tools\ModelEventDispatcherTrait;
     use \Thelia\Model\Tools\PositionManagementTrait;
 
     /**

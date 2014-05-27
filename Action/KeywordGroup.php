@@ -26,9 +26,11 @@ namespace Keyword\Action;
 use Keyword\Event\KeywordGroupDeleteEvent;
 use Keyword\Event\KeywordGroupEvents;
 
+use Keyword\Event\KeywordGroupToggleVisibilityEvent;
 use Keyword\Event\KeywordGroupUpdateEvent;
 use Keyword\Model\KeywordGroupQuery;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Thelia\Core\Event\UpdatePositionEvent;
 
 /**
  *
@@ -88,6 +90,38 @@ class KeywordGroup implements EventSubscriberInterface
         }
     }
 
+    public function updateKeywordGroupPosition(UpdatePositionEvent $event)
+    {
+        if (null !== $keywordGroup = KeywordGroupQuery::create()->findPk($event->getObjectId())) {
+
+            $keywordGroup->setDispatcher($event->getDispatcher());
+
+            switch ($event->getMode()) {
+                case UpdatePositionEvent::POSITION_ABSOLUTE:
+                    $keywordGroup->changeAbsolutePosition($event->getPosition());
+                    break;
+                case UpdatePositionEvent::POSITION_DOWN:
+                    $keywordGroup->movePositionDown();
+                    break;
+                case UpdatePositionEvent::POSITION_UP:
+                    $keywordGroup->movePositionUp();
+                    break;
+            }
+        }
+    }
+
+    public function toggleVisibilityKeywordGroup(KeywordGroupToggleVisibilityEvent $event)
+    {
+        $keywordGroup = $event->getKeywordGroup();
+
+        $keywordGroup
+            ->setVisible(!$keywordGroup->getVisible())
+            ->save();
+
+        $event->setKeywordGroup($keywordGroup);
+
+    }
+
     /**
      * Returns an array of event names this subscriber wants to listen to.
      *
@@ -111,9 +145,11 @@ class KeywordGroup implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return array(
-            KeywordGroupEvents::KEYWORD_GROUP_CREATE => array('createKeywordGroup', 128),
-            KeywordGroupEvents::KEYWORD_GROUP_UPDATE => array('updateKeywordGroup', 128),
-            KeywordGroupEvents::KEYWORD_GROUP_DELETE => array('deleteKeywordGroup', 128)
+            KeywordGroupEvents::KEYWORD_GROUP_CREATE                => array('createKeywordGroup', 128),
+            KeywordGroupEvents::KEYWORD_GROUP_UPDATE                => array('updateKeywordGroup', 128),
+            KeywordGroupEvents::KEYWORD_GROUP_DELETE                => array('deleteKeywordGroup', 128),
+            KeywordGroupEvents::KEYWORD_GROUP_UPDATE_POSITION       => array('updateKeywordGroupPosition', 128),
+            KeywordGroupEvents::KEYWORD_GROUP_TOGGLE_VISIBILITY     => array('toggleVisibilityKeywordGroup', 128)
         );
     }
 }

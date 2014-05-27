@@ -25,12 +25,14 @@ namespace Keyword\Controller\Admin;
 
 use Keyword\Event\KeywordGroupDeleteEvent;
 use Keyword\Event\KeywordGroupEvents;
+use Keyword\Event\KeywordGroupToggleVisibilityEvent;
 use Keyword\Event\KeywordGroupUpdateEvent;
 use Keyword\Form\KeywordGroupCreationForm;
 use Keyword\Form\KeywordGroupModificationForm;
 use Keyword\Model\KeywordGroupQuery;
 use Thelia\Controller\Admin\AbstractCrudController;
 use Thelia\Controller\Admin\unknown;
+use Thelia\Core\Event\UpdatePositionEvent;
 
 /**
  * Class KeywordGroupController
@@ -52,8 +54,8 @@ class KeywordGroupController extends AbstractCrudController
             KeywordGroupEvents::KEYWORD_GROUP_CREATE,
             KeywordGroupEvents::KEYWORD_GROUP_UPDATE,
             KeywordGroupEvents::KEYWORD_GROUP_DELETE,
-            null,
-            null
+            KeywordGroupEvents::KEYWORD_GROUP_TOGGLE_VISIBILITY,
+            KeywordGroupEvents::KEYWORD_GROUP_UPDATE_POSITION
         );
     }
 
@@ -80,6 +82,28 @@ class KeywordGroupController extends AbstractCrudController
     protected function getUpdateForm()
     {
         return new KeywordGroupModificationForm($this->getRequest());
+    }
+
+    /**
+     * @param $positionChangeMode
+     * @param $positionValue
+     * @return UpdatePositionEvent|void
+     */
+    protected function createUpdatePositionEvent($positionChangeMode, $positionValue)
+    {
+        return new UpdatePositionEvent(
+            $this->getRequest()->get('keyword_group_id', null),
+            $positionChangeMode,
+            $positionValue
+        );
+    }
+
+    /**
+     * @return KeywordToggleVisibilityEvent|void
+     */
+    protected function createToggleVisibilityEvent()
+    {
+        return new KeywordGroupToggleVisibilityEvent($this->getExistingObject());
     }
 
     /**

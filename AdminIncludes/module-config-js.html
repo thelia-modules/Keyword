@@ -13,5 +13,38 @@
             $('#keyword_group_delete_id').val($(this).data('id'));
         });
 
+        {* Inline editing of object position using bootstrap-editable *}
+
+        $('.keywordGroupPositionChange').editable({
+            type        : 'text',
+            title       : '{intl l="[Keyword]Enter new keyword group position"}',
+            mode        : 'popup',
+            inputclass  : 'input-mini',
+            placement   : 'left',
+            success     : function(response, newValue) {
+                // The URL template
+                var url = "{url path='/admin/module/Keyword/group/update-position' keyword_group_id='__ID__' position='__POS__'}";
+
+                // Perform subtitutions
+                url = url.replace('__ID__', $(this).data('id'))
+                        .replace('__POS__', newValue);
+
+                // Reload the page
+                location.href = url;
+            }
+        });
+
+        {* Toggle object visibility *}
+
+        $(".keywordGroupVisibleToggle").on('switch-change', function(event, data) {
+            $.ajax({
+                url : "{url path='admin/module/Keyword/group/toggle-online'}",
+                data : {
+                    keyword_group_id : $(this).data('id'),
+                    action : 'visibilityToggle'
+                }
+            });
+        });
+
     });
 </script>

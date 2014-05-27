@@ -39,6 +39,8 @@ class KeywordGroupEvents extends ActionEvent
     const KEYWORD_GROUP_CREATE            = 'keywordGroup.action.create';
     const KEYWORD_GROUP_UPDATE            = 'keywordGroup.action.update';
     const KEYWORD_GROUP_DELETE            = 'keywordGroup.action.delete';
+    const KEYWORD_GROUP_TOGGLE_VISIBILITY = 'keywordGroup.action.toggleVisibility';
+    const KEYWORD_GROUP_UPDATE_POSITION   = 'keywordGroup.action.updatePosition';
 
     protected $locale;
     protected $title;

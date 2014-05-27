@@ -71,4 +71,12 @@
     <route id="admin.keyword.group.delete" path="/admin/module/Keyword/group/delete">
         <default key="_controller">Keyword\Controller\Admin\KeywordGroupController::deleteAction</default>
     </route>
+
+    <route id="admin.keyword.group.update-position" path="/admin/module/Keyword/group/update-position">
+        <default key="_controller">Keyword\Controller\Admin\KeywordGroupController::updatePositionAction</default>
+    </route>
+
+    <route id="admin.keyword.group.toggle-online" path="/admin/module/Keyword/group/toggle-online">
+        <default key="_controller">Keyword\Controller\Admin\KeywordGroupController::setToggleVisibilityAction</default>
+    </route>
 </routes>
