@@ -50,6 +50,8 @@ class KeywordGroup implements EventSubscriberInterface
             ->setCode($event->getCode())
             ->setVisible($event->getVisible())
             ->create();
+
+        $event->setKeywordGroup($keywordGroup);
     }
 
     /**

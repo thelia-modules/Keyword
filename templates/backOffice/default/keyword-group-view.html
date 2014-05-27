@@ -72,7 +72,7 @@
                                     <td>{$ID}</td>
 
                                     <td class="object-title">
-                                        <a href="{url path='admin/module/Keyword' keyword_id=$ID}" title="{intl l='[Keyword]Browse this keyword'}">
+                                        <a title="{intl l='[Keyword]Browse this keyword'}" href="{url path='/admin/module/Keyword/view' keyword_id=$ID}">
                                             {$TITLE}
                                         </a>
                                     </td>
@@ -165,7 +165,7 @@
     {form_hidden_fields form=$form}
 
     {form_field form=$form field='success_url'}
-    <input type="hidden" name="{$name}" value="{url path='/admin/module/Keyword'}" />
+    <input type="hidden" name="{$name}" value="{url path='/admin/module/Keyword/group/view' keyword_group_id=$keyword_group_id}" />
     {/form_field}
 
     {form_field form=$form field='keyword_group'}
@@ -228,4 +228,75 @@
     }
 {/form}
 
+{* -- Delete keyword confirmation dialog ----------------------------------- *}
+
+{capture "keyword_delete_dialog"}
+    <input type="hidden" name="keyword_id" id="keyword_delete_id" value="" />
+    <input type="hidden" name="keyword_group_id" value="{$keyword_group_id}" />
+{/capture}
+
+{include
+file = "includes/generic-confirm-dialog.html"
+
+dialog_id       = "keyword_delete_dialog"
+dialog_title    = {intl l="[Keyword]Delete keyword"}
+dialog_message  = {intl l="[Keyword]Do you really want to delete this keyword and all its associations ?"}
+
+form_action         = {url path='/admin/module/Keyword/delete'}
+form_content        = {$smarty.capture.keyword_delete_dialog nofilter}
+}
+
+{/block}
+
+{block name="javascript-initialization"}
+    {javascripts file='assets/js/bootstrap-switch/bootstrap-switch.js'}
+    <script src="{$asset_url}"></script>
+    {/javascripts}
+
+    {javascripts file='assets/js/bootstrap-editable/bootstrap-editable.js'}
+    <script src="{$asset_url}"></script>
+    {/javascripts}
+
+    <script>
+        $(function() {
+
+            $('a.keyword-delete').click(function(ev) {
+                $('#keyword_delete_id').val($(this).data('id'));
+            });
+
+            {* Inline editing of object position using bootstrap-editable *}
+
+            $('.keywordPositionChange').editable({
+                type        : 'text',
+                title       : '{intl l="[Keyword]Enter new keyword position"}',
+                mode        : 'popup',
+                inputclass  : 'input-mini',
+                placement   : 'left',
+                success     : function(response, newValue) {
+                    // The URL template
+                    var url = "{url path='/admin/module/Keyword/update-position' keyword_id='__ID__' position='__POS__'}";
+
+                    // Perform subtitutions
+                    url = url.replace('__ID__', $(this).data('id'))
+                            .replace('__POS__', newValue);
+
+                    // Reload the page
+                    location.href = url;
+                }
+            });
+
+            {* Toggle object visibility *}
+
+            $(".keywordVisibleToggle").on('switch-change', function(event, data) {
+                $.ajax({
+                    url : "{url path='admin/module/Keyword/toggle-online'}",
+                    data : {
+                        keyword_id : $(this).data('id'),
+                        action : 'visibilityToggle'
+                    }
+                });
+            });
+
+        });
+    </script>
 {/block}

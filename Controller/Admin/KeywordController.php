@@ -34,6 +34,7 @@ use Keyword\Form\KeywordCreationForm;
 use Keyword\Form\KeywordModificationForm;
 use Keyword\Form\KeywordFolderModificationForm;
 use Keyword\Form\KeywordProductModificationForm;
+use Keyword\Model\Base\KeywordGroupAssociatedKeywordQuery;
 use Keyword\Model\KeywordQuery;
 
 use Propel\Runtime\Exception\PropelException;
@@ -518,6 +519,36 @@ class KeywordController extends AbstractCrudController
     {
         $args = $this->getEditionArguments();
         $this->redirect('/admin/module/Keyword/update?keyword_id='.$args['keyword_id'].'&current_tab='.$args['current_tab']);
+    }
+
+    /**
+     * Get the keyword group id from request
+     * @return int|mixed
+     *
+     */
+    protected function getKeywordGroupId()
+    {
+        $keywordGroupId = $this->getRequest()->get('keyword_group_id', null);
+
+        return $keywordGroupId != null ? $keywordGroupId : 0;
+    }
+
+    /**
+     * Put in this method post object delete processing if required.
+     *
+     * @param unknown $deleteEvent the delete event
+     * @return \Thelia\Controller\Admin\Response|void
+     */
+    protected function performAdditionalDeleteAction($deleteEvent)
+    {
+
+        $this->setCurrentRouter("router.keyword");
+
+        // Redirect to parent keyword group list
+        $this->redirectToRoute(
+            'admin.keyword.group.view',
+            array('keyword_group_id' => $this->getKeywordGroupId())
+        );
     }
 
     /**
