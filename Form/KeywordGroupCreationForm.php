@@ -53,7 +53,7 @@ class KeywordGroupCreationForm extends BaseForm
                             )
                         ))
                     ),
-                    'label' => Translator::getInstance()->trans('[Keyword]Unique identifier'),
+                    'label' => Translator::getInstance()->trans('Unique identifier', array(), 'keyword'),
                     'label_attr' => array(
                         'for' => 'keyword_code'
                     )
