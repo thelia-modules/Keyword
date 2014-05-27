@@ -9,13 +9,18 @@
 <div class="keyword edit-keyword">
     <div id="wrapper" class="container">
 
+        {loop name="keyword_edit" type="keyword" visible="*" id="{$keyword_id}" backend_context="1" lang="$edit_language_id"}
         <ul class="breadcrumb">
             <li><a href="{url path='admin/home'}">{intl l="Home"}</a></li>
             <li><a href="{url path='admin/module/Keyword'}">{intl l="[Keyword]Keywords"}</a></li>
+            {loop name="keyword_group" type="keyword_group" id="$KEYWORD_GROUP_ID"}
+                <li><a title="{intl l='[Keyword]Browse this keyword'}" href="{url path='/admin/module/Keyword/group/view' keyword_group_id=$ID}">{$TITLE}</a></li>
+            {/loop}
+            <li class="active">{$TITLE}</li>
         </ul>
 
         <div class="row">
-            {loop name="keyword_edit" type="keyword" visible="*" id="{$keyword_id}" backend_context="1" lang="$edit_language_id"}
+
             <div class="col-md-12 general-block-decorator">
                 <div class="row">
                     <div class="col-md-7 title">
@@ -54,10 +59,11 @@
                                     {form name="keyword.admin.modification"}
                                     <form method="POST" action="{url path='/admin/module/Keyword/save'}" {form_enctype form=$form} class="clearfix">
 
-                                    {include file="includes/inner-form-toolbar.html" close_url="{url path='/admin/module/Keyword' keyword_id=$keyword_id}"}
+                                    {include file="includes/inner-form-toolbar.html" close_url="{url path='/admin/module/Keyword/group/view' keyword_group_id=$KEYWORD_GROUP_ID}"}
 
                                     {* Be sure to get the keyword ID, even if the form could not be validated *}
                                     <input type="hidden" name="keyword_id" value="{$keyword_id}" />
+                                    <input type="hidden" name="keyword_group_id" value="{$KEYWORD_GROUP_ID}" />
 
                                     <input type="hidden" name="current_tab" value="general" />
 
@@ -120,8 +126,10 @@
                     </div>
                 </div>
             </div>
-            {/loop}
+
         </div>
+        {/loop}
+
     </div>
 </div>
 {/block}

@@ -187,7 +187,10 @@ class Keyword extends BaseI18nLoop implements PropelSearchLoopInterface
                 $productId[] = $product->getId();
             }
 
+            $keywordGroup = KeywordGroupAssociatedKeywordQuery::create()->findOneByKeywordId($keyword->getId());
+
             $loopResultRow->set("ID", $keyword->getId())
+                ->set("KEYWORD_GROUP_ID", $keywordGroup->getKeywordGroupId())
                 ->set("IS_TRANSLATED",$keyword->getVirtualColumn('IS_TRANSLATED'))
                 ->set("LOCALE",$this->locale)
                 ->set("TITLE",$keyword->getVirtualColumn('i18n_TITLE'))

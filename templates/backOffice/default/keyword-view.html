@@ -9,13 +9,18 @@
 <div class="keyword view-keyword">
     <div id="wrapper" class="container">
 
+        {loop name="keyword" type="keyword" id="$keyword_id"}
         <ul class="breadcrumb">
             <li><a href="{url path='admin/home'}">{intl l="Home"}</a></li>
             <li><a href="{url path='admin/module/Keyword'}">{intl l="[Keyword]Keywords"}</a></li>
+            {loop name="keyword_group" type="keyword_group" id="$KEYWORD_GROUP_ID"}
+                <li><a title="{intl l='[Keyword]Browse this keyword'}" href="{url path='/admin/module/Keyword/group/view' keyword_group_id=$ID}">{$TITLE}</a></li>
+            {/loop}
+            <li class="active">{$TITLE}</li>
         </ul>
 
         <div class="row">
-            {loop name="keyword" type="keyword" id="$keyword_id"}
+
             <div class="col-md-12 general-block-decorator">
                 <div class="row">
                     <div class="col-md-7 title">
@@ -333,8 +338,9 @@
                 </div>
 
             </div>
-            {/loop}
+
         </div>
+        {/loop}
     </div>
 </div>
 {/block}

@@ -184,6 +184,7 @@ class Keyword implements EventSubscriberInterface
 
     public function createKeyword(KeywordEvents $event)
     {
+
         $keyword = new \Keyword\Model\Keyword();
 
         $keyword
@@ -192,7 +193,7 @@ class Keyword implements EventSubscriberInterface
             ->setCode($event->getCode())
             ->setVisible($event->getVisible());
 
-        $keywordGroup = KeywordGroupQuery::create()->findById($event->getKeywordGroup());
+        $keywordGroup = KeywordGroupQuery::create()->findById($event->getKeywordGroupId());
 
         $keyword->setKeywordGroups($keywordGroup);
 

@@ -34,7 +34,6 @@ use Keyword\Form\KeywordCreationForm;
 use Keyword\Form\KeywordModificationForm;
 use Keyword\Form\KeywordFolderModificationForm;
 use Keyword\Form\KeywordProductModificationForm;
-use Keyword\Model\Base\KeywordGroupAssociatedKeywordQuery;
 use Keyword\Model\KeywordQuery;
 
 use Propel\Runtime\Exception\PropelException;
@@ -380,11 +379,9 @@ class KeywordController extends AbstractCrudController
      */
     protected function getCreationEvent($formData)
     {
-
-        $keywordCreateEvent = new KeywordEvents($formData['title'], $formData['code'], $formData['visible'], $formData['locale'], $formData['keyword_group']);
+        $keywordCreateEvent = new KeywordEvents($formData['title'], $formData['code'], $formData['visible'], $formData['locale'], $formData['keyword_group_id']);
 
         return $keywordCreateEvent;
-
     }
 
     /**
@@ -488,19 +485,27 @@ class KeywordController extends AbstractCrudController
      */
     protected function renderListTemplate($currentKeyword)
     {
-        return $this->render('module-configure',
-            array(
-                'module_code' => 'Keyword',
-                'code' => 'keyword',
-                'keyword_order' => $currentKeyword
-            ));
+        $request = $this->getRequest()->get('admin_keyword_creation');
+        if(isset($request['keyword_group_id'])){
+            $keywordGroupId = $request['keyword_group_id'];
+
+            return $this->render(
+                'keyword-group-view',
+                array(
+                    'keyword_group_id' => $keywordGroupId
+                )
+            );
+        }
+        else {
+            $this->redirect('/admin/module/Keyword');
+        }
+
     }
 
     protected function getEditionArguments()
     {
         return array(
-            'keyword_id' => $this->getRequest()->get('keyword_id', 0),
-            'current_tab' => $this->getRequest()->get('current_tab', 'general')
+            'keyword_id' => $this->getRequest()->get('keyword_id', 0)
         );
     }
 
@@ -518,7 +523,7 @@ class KeywordController extends AbstractCrudController
     protected function redirectToEditionTemplate()
     {
         $args = $this->getEditionArguments();
-        $this->redirect('/admin/module/Keyword/update?keyword_id='.$args['keyword_id'].'&current_tab='.$args['current_tab']);
+        $this->redirect('/admin/module/Keyword/update?keyword_id='.$args['keyword_id']);
     }
 
     /**
@@ -528,27 +533,10 @@ class KeywordController extends AbstractCrudController
      */
     protected function getKeywordGroupId()
     {
+
         $keywordGroupId = $this->getRequest()->get('keyword_group_id', null);
 
         return $keywordGroupId != null ? $keywordGroupId : 0;
-    }
-
-    /**
-     * Put in this method post object delete processing if required.
-     *
-     * @param unknown $deleteEvent the delete event
-     * @return \Thelia\Controller\Admin\Response|void
-     */
-    protected function performAdditionalDeleteAction($deleteEvent)
-    {
-
-        $this->setCurrentRouter("router.keyword");
-
-        // Redirect to parent keyword group list
-        $this->redirectToRoute(
-            'admin.keyword.group.view',
-            array('keyword_group_id' => $this->getKeywordGroupId())
-        );
     }
 
     /**
@@ -556,7 +544,15 @@ class KeywordController extends AbstractCrudController
      */
     protected function redirectToListTemplate()
     {
-        $this->redirect('/admin/module/Keyword');
+        // Set the module router to use module routes
+        $this->setCurrentRouter("router.keyword");
+
+        // Redirect to parent keyword group list
+        $this->redirectToRoute(
+            'admin.keyword.group.view',
+            array('keyword_group_id' => $this->getKeywordGroupId())
+        );
+
     }
 
     protected function performAdditionalUpdateAction($updateEvent)

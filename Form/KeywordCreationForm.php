@@ -59,7 +59,7 @@ class KeywordCreationForm extends BaseForm
                         'for' => 'keyword_code'
                     )
                 ))
-            ->add("keyword_group", "integer", array(
+            ->add("keyword_group_id", "integer", array(
                     "constraints" => array(
                         new GreaterThan(array(
                             'value' => 0

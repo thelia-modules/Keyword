@@ -9,13 +9,15 @@
 <div class="keyword view-keyword">
     <div id="wrapper" class="container">
 
+        {loop name="keyword" type="keyword_group" id="$keyword_group_id"}
         <ul class="breadcrumb">
             <li><a href="{url path='admin/home'}">{intl l="Home"}</a></li>
             <li><a href="{url path='admin/module/Keyword'}">{intl l="[Keyword]Keywords"}</a></li>
+            <li class="active">{$TITLE}</li>
         </ul>
 
         <div class="row">
-            {loop name="keyword" type="keyword_group" id="$keyword_group_id"}
+
             <div class="col-md-12 general-block-decorator">
                 <div class="row">
                     <div class="col-md-7 title">
@@ -150,8 +152,10 @@
                 </div>
 
             </div>
-            {/loop}
+
         </div>
+        {/loop}
+
     </div>
 </div>
 
@@ -168,7 +172,7 @@
     <input type="hidden" name="{$name}" value="{url path='/admin/module/Keyword/group/view' keyword_group_id=$keyword_group_id}" />
     {/form_field}
 
-    {form_field form=$form field='keyword_group'}
+    {form_field form=$form field='keyword_group_id'}
     <input type="hidden" name="{$name}" value="{$keyword_group_id}" />
     {/form_field}
 
