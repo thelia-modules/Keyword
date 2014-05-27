@@ -4,7 +4,6 @@ namespace Keyword\Model;
 
 use Keyword\Model\Base\KeywordGroupQuery as BaseKeywordGroupQuery;
 
-
 /**
  * Skeleton subclass for performing query and update operations on the 'keyword_group' table.
  *

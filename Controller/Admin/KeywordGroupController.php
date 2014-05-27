@@ -109,7 +109,7 @@ class KeywordGroupController extends AbstractCrudController
     /**
      * Hydrate the update form for this object, before passing it to the update template
      *
-     * @param  unknown                               $object
+     * @param  unknown                                    $object
      * @return \Keyword\Form\KeywordGroupModificationForm
      */
     protected function hydrateObjectForm($object)

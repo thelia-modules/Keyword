@@ -39,12 +39,10 @@ use Keyword\Model\FolderAssociatedKeyword;
 use Keyword\Model\FolderAssociatedKeywordQuery;
 
 use Keyword\Model\KeywordGroup;
-use Keyword\Model\KeywordGroupAssociatedKeyword;
 use Keyword\Model\KeywordGroupQuery;
 use Keyword\Model\KeywordQuery;
 use Keyword\Model\ProductAssociatedKeyword;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Thelia\Action\BaseAction;
 use Thelia\Core\Event\UpdatePositionEvent;
 
 /**

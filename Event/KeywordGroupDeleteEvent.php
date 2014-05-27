@@ -35,7 +35,7 @@ class KeywordGroupDeleteEvent extends KeywordGroupEvents
      */
     protected $keyword_group_id;
 
-    function __construct($keyword_group_id)
+    public function __construct($keyword_group_id)
     {
         $this->keyword_group_id = $keyword_group_id;
     }

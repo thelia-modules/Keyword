@@ -486,7 +486,7 @@ class KeywordController extends AbstractCrudController
     protected function renderListTemplate($currentKeyword)
     {
         $request = $this->getRequest()->get('admin_keyword_creation');
-        if(isset($request['keyword_group_id'])){
+        if (isset($request['keyword_group_id'])) {
             $keywordGroupId = $request['keyword_group_id'];
 
             return $this->render(
@@ -495,8 +495,7 @@ class KeywordController extends AbstractCrudController
                     'keyword_group_id' => $keywordGroupId
                 )
             );
-        }
-        else {
+        } else {
             $this->redirect('/admin/module/Keyword');
         }
 
