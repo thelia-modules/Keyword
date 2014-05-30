@@ -24,7 +24,11 @@
 namespace Keyword\Loop;
 
 use Keyword\Model\Base\KeywordGroupAssociatedKeywordQuery;
+use Keyword\Model\CategoryAssociatedKeywordQuery;
+use Keyword\Model\ContentAssociatedKeywordQuery;
+use Keyword\Model\FolderAssociatedKeywordQuery;
 use Keyword\Model\KeywordQuery;
+use Keyword\Model\ProductAssociatedKeywordQuery;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Thelia\Core\Template\Element\BaseI18nLoop;
 use Thelia\Core\Template\Element\LoopResult;
@@ -66,6 +70,30 @@ class Keyword extends BaseI18nLoop implements PropelSearchLoopInterface
                 )
             ),
             new Argument(
+                'folder',
+                new TypeCollection(
+                    new Type\IntListType()
+                )
+            ),
+            new Argument(
+                'content',
+                new TypeCollection(
+                    new Type\IntListType()
+                )
+            ),
+            new Argument(
+                'category',
+                new TypeCollection(
+                    new Type\IntListType()
+                )
+            ),
+            new Argument(
+                'product',
+                new TypeCollection(
+                    new Type\IntListType()
+                )
+            ),
+            new Argument(
                 'order',
                 new TypeCollection(
                     new Type\EnumListType(array('alpha', 'alpha-reverse', 'manual', 'manual_reverse', 'random', 'given_id'))
@@ -86,11 +114,33 @@ class Keyword extends BaseI18nLoop implements PropelSearchLoopInterface
 
         $search = KeywordQuery::create();
 
+        /* If folder criteria search keyword associated to folder */
+        if ($this->getFolder()) {
+            $folder = FolderAssociatedKeywordQuery::create()->findByFolderId($this->getFolder());
+            $search->filterByFolderAssociatedKeyword($folder);
+        }
+
+        /* If content criteria search keyword associated to content */
+        if ($this->getContent()) {
+            $content = ContentAssociatedKeywordQuery::create()->findByContentId($this->getContent());
+            $search->filterByContentAssociatedKeyword($content);
+        }
+
+        /* If category criteria search keyword associated to category */
+        if ($this->getCategory()) {
+            $category = CategoryAssociatedKeywordQuery::create()->findByCategoryId($this->getCategory());
+            $search->filterByCategoryAssociatedKeyword($category);
+        }
+
+        /* If product criteria search keyword associated to product */
+        if ($this->getProduct()) {
+            $product = ProductAssociatedKeywordQuery::create()->findByProductId($this->getProduct());
+            $search->filterByProductAssociatedKeyword($product);
+        }
+
         /* If keyword group criteria filter by keyword group code */
         if ($this->getKeywordGroup()) {
-
             $keywordGroup = KeywordGroupAssociatedKeywordQuery::create()->findByKeywordGroupId($this->getKeywordGroup());
-
             $search->filterByKeywordGroupAssociatedKeyword($keywordGroup);
         }
 
