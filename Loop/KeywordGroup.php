@@ -81,7 +81,7 @@ class KeywordGroup extends BaseI18nLoop implements PropelSearchLoopInterface
 
         /* If keyword group criteria filter by keyword group code */
         if ($this->getKeywordGroup()) {
-            $search->filterByCode($this->getKeyword());
+            $search->filterByCode($this->getKeywordGroup());
         }
 
         /* manage translations */
