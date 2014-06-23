@@ -16,5 +16,17 @@ use Keyword\Model\Base\ContentAssociatedKeywordQuery as BaseContentAssociatedKey
  */
 class ContentAssociatedKeywordQuery extends BaseContentAssociatedKeywordQuery
 {
+    /**
+     * Load an existing relation from the database
+     * @param $contentId
+     * @param $keywordId
+     * @return ChildContentAssociatedKeyword
+     */
+    public static function getContentKeywordAssociation($contentId, $keywordId) {
 
+        return self::create()
+            ->filterByKeywordId($keywordId)
+            ->filterByContentId($contentId)
+            ->findOne();
+    }
 } // ContentAssociatedKeywordQuery

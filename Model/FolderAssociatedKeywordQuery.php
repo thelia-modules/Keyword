@@ -17,4 +17,18 @@ use Keyword\Model\Base\FolderAssociatedKeywordQuery as BaseFolderAssociatedKeywo
 class FolderAssociatedKeywordQuery extends BaseFolderAssociatedKeywordQuery
 {
 
+    /**
+     * Load an existing relation from the database
+     * @param $folderId
+     * @param $keywordId
+     * @return ChildFolderAssociatedKeyword
+     */
+    public static function getFolderKeywordAssociation($folderId, $keywordId) {
+
+        return self::create()
+            ->filterByKeywordId($keywordId)
+            ->filterByFolderId($folderId)
+            ->findOne();
+    }
+
 } // FolderAssociatedKeywordQuery

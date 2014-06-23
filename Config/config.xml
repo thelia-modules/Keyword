@@ -34,6 +34,11 @@
         <service id="keywordGroup.action" class="Keyword\Action\KeywordGroup">
             <tag name="kernel.event_subscriber"/>
         </service>
+
+        <service id="keyword.smarty.plugin" class="Keyword\Smarty\Plugins\Keyword" scope="request">
+            <argument type="service" id="request"/>
+            <tag name="thelia.parser.register_plugin"/>
+        </service>
     </services>
 
 </config>

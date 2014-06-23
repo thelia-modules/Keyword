@@ -16,5 +16,17 @@ use Keyword\Model\Base\CategoryAssociatedKeywordQuery as BaseCategoryAssociatedK
  */
 class CategoryAssociatedKeywordQuery extends BaseCategoryAssociatedKeywordQuery
 {
+    /**
+     * Load an existing relation from the database
+     * @param $categoryId
+     * @param $keywordId
+     * @return ChildCategoryAssociatedKeyword
+     */
+    public static function getCategoryKeywordAssociation($categoryId, $keywordId) {
 
+        return self::create()
+            ->filterByKeywordId($keywordId)
+            ->filterByCategoryId($categoryId)
+            ->findOne();
+    }
 } // CategoryAssociatedKeywordQuery
