@@ -81,3 +81,15 @@ __Use the keyword group loop (list all keyword groups that are visible)__
     ...
 {/loop}
 ```
+---
+*****
+
+You can also check the association between a keyword and a category, a product, a folder or a content by using Smarty extension available in the latest version of this plugin :
+
+__Check if thelia object is associated with keyword "my_keyword"__
+```html
+{category_has_keyword category_id=$ID keyword_code="my_keyword"} {* return true/false if relation exist or not *}
+{product_has_keyword product_id=$ID keyword_code="my_keyword"}
+{folder_has_keyword folder_id=$ID keyword_code="my_keyword"}
+{content_has_keyword content_id=$ID keyword_code="my_keyword"}
+```
