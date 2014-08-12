@@ -27,6 +27,7 @@ use Keyword\Model\KeywordQuery;
 use Keyword\Model\Map\FolderAssociatedKeywordTableMap;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\ActiveQuery\Join;
+use Propel\Runtime\Collection\ObjectCollection;
 use Thelia\Core\Template\Element\LoopResultRow;
 use Thelia\Core\Template\Loop\Argument\Argument;
 use Thelia\Core\Template\Loop\Folder;
@@ -80,6 +81,8 @@ class KeywordFolder extends Folder
         $search = parent::buildModelCriteria();
 
         $keyword = KeywordQuery::create();
+
+        /** @var ObjectCollection $results */
         $results = $keyword
             ->findByCode($this->getKeyword())
         ;
@@ -90,8 +93,17 @@ class KeywordFolder extends Folder
         }
 
         $folderIds = array();
+        $keywordListId = array();
+        $keywordIds = $results->getData();
+
+        foreach ($keywordIds as $keyword) {
+            $keywordListId[] = $keyword->getId();
+        }
+
+        $keywordListId = implode(',', $keywordListId);
 
         foreach ($results as $result) {
+
             // If any content is associated with keyword
             if (true === $result->getFolders()->isEmpty()) {
                 return null;
@@ -109,7 +121,7 @@ class KeywordFolder extends Folder
         $join->setJoinType(Criteria::INNER_JOIN);
 
         $search->addJoinObject($join, 'folder_associated_keyword_join');
-
+        $search->addJoinCondition('folder_associated_keyword_join','folder_associated_keyword.keyword_id IN ('.$keywordListId.')');
         $search->addJoinCondition('folder_associated_keyword_join','folder_associated_keyword.folder_id IN ('.$folderIds.')');
         $search->withColumn('folder_associated_keyword.position', 'folder_position');
 

@@ -27,6 +27,7 @@ use Keyword\Model\KeywordQuery;
 use Keyword\Model\Map\CategoryAssociatedKeywordTableMap;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\ActiveQuery\Join;
+use Propel\Runtime\Collection\ObjectCollection;
 use Thelia\Core\Template\Element\LoopResultRow;
 use Thelia\Core\Template\Loop\Argument\Argument;
 use Thelia\Core\Template\Loop\Category;
@@ -81,6 +82,8 @@ class KeywordCategory extends Category
         $search = parent::buildModelCriteria();
 
         $keyword = KeywordQuery::create();
+
+        /** @var ObjectCollection $results */
         $results = $keyword
             ->findByCode($this->getKeyword())
         ;
@@ -91,6 +94,14 @@ class KeywordCategory extends Category
         }
 
         $categoryIds = array();
+        $keywordListId = array();
+        $keywordIds = $results->getData();
+
+        foreach ($keywordIds as $keyword) {
+            $keywordListId[] = $keyword->getId();
+        }
+
+        $keywordListId = implode(',', $keywordListId);
 
         foreach ($results as $result) {
             // If any product is associated with keyword
@@ -110,7 +121,7 @@ class KeywordCategory extends Category
         $join->setJoinType(Criteria::INNER_JOIN);
 
         $search->addJoinObject($join, 'category_associated_keyword_join');
-
+        $search->addJoinCondition('category_associated_keyword_join','category_associated_keyword.keyword_id IN ('.$keywordListId.')');
         $search->addJoinCondition('category_associated_keyword_join','category_associated_keyword.category_id IN ('.$categoryIds.')');
         $search->withColumn('category_associated_keyword.position', 'category_position');
 

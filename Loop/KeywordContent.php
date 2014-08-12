@@ -27,6 +27,7 @@ use Keyword\Model\KeywordQuery;
 use Keyword\Model\Map\ContentAssociatedKeywordTableMap;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\ActiveQuery\Join;
+use Propel\Runtime\Collection\ObjectCollection;
 use Thelia\Core\Template\Element\LoopResultRow;
 use Thelia\Core\Template\Loop\Argument\Argument;
 use Thelia\Core\Template\Loop\Content;
@@ -80,6 +81,8 @@ class KeywordContent extends Content
         $search = parent::buildModelCriteria();
 
         $keyword = KeywordQuery::create();
+
+        /** @var ObjectCollection $results */
         $results = $keyword
             ->findByCode($this->getKeyword())
         ;
@@ -90,6 +93,14 @@ class KeywordContent extends Content
         }
 
         $contentIds = array();
+        $keywordListId = array();
+        $keywordIds = $results->getData();
+
+        foreach ($keywordIds as $keyword) {
+            $keywordListId[] = $keyword->getId();
+        }
+
+        $keywordListId = implode(',', $keywordListId);
 
         foreach ($results as $result) {
             // If any content is associated with keyword
@@ -109,7 +120,7 @@ class KeywordContent extends Content
         $join->setJoinType(Criteria::INNER_JOIN);
 
         $search->addJoinObject($join, 'content_associated_keyword_join');
-
+        $search->addJoinCondition('content_associated_keyword_join','content_associated_keyword.keyword_id IN ('.$keywordListId.')');
         $search->addJoinCondition('content_associated_keyword_join','content_associated_keyword.content_id IN ('.$contentIds.')');
         $search->withColumn('content_associated_keyword.position', 'content_position');
 
