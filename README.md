@@ -28,21 +28,21 @@ Here is an example of using each :
 
 __Use the keyword_category loop (list of categories related to the "my_keyword" keyword)__
 ```html
-{loop name="categories" type="keyword_category" keyword="my_keyword" order="manual_reverse"}
+{loop name="categories" type="keyword_category" keyword="my_keyword" association_order="manual_reverse"}
     ...
 {/loop}
 ```
 
 __Use the keyword_product loop (list of products related to the "my_keyword" keyword)__
 ```html
-{loop name="products" type="keyword_product" keyword="my_keyword" order="manual_reverse"}
+{loop name="products" type="keyword_product" keyword="my_keyword" association_order="manual_reverse"}
     ...
 {/loop}
 ```
 
 __Use the keyword_content loop (list of contents related to the "my_keyword" keyword)__
 ```html
-{loop name="contents" type="keyword_content" keyword="my_keyword" folder="1" order="manual_reverse"}
+{loop name="contents" type="keyword_content" keyword="my_keyword" folder="1" association_order="manual_reverse"}
     ...
 {/loop}
 ```
