@@ -58,5 +58,9 @@ return array(
     'View keyword group associations' => 'View keyword group associations',
     'View keyword group "%title" associations' => 'View keyword group associations : <span class="label label-info">%title</span>',
     'View previous keyword group' => 'View previous keyword group',
-    'View next keyword group' => 'View next keyword group'
+    'View next keyword group' => 'View next keyword group',
+    'Enter new folder position' => 'Enter new folder position',
+    'Enter new content position' => 'Enter new content position',
+    'Enter new category position' => 'Enter new category position',
+    'Enter new product position' => 'Enter new product position'
 );

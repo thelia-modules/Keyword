@@ -58,5 +58,9 @@ return array(
     'View keyword group associations' => 'Voir les associations du groupe de mots-clés',
     'View keyword group "%title" associations' => 'Voir les associations du groupe de mots-clés : <span class="label label-info">%title</span>',
     'View previous keyword group' => 'Voir le groupe de mots-clés précédent',
-    'View next keyword group' => 'Voir le groupe de mots-clés suivant'
+    'View next keyword group' => 'Voir le groupe de mots-clés suivant',
+    'Enter new folder position' => 'Entrez la nouvelle position du dossier',
+    'Enter new content position' => 'Entrez la nouvelle position du contenu',
+    'Enter new category position' => 'Entrez la nouvelle position de la catégorie',
+    'Enter new product position' => 'Entrez la nouvelle position du produit'
 );
