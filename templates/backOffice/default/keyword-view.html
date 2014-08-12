@@ -47,15 +47,15 @@
 
                     <div class="col-md-12">
                         <ul class="nav nav-tabs" id="tabbed-menu">
-                            <li class="active"><a href="#folder-association" data-toggle="tab">{intl l="Folders association" d='keyword'}</a></li>
-                            <li><a href="#content-association" data-toggle="tab">{intl l="Contents association" d='keyword'}</a></li>
-                            <li><a href="#category-association" data-toggle="tab">{intl l="Categories association" d='keyword'}</a></li>
-                            <li><a href="#product-association" data-toggle="tab">{intl l="Products association" d='keyword'}</a></li>
+                            <li class="active"><a href="#folder" data-toggle="tab">{intl l="Folders association" d='keyword'}</a></li>
+                            <li><a href="#content" data-toggle="tab">{intl l="Contents association" d='keyword'}</a></li>
+                            <li><a href="#category" data-toggle="tab">{intl l="Categories association" d='keyword'}</a></li>
+                            <li><a href="#product" data-toggle="tab">{intl l="Products association" d='keyword'}</a></li>
                         </ul>
 
                         <div class="tab-content">
 
-                            <div class="tab-pane fade active in" id="folder-association">
+                            <div class="tab-pane fade active in" id="folder">
 
                                 <table class="table table-striped table-condensed" id="folder_list">
                                     <caption>
@@ -140,7 +140,7 @@
 
                             </div>
 
-                            <div class="tab-pane fade" id="content-association">
+                            <div class="tab-pane fade" id="content">
 
                                 <table class="table table-striped table-condensed" id="content_list">
                                     <caption>
@@ -220,7 +220,7 @@
 
                             </div>
 
-                            <div class="tab-pane fade" id="category-association">
+                            <div class="tab-pane fade" id="category">
 
                                 <table class="table table-striped table-condensed" id="category_list">
                                     <caption>
@@ -307,7 +307,7 @@
 
                             </div>
 
-                            <div class="tab-pane fade" id="product-association">
+                            <div class="tab-pane fade" id="product">
 
                                 <table class="table table-striped table-condensed" id="product_list">
                                     <caption>
@@ -409,6 +409,10 @@
 
     <script>
         $(function() {
+
+            {if $smarty.get.tab}
+                $('#tabbed-menu a[href="#{$smarty.get.tab}"]').tab('show');
+            {/if}
 
             {* Inline editing of object position using bootstrap-editable *}
 

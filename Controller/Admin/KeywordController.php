@@ -342,7 +342,10 @@ class KeywordController extends AbstractCrudController
         // Redirect to keyword view
         $this->redirectToRoute(
             'admin.keyword.view',
-            array('keyword_id' => $this->getRequest()->get('keyword_id'))
+            array(
+                'keyword_id'    => $this->getRequest()->get('keyword_id'),
+                'tab'           => $object
+            )
         );
     }
 
