@@ -71,6 +71,8 @@
 
                                         <th class="object-title">{intl l='Folder title'}</th>
 
+                                        <th class="object-title">{intl l="Position"}</th>
+
                                         {module_include location='folder_list_header'}
 
                                         <th class="actions">{intl l='Actions'}</th>
@@ -92,6 +94,18 @@
                                             <a href="{url path='admin/folders' parent=$ID}" title="{intl l='Browse this folder'}">
                                                 {$TITLE}
                                             </a>
+                                        </td>
+
+                                        <td>
+                                            {admin_position_block
+                                            resource="admin.keyword"
+                                            access="update"
+                                            path={url path='admin/module/Keyword/folder/update-position' folder_id=$ID keyword_id=$keyword_id noamp=1}
+                                            url_parameter="folder_id"
+                                            in_place_edit_class="keywordFolderPositionChange"
+                                            position=$FOLDER_POSITION
+                                            id=$ID
+                                            }
                                         </td>
 
                                         {module_include location='folder_list_row'}
@@ -142,6 +156,8 @@
 
                                         <th class="object-title">{intl l='Content title'}</th>
 
+                                        <th class="object-title">{intl l="Position"}</th>
+
                                         {module_include location='content_list_header'}
 
                                         <th class="actions">{intl l='Actions'}</th>
@@ -162,6 +178,18 @@
                                         </td>
 
                                         <td class="object-title"><a href="{url path="/admin/content/update/$ID"}" title="{intl l='Edit this content'}">{$TITLE}</a></td>
+
+                                        <td>
+                                            {admin_position_block
+                                            resource="admin.keyword"
+                                            access="update"
+                                            path={url path='admin/module/Keyword/content/update-position' content_id=$ID keyword_id=$keyword_id noamp=1}
+                                            url_parameter="content_id"
+                                            in_place_edit_class="keywordContentPositionChange"
+                                            position=$CONTENT_POSITION
+                                            id=$ID
+                                            }
+                                        </td>
 
                                         {module_include location='content_list_row'}
 
@@ -208,6 +236,8 @@
 
                                         <th class="object-title">{intl l='Category title'}</th>
 
+                                        <th class="object-title">{intl l="Position"}</th>
+
                                         {module_include location='category_list_header'}
 
                                         <th class="actions">{intl l='Actions'}</th>
@@ -231,6 +261,18 @@
                                             <a href="{url path='admin/catalog' category_id=$ID}" title="{intl l='Browse this category'}">
                                                 {$TITLE}
                                             </a>
+                                        </td>
+
+                                        <td>
+                                            {admin_position_block
+                                            resource="admin.keyword"
+                                            access="update"
+                                            path={url path='admin/module/Keyword/category/update-position' category_id=$ID keyword_id=$keyword_id noamp=1}
+                                            url_parameter="category_id"
+                                            in_place_edit_class="keywordCategoryPositionChange"
+                                            position=$CATEGORY_POSITION
+                                            id=$ID
+                                            }
                                         </td>
 
                                         {module_include location='category_list_row'}
@@ -281,6 +323,8 @@
 
                                         <th class="object-title">{intl l='Product title'}</th>
 
+                                        <th class="object-title">{intl l="Position"}</th>
+
                                         {module_include location='product_list_header'}
 
                                         <th class="actions">{intl l='Actions'}</th>
@@ -288,7 +332,7 @@
                                     </thead>
 
                                     <tbody>
-                                    {loop name="product_list" type="keyword_product" keyword="$CODE" visible="*" backend_context="1" lang=$lang_id}
+                                    {loop name="product_list" type="keyword_product" keyword="$CODE" association_order="manual" visible="*" backend_context="1" lang=$lang_id}
                                     <tr>
                                         <td>{$ID}</td>
 
@@ -301,6 +345,18 @@
                                         </td>
 
                                         <td class="object-title"><a href="{url path="/admin/products/update" product_id=$ID}" title="{intl l='Edit this product'}">{$TITLE}</a></td>
+
+                                        <td>
+                                            {admin_position_block
+                                            resource="admin.keyword"
+                                            access="update"
+                                            path={url path='admin/module/Keyword/product/update-position' product_id=$ID keyword_id=$keyword_id noamp=1}
+                                            url_parameter="product_id"
+                                            in_place_edit_class="keywordProductPositionChange"
+                                            position=$PRODUCT_POSITION
+                                            id=$ID
+                                            }
+                                        </td>
 
                                         {module_include location='product_list_row'}
 
@@ -343,4 +399,62 @@
         {/loop}
     </div>
 </div>
+{/block}
+
+{block name="javascript-initialization"}
+
+    {javascripts file='assets/js/bootstrap-editable/bootstrap-editable.js'}
+        <script src="{$asset_url}"></script>
+    {/javascripts}
+
+    <script>
+        $(function() {
+
+            {* Inline editing of object position using bootstrap-editable *}
+
+            $('.keywordFolderPositionChange, .keywordContentPositionChange, .keywordCategoryPositionChange, .keywordProductPositionChange').attr('data-keyword', "{$keyword_id}");
+
+            doEditable($('.keywordFolderPositionChange'), 'folder');
+            doEditable($('.keywordContentPositionChange'), 'content');
+            doEditable($('.keywordCategoryPositionChange'), 'category');
+            doEditable($('.keywordProductPositionChange'), 'product');
+
+            function doEditable($elem, object) {
+                $elem.editable({
+                    type        : 'text',
+                    title       : '{intl l="Enter new ' + object + ' position" d="keyword"}',
+                    mode        : 'popup',
+                    inputclass  : 'input-mini',
+                    placement   : 'left',
+                    success     : function(response, newValue) {
+
+                        // The URL template
+                        var url = '';
+                        if (object == 'folder') {
+                            url = "{url path='/admin/module/Keyword/" + object + "/update-position' keyword_id='__KEYWORD_ID__' folder_id='__ID__' position='__POS__' noamp=1}";
+                        }
+                        if (object == 'content') {
+                            url = "{url path='/admin/module/Keyword/" + object + "/update-position' keyword_id='__KEYWORD_ID__' content_id='__ID__' position='__POS__' noamp=1}";
+                        }
+                        if (object == 'category') {
+                            url = "{url path='/admin/module/Keyword/" + object + "/update-position' keyword_id='__KEYWORD_ID__' category_id='__ID__' position='__POS__' noamp=1}";
+                        }
+                        if (object == 'product') {
+                            url = "{url path='/admin/module/Keyword/" + object + "/update-position' keyword_id='__KEYWORD_ID__' prod='__ID__' position='__POS__' noamp=1}";
+                        }
+
+
+                        // Perform subtitutions
+                        url = url.replace('__KEYWORD_ID__', $(this).data('keyword'))
+                                .replace('__ID__', $(this).data('id'))
+                                .replace('__POS__', newValue);
+
+                        // Reload the page
+                        location.href = url;
+                    }
+                });
+            }
+
+        });
+    </script>
 {/block}

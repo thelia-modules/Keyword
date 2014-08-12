@@ -28,6 +28,11 @@
         <default key="_controller">Keyword\Controller\Admin\KeywordController::updatePositionAction</default>
     </route>
 
+    <route id="admin.keyword.folder.update-position" path="/admin/module/Keyword/{object}/update-position">
+        <default key="_controller">Keyword\Controller\Admin\KeywordController::updateObjectPositionAction</default>
+        <requirement key="object">([a-z]+)</requirement>
+    </route>
+
     <route id="admin.keyword.update" path="/admin/module/Keyword/update">
         <default key="_controller">Keyword\Controller\Admin\KeywordController::updateAction</default>
     </route>

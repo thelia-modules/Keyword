@@ -29,6 +29,7 @@ use Keyword\Event\KeywordEvents;
 
 use Keyword\Event\KeywordToggleVisibilityEvent;
 use Keyword\Event\KeywordUpdateEvent;
+use Keyword\Event\KeywordUpdateObjectPositionEvent;
 use Keyword\Model\Base\ProductAssociatedKeywordQuery;
 use Keyword\Model\CategoryAssociatedKeyword;
 use Keyword\Model\CategoryAssociatedKeywordQuery;
@@ -246,6 +247,47 @@ class Keyword implements EventSubscriberInterface
 
     }
 
+    public function updateKeywordObjectPosition(KeywordUpdateObjectPositionEvent $event)
+    {
+
+        $object = null;
+
+        if ($event->getObject() == $event::FOLDER_OBJECT) {
+            if (null !== $keywordObjectAssociation = FolderAssociatedKeywordQuery::create()->filterByKeywordId($event->getKeywordId())->filterByFolderId($event->getObjectId())->findOne()) {
+                $object = $keywordObjectAssociation;
+            }
+        } elseif ($event->getObject() == $event::CONTENT_OBJECT) {
+            if (null !== $keywordObjectAssociation = ContentAssociatedKeywordQuery::create()->filterByKeywordId($event->getKeywordId())->filterByContentId($event->getObjectId())->findOne()) {
+                $object = $keywordObjectAssociation;
+            }
+        } elseif ($event->getObject() == $event::CATEGORY_OBJECT) {
+            if (null !== $keywordObjectAssociation = CategoryAssociatedKeywordQuery::create()->filterByKeywordId($event->getKeywordId())->filterByCategoryId($event->getObjectId())->findOne()) {
+                $object = $keywordObjectAssociation;
+            }
+        } elseif ($event->getObject() == $event::PRODUCT_OBJECT) {
+            if (null !== $keywordObjectAssociation = ProductAssociatedKeywordQuery::create()->filterByKeywordId($event->getKeywordId())->filterByProductId($event->getObjectId())->findOne()) {
+                $object = $keywordObjectAssociation;
+            }
+        }
+
+        if ($object !== null) {
+            $object->setDispatcher($event->getDispatcher());
+
+            switch ($event->getMode()) {
+                case UpdatePositionEvent::POSITION_ABSOLUTE:
+                    $object->changeAbsolutePosition($event->getPosition());
+                    break;
+                case UpdatePositionEvent::POSITION_DOWN:
+                    $object->movePositionDown();
+                    break;
+                case UpdatePositionEvent::POSITION_UP:
+                    $object->movePositionUp();
+                    break;
+            }
+        }
+
+    }
+
     /**
      * Returns an array of event names this subscriber wants to listen to.
      *
@@ -277,7 +319,8 @@ class Keyword implements EventSubscriberInterface
             KeywordEvents::KEYWORD_CREATE                       => array('createKeyword', 128),
             KeywordEvents::KEYWORD_UPDATE                       => array('updateKeyword', 128),
             KeywordEvents::KEYWORD_DELETE                       => array('deleteKeyword', 128),
-            KeywordEvents::KEYWORD_TOGGLE_VISIBILITY            => array('toggleVisibilityKeyword', 128)
+            KeywordEvents::KEYWORD_TOGGLE_VISIBILITY            => array('toggleVisibilityKeyword', 128),
+            KeywordEvents::KEYWORD_OBJECT_UPDATE_POSITION       => array('updateKeywordObjectPosition', 128)
         );
     }
 }

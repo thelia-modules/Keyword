@@ -28,6 +28,7 @@ use Keyword\Event\KeywordDeleteEvent;
 use Keyword\Event\KeywordAssociationEvent;
 use Keyword\Event\KeywordEvents;
 use Keyword\Event\KeywordUpdateEvent;
+use Keyword\Event\KeywordUpdateObjectPositionEvent;
 use Keyword\Form\KeywordCategoryModificationForm;
 use Keyword\Form\KeywordContentModificationForm;
 use Keyword\Form\KeywordCreationForm;
@@ -300,6 +301,65 @@ class KeywordController extends AbstractCrudController
             'admin.products.update',
             array(),
             array('product_id' => $product_id, 'current_tab' => 'modules')
+        );
+    }
+
+    /**
+     * Update keyword object position
+     *
+     */
+    public function updateObjectPositionAction()
+    {
+        // Check current user authorization
+        if (null !== $response = $this->checkAuth($this->resourceCode, array(), AccessManager::UPDATE))
+            return $response;
+
+        try {
+            $mode = $this->getRequest()->get('mode', null);
+
+            if ($mode == 'up')
+                $mode = UpdatePositionEvent::POSITION_UP;
+            else if ($mode == 'down')
+                $mode = UpdatePositionEvent::POSITION_DOWN;
+            else
+                $mode = UpdatePositionEvent::POSITION_ABSOLUTE;
+
+            $position = $this->getRequest()->get('position', null);
+            $object = $this->getRequest()->get('object');
+
+            $event = $this->createObjectUpdatePositionEvent($mode, $position, $object);
+
+            $this->dispatch(KeywordEvents::KEYWORD_OBJECT_UPDATE_POSITION, $event);
+
+        } catch (\Exception $ex) {
+            // Any error
+            return $this->errorPage($ex);
+        }
+
+        // Set the module router to use module routes
+        $this->setCurrentRouter("router.keyword");
+
+        // Redirect to keyword view
+        $this->redirectToRoute(
+            'admin.keyword.view',
+            array('keyword_id' => $this->getRequest()->get('keyword_id'))
+        );
+    }
+
+    /**
+     * @param $positionChangeMode
+     * @param $positionValue
+     * @param $object
+     * @return createObjectUpdatePositionEvent|void
+     */
+    protected function createObjectUpdatePositionEvent($positionChangeMode, $positionValue, $object)
+    {
+        return new KeywordUpdateObjectPositionEvent(
+            $this->getRequest()->get('keyword_id', null),
+            $object,
+            $this->getRequest()->get("$object".'_id', null),
+            $positionChangeMode,
+            $positionValue
         );
     }
 

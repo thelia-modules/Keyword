@@ -41,6 +41,7 @@ class KeywordEvents extends ActionEvent
     const KEYWORD_DELETE            = 'keyword.action.delete';
     const KEYWORD_TOGGLE_VISIBILITY = 'keyword.action.toggleVisibility';
     const KEYWORD_UPDATE_POSITION   = 'keyword.action.updatePosition';
+    const KEYWORD_OBJECT_UPDATE_POSITION = 'keyword.action.updateObjectPosition';
 
     const BEFORE_KEYWORD_ASSOCIATE_FOLDER                     = 'keyword.action.beforeKeywordAssociateFolder';
     const AFTER_KEYWORD_ASSOCIATE_FOLDER                      = 'keyword.action.afterKeywordAssociateFolder';
