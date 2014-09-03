@@ -1,6 +1,15 @@
 {
     "name": "thelia/keyword",
     "type": "thelia-module",
+    "license": "LGPL V3",
+    "description": "Associate contents, folders, categories and products to one or more keywords",
+    "authors": [
+        {
+            "name": "Michaël Espeche",
+            "email": "michael.espeche@gmail.com",
+            "homepage": "https://github.com/mespeche"
+        }
+    ],
     "require": {
         "thelia/installer": "1.0"
     },
