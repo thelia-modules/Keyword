@@ -9,7 +9,7 @@
 <div class="keyword view-keyword">
     <div id="wrapper" class="container">
 
-        {loop name="keyword" type="keyword_group" id="$keyword_group_id"}
+        {loop name="keyword" type="keyword_group" visible="*" id="$keyword_group_id"}
         <ul class="breadcrumb">
             <li><a href="{url path='admin/home'}">{intl l="Home"}</a></li>
             <li><a href="{url path='admin/module/Keyword'}">{intl l="Keywords" d='keyword'}</a></li>
@@ -286,7 +286,7 @@ form_content        = {$smarty.capture.keyword_delete_dialog nofilter}
                     url = url.replace('__ID__', $(this).data('id'))
                             .replace('__KEYWORD_GROUP_ID__', $(this).data('group'))
                             .replace('__POS__', newValue);
-                    
+
                     // Reload the page
                     location.href = url;
                 }

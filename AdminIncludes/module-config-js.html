@@ -20,7 +20,7 @@
             placement   : 'left',
             success     : function(response, newValue) {
                 // The URL template
-                var url = "{url path='/admin/module/Keyword/group/update-position' keyword_group_id='__ID__' position='__POS__'}";
+                var url = "{url path='/admin/module/Keyword/group/update-position' keyword_group_id='__ID__' position='__POS__' noamp=1}";
 
                 // Perform subtitutions
                 url = url.replace('__ID__', $(this).data('id'))

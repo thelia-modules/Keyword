@@ -9,7 +9,7 @@
 <div class="keyword view-keyword">
     <div id="wrapper" class="container">
 
-        {loop name="keyword" type="keyword" id="$keyword_id"}
+        {loop name="keyword" type="keyword" visible="*" id="$keyword_id"}
         <ul class="breadcrumb">
             <li><a href="{url path='admin/home'}">{intl l="Home"}</a></li>
             <li><a href="{url path='admin/module/Keyword'}">{intl l="Keywords" d='keyword'}</a></li>
