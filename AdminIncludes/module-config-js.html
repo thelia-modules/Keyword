@@ -1,10 +1,7 @@
-{javascripts file='assets/js/bootstrap-switch/bootstrap-switch.js'}
-<script src="{$asset_url}"></script>
-{/javascripts}
-
-{javascripts file='assets/js/bootstrap-editable/bootstrap-editable.js'}
-<script src="{$asset_url}"></script>
-{/javascripts}
+<script>
+    $.fn.bootstrapSwitch || {javascripts file='assets/js/bootstrap-switch/bootstrap-switch.js'}document.write('<script src="{$asset_url}"><\/script>');{/javascripts}
+    window.bootstrapSwitch || {javascripts file='assets/js/bootstrap-editable/bootstrap-editable.js'}document.write('<script src="{$asset_url}"><\/script>');{/javascripts}
+</script>
 
 <script>
     $(function() {
