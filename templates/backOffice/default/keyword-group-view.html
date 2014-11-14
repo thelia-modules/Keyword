@@ -246,7 +246,7 @@ dialog_id       = "keyword_delete_dialog"
 dialog_title    = {intl l="Delete keyword" d='keyword'}
 dialog_message  = {intl l="Do you really want to delete this keyword and all its associations ?" d='keyword'}
 
-form_action         = {url path='/admin/module/Keyword/delete'}
+form_action         = {token_url path='/admin/module/Keyword/delete'}
 form_content        = {$smarty.capture.keyword_delete_dialog nofilter}
 }
 

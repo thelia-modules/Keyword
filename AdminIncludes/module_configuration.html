@@ -111,7 +111,7 @@
     </div>
 </div>
 
-{* -- Adding a new keyword -------------------------------------------------- *}
+{* -- Adding a new keyword group -------------------------------------------------- *}
 
 {form name="keyword.group.admin.creation"}
 
@@ -180,7 +180,7 @@
     }
 {/form}
 
-{* -- Delete keyword confirmation dialog ----------------------------------- *}
+{* -- Delete keyword group confirmation dialog ----------------------------------- *}
 
 {capture "keyword_group_delete_dialog"}
     <input type="hidden" name="keyword_group_id" id="keyword_group_delete_id" value="" />
@@ -193,7 +193,7 @@
     dialog_title    = {intl l="Delete keyword group" d='keyword'}
     dialog_message  = {intl l="Do you really want to delete this keyword group and all its associations ?" d='keyword'}
 
-    form_action         = {url path='/admin/module/Keyword/group/delete'}
+    form_action         = {token_url path='/admin/module/Keyword/group/delete'}
     form_content        = {$smarty.capture.keyword_group_delete_dialog nofilter}
 }
 

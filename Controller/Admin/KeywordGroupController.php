@@ -138,7 +138,12 @@ class KeywordGroupController extends AbstractCrudController
     protected function getCreationEvent($formData)
     {
 
-        $keywordGroupCreateEvent = new KeywordGroupEvents($formData['title'], $formData['code'], $formData['visible'], $formData['locale']);
+        $keywordGroupCreateEvent = new KeywordGroupEvents(
+            $formData['title'],
+            $formData['code'],
+            $formData['visible'],
+            $formData['locale']
+        );
 
         return $keywordGroupCreateEvent;
 
@@ -266,7 +271,7 @@ class KeywordGroupController extends AbstractCrudController
     protected function redirectToEditionTemplate()
     {
         $args = $this->getEditionArguments();
-        $this->redirect('/admin/module/Keyword/group/update?keyword_group_id='.$args['keyword_group_id']);
+        return $this->generateRedirect('/admin/module/Keyword/group/update?keyword_group_id='.$args['keyword_group_id']);
     }
 
     /**
@@ -274,13 +279,13 @@ class KeywordGroupController extends AbstractCrudController
      */
     protected function redirectToListTemplate()
     {
-        $this->redirect('/admin/module/Keyword');
+        return $this->generateRedirect('/admin/module/Keyword');
     }
 
     protected function performAdditionalUpdateAction($updateEvent)
     {
         if ($this->getRequest()->get('save_mode') != 'stay') {
-            $this->redirectToListTemplate();
+            return $this->redirectToListTemplate();
         }
     }
 

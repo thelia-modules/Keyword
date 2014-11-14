@@ -107,7 +107,7 @@ class KeywordController extends AbstractCrudController
 
             $this->dispatch(KeywordEvents::KEYWORD_UPDATE_FOLDER_ASSOCIATION, $event);
 
-            $this->redirectSuccess($keywordFolderUpdateForm);
+            return $this->generateSuccessRedirect($keywordFolderUpdateForm);
 
         } catch (FormValidationException $e) {
             $message = sprintf("Please check your input: %s", $e->getMessage());
@@ -118,7 +118,9 @@ class KeywordController extends AbstractCrudController
         }
 
         if ($message !== false) {
-            \Thelia\Log\Tlog::getInstance()->error(sprintf("Error during keyword folder association update process : %s.", $message));
+            \Thelia\Log\Tlog::getInstance()->error(
+                sprintf("Error during keyword folder association update process : %s.", $message)
+            );
 
             $keywordFolderUpdateForm->setErrorMessage($message);
 
@@ -129,7 +131,7 @@ class KeywordController extends AbstractCrudController
         }
 
         // Redirect to current folder
-        $this->redirectToRoute(
+        return $this->generateRedirectFromRoute(
             'admin.folders.update',
             array(),
             array('folder_id' => $folder_id, 'current_tab' => 'modules')
@@ -163,7 +165,7 @@ class KeywordController extends AbstractCrudController
 
             $this->dispatch(KeywordEvents::KEYWORD_UPDATE_CONTENT_ASSOCIATION, $event);
 
-            $this->redirectSuccess($keywordContentUpdateForm);
+            return $this->generateSuccessRedirect($keywordContentUpdateForm);
 
         } catch (FormValidationException $e) {
             $message = sprintf("Please check your input: %s", $e->getMessage());
@@ -174,7 +176,9 @@ class KeywordController extends AbstractCrudController
         }
 
         if ($message !== false) {
-            \Thelia\Log\Tlog::getInstance()->error(sprintf("Error during keyword content association update process : %s.", $message));
+            \Thelia\Log\Tlog::getInstance()->error(
+                sprintf("Error during keyword content association update process : %s.", $message)
+            );
 
             $keywordContentUpdateForm->setErrorMessage($message);
 
@@ -185,7 +189,7 @@ class KeywordController extends AbstractCrudController
         }
 
         // Redirect to current folder
-        $this->redirectToRoute(
+        return $this->generateRedirectFromRoute(
             'admin.content.update',
             array(),
             array('content_id' => $content_id, 'current_tab' => 'modules')
@@ -219,7 +223,7 @@ class KeywordController extends AbstractCrudController
 
             $this->dispatch(KeywordEvents::KEYWORD_UPDATE_CATEGORY_ASSOCIATION, $event);
 
-            $this->redirectSuccess($keywordCategoryUpdateForm);
+            return $this->generateSuccessRedirect($keywordCategoryUpdateForm);
 
         } catch (FormValidationException $e) {
             $message = sprintf("Please check your input: %s", $e->getMessage());
@@ -230,7 +234,9 @@ class KeywordController extends AbstractCrudController
         }
 
         if ($message !== false) {
-            \Thelia\Log\Tlog::getInstance()->error(sprintf("Error during keyword category association update process : %s.", $message));
+            \Thelia\Log\Tlog::getInstance()->error(
+                sprintf("Error during keyword category association update process : %s.", $message)
+            );
 
             $keywordCategoryUpdateForm->setErrorMessage($message);
 
@@ -241,7 +247,7 @@ class KeywordController extends AbstractCrudController
         }
 
         // Redirect to current folder
-        $this->redirectToRoute(
+        return $this->generateRedirectFromRoute(
             'admin.categories.update',
             array(),
             array('category_id' => $category_id, 'current_tab' => 'modules')
@@ -275,7 +281,7 @@ class KeywordController extends AbstractCrudController
 
             $this->dispatch(KeywordEvents::KEYWORD_UPDATE_PRODUCT_ASSOCIATION, $event);
 
-            $this->redirectSuccess($keywordProductUpdateForm);
+            return $this->generateSuccessRedirect($keywordProductUpdateForm);
 
         } catch (FormValidationException $e) {
             $message = sprintf("Please check your input: %s", $e->getMessage());
@@ -286,7 +292,9 @@ class KeywordController extends AbstractCrudController
         }
 
         if ($message !== false) {
-            \Thelia\Log\Tlog::getInstance()->error(sprintf("Error during keyword product association update process : %s.", $message));
+            \Thelia\Log\Tlog::getInstance()->error(
+                sprintf("Error during keyword product association update process : %s.", $message)
+            );
 
             $keywordProductUpdateForm->setErrorMessage($message);
 
@@ -297,7 +305,7 @@ class KeywordController extends AbstractCrudController
         }
 
         // Redirect to current folder
-        $this->redirectToRoute(
+        return $this->generateRedirectFromRoute(
             'admin.products.update',
             array(),
             array('product_id' => $product_id, 'current_tab' => 'modules')
@@ -319,7 +327,7 @@ class KeywordController extends AbstractCrudController
 
             if ($mode == 'up')
                 $mode = UpdatePositionEvent::POSITION_UP;
-            else if ($mode == 'down')
+            elseif ($mode == 'down')
                 $mode = UpdatePositionEvent::POSITION_DOWN;
             else
                 $mode = UpdatePositionEvent::POSITION_ABSOLUTE;
@@ -340,7 +348,7 @@ class KeywordController extends AbstractCrudController
         $this->setCurrentRouter("router.keyword");
 
         // Redirect to keyword view
-        $this->redirectToRoute(
+        return $this->generateRedirectFromRoute(
             'admin.keyword.view',
             array(
                 'keyword_id'    => $this->getRequest()->get('keyword_id'),
@@ -442,7 +450,13 @@ class KeywordController extends AbstractCrudController
      */
     protected function getCreationEvent($formData)
     {
-        $keywordCreateEvent = new KeywordEvents($formData['title'], $formData['code'], $formData['visible'], $formData['locale'], $formData['keyword_group_id']);
+        $keywordCreateEvent = new KeywordEvents(
+            $formData['title'],
+            $formData['code'],
+            $formData['visible'],
+            $formData['locale'],
+            $formData['keyword_group_id']
+        );
 
         return $keywordCreateEvent;
     }
@@ -559,7 +573,7 @@ class KeywordController extends AbstractCrudController
                 )
             );
         } else {
-            $this->redirect('/admin/module/Keyword');
+            return $this->generateRedirect('/admin/module/Keyword');
         }
 
     }
@@ -585,7 +599,7 @@ class KeywordController extends AbstractCrudController
     protected function redirectToEditionTemplate()
     {
         $args = $this->getEditionArguments();
-        $this->redirect('/admin/module/Keyword/update?keyword_id='.$args['keyword_id']);
+        return $this->generateRedirect('/admin/module/Keyword/update?keyword_id='.$args['keyword_id']);
     }
 
     /**
@@ -610,7 +624,7 @@ class KeywordController extends AbstractCrudController
         $this->setCurrentRouter("router.keyword");
 
         // Redirect to parent keyword group list
-        $this->redirectToRoute(
+        return $this->generateRedirectFromRoute(
             'admin.keyword.group.view',
             array('keyword_group_id' => $this->getKeywordGroupId())
         );
@@ -620,7 +634,7 @@ class KeywordController extends AbstractCrudController
     protected function performAdditionalUpdateAction($updateEvent)
     {
         if ($this->getRequest()->get('save_mode') != 'stay') {
-            $this->redirectToListTemplate();
+            return $this->redirectToListTemplate();
         }
     }
 }
