@@ -62,5 +62,6 @@ return array(
     'Enter new folder position' => 'Entrez la nouvelle position du dossier',
     'Enter new content position' => 'Entrez la nouvelle position du contenu',
     'Enter new category position' => 'Entrez la nouvelle position de la catégorie',
-    'Enter new product position' => 'Entrez la nouvelle position du produit'
+    'Enter new product position' => 'Entrez la nouvelle position du produit',
+    'Change keyword group' => 'Changer le mot clé de groupe'
 );

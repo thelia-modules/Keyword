@@ -40,9 +40,9 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildKeywordGroupQuery rightJoin($relation) Adds a RIGHT JOIN clause to the query
  * @method     ChildKeywordGroupQuery innerJoin($relation) Adds a INNER JOIN clause to the query
  *
- * @method     ChildKeywordGroupQuery leftJoinKeywordGroupAssociatedKeyword($relationAlias = null) Adds a LEFT JOIN clause to the query using the KeywordGroupAssociatedKeyword relation
- * @method     ChildKeywordGroupQuery rightJoinKeywordGroupAssociatedKeyword($relationAlias = null) Adds a RIGHT JOIN clause to the query using the KeywordGroupAssociatedKeyword relation
- * @method     ChildKeywordGroupQuery innerJoinKeywordGroupAssociatedKeyword($relationAlias = null) Adds a INNER JOIN clause to the query using the KeywordGroupAssociatedKeyword relation
+ * @method     ChildKeywordGroupQuery leftJoinKeyword($relationAlias = null) Adds a LEFT JOIN clause to the query using the Keyword relation
+ * @method     ChildKeywordGroupQuery rightJoinKeyword($relationAlias = null) Adds a RIGHT JOIN clause to the query using the Keyword relation
+ * @method     ChildKeywordGroupQuery innerJoinKeyword($relationAlias = null) Adds a INNER JOIN clause to the query using the Keyword relation
  *
  * @method     ChildKeywordGroupQuery leftJoinKeywordGroupI18n($relationAlias = null) Adds a LEFT JOIN clause to the query using the KeywordGroupI18n relation
  * @method     ChildKeywordGroupQuery rightJoinKeywordGroupI18n($relationAlias = null) Adds a RIGHT JOIN clause to the query using the KeywordGroupI18n relation
@@ -480,40 +480,40 @@ abstract class KeywordGroupQuery extends ModelCriteria
     }
 
     /**
-     * Filter the query by a related \Keyword\Model\KeywordGroupAssociatedKeyword object
+     * Filter the query by a related \Keyword\Model\Keyword object
      *
-     * @param \Keyword\Model\KeywordGroupAssociatedKeyword|ObjectCollection $keywordGroupAssociatedKeyword  the related object to use as filter
+     * @param \Keyword\Model\Keyword|ObjectCollection $keyword  the related object to use as filter
      * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
      *
      * @return ChildKeywordGroupQuery The current query, for fluid interface
      */
-    public function filterByKeywordGroupAssociatedKeyword($keywordGroupAssociatedKeyword, $comparison = null)
+    public function filterByKeyword($keyword, $comparison = null)
     {
-        if ($keywordGroupAssociatedKeyword instanceof \Keyword\Model\KeywordGroupAssociatedKeyword) {
+        if ($keyword instanceof \Keyword\Model\Keyword) {
             return $this
-                ->addUsingAlias(KeywordGroupTableMap::ID, $keywordGroupAssociatedKeyword->getKeywordGroupId(), $comparison);
-        } elseif ($keywordGroupAssociatedKeyword instanceof ObjectCollection) {
+                ->addUsingAlias(KeywordGroupTableMap::ID, $keyword->getKeywordGroupId(), $comparison);
+        } elseif ($keyword instanceof ObjectCollection) {
             return $this
-                ->useKeywordGroupAssociatedKeywordQuery()
-                ->filterByPrimaryKeys($keywordGroupAssociatedKeyword->getPrimaryKeys())
+                ->useKeywordQuery()
+                ->filterByPrimaryKeys($keyword->getPrimaryKeys())
                 ->endUse();
         } else {
-            throw new PropelException('filterByKeywordGroupAssociatedKeyword() only accepts arguments of type \Keyword\Model\KeywordGroupAssociatedKeyword or Collection');
+            throw new PropelException('filterByKeyword() only accepts arguments of type \Keyword\Model\Keyword or Collection');
         }
     }
 
     /**
-     * Adds a JOIN clause to the query using the KeywordGroupAssociatedKeyword relation
+     * Adds a JOIN clause to the query using the Keyword relation
      *
      * @param     string $relationAlias optional alias for the relation
      * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
      *
      * @return ChildKeywordGroupQuery The current query, for fluid interface
      */
-    public function joinKeywordGroupAssociatedKeyword($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    public function joinKeyword($relationAlias = null, $joinType = Criteria::INNER_JOIN)
     {
         $tableMap = $this->getTableMap();
-        $relationMap = $tableMap->getRelation('KeywordGroupAssociatedKeyword');
+        $relationMap = $tableMap->getRelation('Keyword');
 
         // create a ModelJoin object for this join
         $join = new ModelJoin();
@@ -528,14 +528,14 @@ abstract class KeywordGroupQuery extends ModelCriteria
             $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
             $this->addJoinObject($join, $relationAlias);
         } else {
-            $this->addJoinObject($join, 'KeywordGroupAssociatedKeyword');
+            $this->addJoinObject($join, 'Keyword');
         }
 
         return $this;
     }
 
     /**
-     * Use the KeywordGroupAssociatedKeyword relation KeywordGroupAssociatedKeyword object
+     * Use the Keyword relation Keyword object
      *
      * @see useQuery()
      *
@@ -543,13 +543,13 @@ abstract class KeywordGroupQuery extends ModelCriteria
      *                                   to be used as main alias in the secondary query
      * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
      *
-     * @return   \Keyword\Model\KeywordGroupAssociatedKeywordQuery A secondary query class using the current class as primary query
+     * @return   \Keyword\Model\KeywordQuery A secondary query class using the current class as primary query
      */
-    public function useKeywordGroupAssociatedKeywordQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    public function useKeywordQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
     {
         return $this
-            ->joinKeywordGroupAssociatedKeyword($relationAlias, $joinType)
-            ->useQuery($relationAlias ? $relationAlias : 'KeywordGroupAssociatedKeyword', '\Keyword\Model\KeywordGroupAssociatedKeywordQuery');
+            ->joinKeyword($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'Keyword', '\Keyword\Model\KeywordQuery');
     }
 
     /**
@@ -623,23 +623,6 @@ abstract class KeywordGroupQuery extends ModelCriteria
         return $this
             ->joinKeywordGroupI18n($relationAlias, $joinType)
             ->useQuery($relationAlias ? $relationAlias : 'KeywordGroupI18n', '\Keyword\Model\KeywordGroupI18nQuery');
-    }
-
-    /**
-     * Filter the query by a related Keyword object
-     * using the keyword_group_associated_keyword table as cross reference
-     *
-     * @param Keyword $keyword the related object to use as filter
-     * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
-     *
-     * @return ChildKeywordGroupQuery The current query, for fluid interface
-     */
-    public function filterByKeyword($keyword, $comparison = Criteria::EQUAL)
-    {
-        return $this
-            ->useKeywordGroupAssociatedKeywordQuery()
-            ->filterByKeyword($keyword, $comparison)
-            ->endUse();
     }
 
     /**

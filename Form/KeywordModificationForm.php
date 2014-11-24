@@ -26,6 +26,7 @@ namespace Keyword\Form;
 use Keyword\Model\KeywordQuery;
 use Symfony\Component\Validator\Constraints\GreaterThan;
 use Symfony\Component\Validator\ExecutionContextInterface;
+use Thelia\Core\Translation\Translator;
 use Thelia\Form\StandardDescriptionFieldsTrait;
 
 /**
@@ -43,6 +44,18 @@ class KeywordModificationForm extends KeywordCreationForm
 
         $this->formBuilder
             ->add("id", "hidden", array("constraints" => array(new GreaterThan(array('value' => 0)))))
+            ->add("keyword_group_id", "integer", array(
+                    "constraints" => array(
+                        new GreaterThan(
+                            array('value' => 0)
+                        )
+                    ),
+                    'label' => Translator::getInstance()->trans('Change keyword group', array(), 'keyword'),
+                    'label_attr' => array(
+                        'for' => 'keyword_group_id'
+                    )
+                )
+            )
         ;
 
         // Add standard description fields, excluding title and locale, which a re defined in parent class

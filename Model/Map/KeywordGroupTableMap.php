@@ -173,9 +173,8 @@ class KeywordGroupTableMap extends TableMap
      */
     public function buildRelations()
     {
-        $this->addRelation('KeywordGroupAssociatedKeyword', '\\Keyword\\Model\\KeywordGroupAssociatedKeyword', RelationMap::ONE_TO_MANY, array('id' => 'keyword_group_id', ), 'CASCADE', 'RESTRICT', 'KeywordGroupAssociatedKeywords');
+        $this->addRelation('Keyword', '\\Keyword\\Model\\Keyword', RelationMap::ONE_TO_MANY, array('id' => 'keyword_group_id', ), 'CASCADE', 'RESTRICT', 'Keywords');
         $this->addRelation('KeywordGroupI18n', '\\Keyword\\Model\\KeywordGroupI18n', RelationMap::ONE_TO_MANY, array('id' => 'id', ), 'CASCADE', null, 'KeywordGroupI18ns');
-        $this->addRelation('Keyword', '\\Keyword\\Model\\Keyword', RelationMap::MANY_TO_MANY, array(), 'CASCADE', 'RESTRICT', 'Keywords');
     } // buildRelations()
 
     /**
@@ -198,7 +197,7 @@ class KeywordGroupTableMap extends TableMap
     {
         // Invalidate objects in ".$this->getClassNameFromBuilder($joinedTableTableMapBuilder)." instance pool,
         // since one or more of them may be deleted by ON DELETE CASCADE/SETNULL rule.
-                KeywordGroupAssociatedKeywordTableMap::clearInstancePool();
+                KeywordTableMap::clearInstancePool();
                 KeywordGroupI18nTableMap::clearInstancePool();
             }
 

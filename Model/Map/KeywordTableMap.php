@@ -58,7 +58,7 @@ class KeywordTableMap extends TableMap
     /**
      * The total number of columns
      */
-    const NUM_COLUMNS = 6;
+    const NUM_COLUMNS = 7;
 
     /**
      * The number of lazy-loaded columns
@@ -68,12 +68,17 @@ class KeywordTableMap extends TableMap
     /**
      * The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS)
      */
-    const NUM_HYDRATE_COLUMNS = 6;
+    const NUM_HYDRATE_COLUMNS = 7;
 
     /**
      * the column name for the ID field
      */
     const ID = 'keyword.ID';
+
+    /**
+     * the column name for the KEYWORD_GROUP_ID field
+     */
+    const KEYWORD_GROUP_ID = 'keyword.KEYWORD_GROUP_ID';
 
     /**
      * the column name for the VISIBLE field
@@ -121,12 +126,12 @@ class KeywordTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('Id', 'Visible', 'Position', 'Code', 'CreatedAt', 'UpdatedAt', ),
-        self::TYPE_STUDLYPHPNAME => array('id', 'visible', 'position', 'code', 'createdAt', 'updatedAt', ),
-        self::TYPE_COLNAME       => array(KeywordTableMap::ID, KeywordTableMap::VISIBLE, KeywordTableMap::POSITION, KeywordTableMap::CODE, KeywordTableMap::CREATED_AT, KeywordTableMap::UPDATED_AT, ),
-        self::TYPE_RAW_COLNAME   => array('ID', 'VISIBLE', 'POSITION', 'CODE', 'CREATED_AT', 'UPDATED_AT', ),
-        self::TYPE_FIELDNAME     => array('id', 'visible', 'position', 'code', 'created_at', 'updated_at', ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, )
+        self::TYPE_PHPNAME       => array('Id', 'KeywordGroupId', 'Visible', 'Position', 'Code', 'CreatedAt', 'UpdatedAt', ),
+        self::TYPE_STUDLYPHPNAME => array('id', 'keywordGroupId', 'visible', 'position', 'code', 'createdAt', 'updatedAt', ),
+        self::TYPE_COLNAME       => array(KeywordTableMap::ID, KeywordTableMap::KEYWORD_GROUP_ID, KeywordTableMap::VISIBLE, KeywordTableMap::POSITION, KeywordTableMap::CODE, KeywordTableMap::CREATED_AT, KeywordTableMap::UPDATED_AT, ),
+        self::TYPE_RAW_COLNAME   => array('ID', 'KEYWORD_GROUP_ID', 'VISIBLE', 'POSITION', 'CODE', 'CREATED_AT', 'UPDATED_AT', ),
+        self::TYPE_FIELDNAME     => array('id', 'keyword_group_id', 'visible', 'position', 'code', 'created_at', 'updated_at', ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, )
     );
 
     /**
@@ -136,12 +141,12 @@ class KeywordTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('Id' => 0, 'Visible' => 1, 'Position' => 2, 'Code' => 3, 'CreatedAt' => 4, 'UpdatedAt' => 5, ),
-        self::TYPE_STUDLYPHPNAME => array('id' => 0, 'visible' => 1, 'position' => 2, 'code' => 3, 'createdAt' => 4, 'updatedAt' => 5, ),
-        self::TYPE_COLNAME       => array(KeywordTableMap::ID => 0, KeywordTableMap::VISIBLE => 1, KeywordTableMap::POSITION => 2, KeywordTableMap::CODE => 3, KeywordTableMap::CREATED_AT => 4, KeywordTableMap::UPDATED_AT => 5, ),
-        self::TYPE_RAW_COLNAME   => array('ID' => 0, 'VISIBLE' => 1, 'POSITION' => 2, 'CODE' => 3, 'CREATED_AT' => 4, 'UPDATED_AT' => 5, ),
-        self::TYPE_FIELDNAME     => array('id' => 0, 'visible' => 1, 'position' => 2, 'code' => 3, 'created_at' => 4, 'updated_at' => 5, ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, )
+        self::TYPE_PHPNAME       => array('Id' => 0, 'KeywordGroupId' => 1, 'Visible' => 2, 'Position' => 3, 'Code' => 4, 'CreatedAt' => 5, 'UpdatedAt' => 6, ),
+        self::TYPE_STUDLYPHPNAME => array('id' => 0, 'keywordGroupId' => 1, 'visible' => 2, 'position' => 3, 'code' => 4, 'createdAt' => 5, 'updatedAt' => 6, ),
+        self::TYPE_COLNAME       => array(KeywordTableMap::ID => 0, KeywordTableMap::KEYWORD_GROUP_ID => 1, KeywordTableMap::VISIBLE => 2, KeywordTableMap::POSITION => 3, KeywordTableMap::CODE => 4, KeywordTableMap::CREATED_AT => 5, KeywordTableMap::UPDATED_AT => 6, ),
+        self::TYPE_RAW_COLNAME   => array('ID' => 0, 'KEYWORD_GROUP_ID' => 1, 'VISIBLE' => 2, 'POSITION' => 3, 'CODE' => 4, 'CREATED_AT' => 5, 'UPDATED_AT' => 6, ),
+        self::TYPE_FIELDNAME     => array('id' => 0, 'keyword_group_id' => 1, 'visible' => 2, 'position' => 3, 'code' => 4, 'created_at' => 5, 'updated_at' => 6, ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, )
     );
 
     /**
@@ -161,6 +166,7 @@ class KeywordTableMap extends TableMap
         $this->setUseIdGenerator(true);
         // columns
         $this->addPrimaryKey('ID', 'Id', 'INTEGER', true, null, null);
+        $this->addForeignKey('KEYWORD_GROUP_ID', 'KeywordGroupId', 'INTEGER', 'keyword_group', 'ID', true, null, null);
         $this->addColumn('VISIBLE', 'Visible', 'TINYINT', false, null, null);
         $this->addColumn('POSITION', 'Position', 'INTEGER', false, null, null);
         $this->addColumn('CODE', 'Code', 'VARCHAR', false, 255, null);
@@ -173,13 +179,12 @@ class KeywordTableMap extends TableMap
      */
     public function buildRelations()
     {
-        $this->addRelation('KeywordGroupAssociatedKeyword', '\\Keyword\\Model\\KeywordGroupAssociatedKeyword', RelationMap::ONE_TO_MANY, array('id' => 'keyword_id', ), 'CASCADE', 'RESTRICT', 'KeywordGroupAssociatedKeywords');
+        $this->addRelation('KeywordGroup', '\\Keyword\\Model\\KeywordGroup', RelationMap::MANY_TO_ONE, array('keyword_group_id' => 'id', ), 'CASCADE', 'RESTRICT');
         $this->addRelation('ContentAssociatedKeyword', '\\Keyword\\Model\\ContentAssociatedKeyword', RelationMap::ONE_TO_MANY, array('id' => 'keyword_id', ), 'CASCADE', 'RESTRICT', 'ContentAssociatedKeywords');
         $this->addRelation('FolderAssociatedKeyword', '\\Keyword\\Model\\FolderAssociatedKeyword', RelationMap::ONE_TO_MANY, array('id' => 'keyword_id', ), 'CASCADE', 'RESTRICT', 'FolderAssociatedKeywords');
         $this->addRelation('CategoryAssociatedKeyword', '\\Keyword\\Model\\CategoryAssociatedKeyword', RelationMap::ONE_TO_MANY, array('id' => 'keyword_id', ), 'CASCADE', 'RESTRICT', 'CategoryAssociatedKeywords');
         $this->addRelation('ProductAssociatedKeyword', '\\Keyword\\Model\\ProductAssociatedKeyword', RelationMap::ONE_TO_MANY, array('id' => 'keyword_id', ), 'CASCADE', 'RESTRICT', 'ProductAssociatedKeywords');
         $this->addRelation('KeywordI18n', '\\Keyword\\Model\\KeywordI18n', RelationMap::ONE_TO_MANY, array('id' => 'id', ), 'CASCADE', null, 'KeywordI18ns');
-        $this->addRelation('KeywordGroup', '\\Keyword\\Model\\KeywordGroup', RelationMap::MANY_TO_MANY, array(), 'CASCADE', 'RESTRICT', 'KeywordGroups');
     } // buildRelations()
 
     /**
@@ -202,7 +207,6 @@ class KeywordTableMap extends TableMap
     {
         // Invalidate objects in ".$this->getClassNameFromBuilder($joinedTableTableMapBuilder)." instance pool,
         // since one or more of them may be deleted by ON DELETE CASCADE/SETNULL rule.
-                KeywordGroupAssociatedKeywordTableMap::clearInstancePool();
                 ContentAssociatedKeywordTableMap::clearInstancePool();
                 FolderAssociatedKeywordTableMap::clearInstancePool();
                 CategoryAssociatedKeywordTableMap::clearInstancePool();
@@ -349,6 +353,7 @@ class KeywordTableMap extends TableMap
     {
         if (null === $alias) {
             $criteria->addSelectColumn(KeywordTableMap::ID);
+            $criteria->addSelectColumn(KeywordTableMap::KEYWORD_GROUP_ID);
             $criteria->addSelectColumn(KeywordTableMap::VISIBLE);
             $criteria->addSelectColumn(KeywordTableMap::POSITION);
             $criteria->addSelectColumn(KeywordTableMap::CODE);
@@ -356,6 +361,7 @@ class KeywordTableMap extends TableMap
             $criteria->addSelectColumn(KeywordTableMap::UPDATED_AT);
         } else {
             $criteria->addSelectColumn($alias . '.ID');
+            $criteria->addSelectColumn($alias . '.KEYWORD_GROUP_ID');
             $criteria->addSelectColumn($alias . '.VISIBLE');
             $criteria->addSelectColumn($alias . '.POSITION');
             $criteria->addSelectColumn($alias . '.CODE');

@@ -29,38 +29,17 @@ DROP TABLE IF EXISTS `keyword`;
 CREATE TABLE `keyword`
 (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `keyword_group_id` INTEGER NOT NULL,
     `visible` TINYINT,
     `position` INTEGER,
     `code` VARCHAR(255),
     `created_at` DATETIME,
     `updated_at` DATETIME,
-    PRIMARY KEY (`id`)
-) ENGINE=InnoDB;
-
--- ---------------------------------------------------------------------
--- keyword_group_associated_keyword
--- ---------------------------------------------------------------------
-
-DROP TABLE IF EXISTS `keyword_group_associated_keyword`;
-
-CREATE TABLE `keyword_group_associated_keyword`
-(
-    `keyword_group_id` INTEGER NOT NULL,
-    `keyword_id` INTEGER NOT NULL,
-    `position` INTEGER NOT NULL,
-    `created_at` DATETIME,
-    `updated_at` DATETIME,
-    PRIMARY KEY (`keyword_group_id`,`keyword_id`),
-    INDEX `idx_keyword_group_associated_keyword_keyword_group_id` (`keyword_group_id`),
-    INDEX `idx_keyword_group_associated_keyword_keyword_id` (`keyword_id`),
-    CONSTRAINT `fk_keyword_group_associated_keyword_keyword_group_id`
+    PRIMARY KEY (`id`),
+    INDEX `idx_keyword_group_id` (`keyword_group_id`),
+    CONSTRAINT `fk_keyword_group_id`
         FOREIGN KEY (`keyword_group_id`)
         REFERENCES `keyword_group` (`id`)
-        ON UPDATE RESTRICT
-        ON DELETE CASCADE,
-    CONSTRAINT `fk_keyword_group_associated_keyword_keyword_id`
-        FOREIGN KEY (`keyword_id`)
-        REFERENCES `keyword` (`id`)
         ON UPDATE RESTRICT
         ON DELETE CASCADE
 ) ENGINE=InnoDB;

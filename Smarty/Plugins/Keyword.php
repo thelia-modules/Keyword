@@ -53,12 +53,10 @@ class Keyword extends AbstractSmartyPlugin
 
                 if (null !== $keywordFolderAssociation) {
                     $ret = true;
-                }
-                else {
+                } else {
                     $ret = false;
                 }
-            }
-            else {
+            } else {
                 $ret = false;
             }
 
@@ -87,12 +85,10 @@ class Keyword extends AbstractSmartyPlugin
 
                 if (null !== $keywordContentAssociation) {
                     $ret = true;
-                }
-                else {
+                } else {
                     $ret = false;
                 }
-            }
-            else {
+            } else {
                 $ret = false;
             }
 
@@ -121,12 +117,10 @@ class Keyword extends AbstractSmartyPlugin
 
                 if (null !== $keywordCategoryAssociation) {
                     $ret = true;
-                }
-                else {
+                } else {
                     $ret = false;
                 }
-            }
-            else {
+            } else {
                 $ret = false;
             }
 
@@ -155,12 +149,10 @@ class Keyword extends AbstractSmartyPlugin
 
                 if (null !== $keywordProductAssociation) {
                     $ret = true;
-                }
-                else {
+                } else {
                     $ret = false;
                 }
-            }
-            else {
+            } else {
                 $ret = false;
             }
 

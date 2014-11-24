@@ -31,6 +31,7 @@ namespace Keyword\Event;
 class KeywordUpdateEvent extends KeywordEvents
 {
     protected $keyword_id;
+    protected $keyword_group_id;
 
     protected $chapo;
     protected $description;
@@ -119,6 +120,24 @@ class KeywordUpdateEvent extends KeywordEvents
     public function getPostscriptum()
     {
         return $this->postscriptum;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getKeywordGroupId()
+    {
+        return $this->keyword_group_id;
+    }
+
+    /**
+     * @param mixed $keyword_group_id
+     */
+    public function setKeywordGroupId($keyword_group_id)
+    {
+        $this->keyword_group_id = $keyword_group_id;
+
+        return $this;
     }
 
 }

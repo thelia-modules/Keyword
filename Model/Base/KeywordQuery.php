@@ -23,6 +23,7 @@ use Propel\Runtime\Exception\PropelException;
  *
  *
  * @method     ChildKeywordQuery orderById($order = Criteria::ASC) Order by the id column
+ * @method     ChildKeywordQuery orderByKeywordGroupId($order = Criteria::ASC) Order by the keyword_group_id column
  * @method     ChildKeywordQuery orderByVisible($order = Criteria::ASC) Order by the visible column
  * @method     ChildKeywordQuery orderByPosition($order = Criteria::ASC) Order by the position column
  * @method     ChildKeywordQuery orderByCode($order = Criteria::ASC) Order by the code column
@@ -30,6 +31,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildKeywordQuery orderByUpdatedAt($order = Criteria::ASC) Order by the updated_at column
  *
  * @method     ChildKeywordQuery groupById() Group by the id column
+ * @method     ChildKeywordQuery groupByKeywordGroupId() Group by the keyword_group_id column
  * @method     ChildKeywordQuery groupByVisible() Group by the visible column
  * @method     ChildKeywordQuery groupByPosition() Group by the position column
  * @method     ChildKeywordQuery groupByCode() Group by the code column
@@ -40,9 +42,9 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildKeywordQuery rightJoin($relation) Adds a RIGHT JOIN clause to the query
  * @method     ChildKeywordQuery innerJoin($relation) Adds a INNER JOIN clause to the query
  *
- * @method     ChildKeywordQuery leftJoinKeywordGroupAssociatedKeyword($relationAlias = null) Adds a LEFT JOIN clause to the query using the KeywordGroupAssociatedKeyword relation
- * @method     ChildKeywordQuery rightJoinKeywordGroupAssociatedKeyword($relationAlias = null) Adds a RIGHT JOIN clause to the query using the KeywordGroupAssociatedKeyword relation
- * @method     ChildKeywordQuery innerJoinKeywordGroupAssociatedKeyword($relationAlias = null) Adds a INNER JOIN clause to the query using the KeywordGroupAssociatedKeyword relation
+ * @method     ChildKeywordQuery leftJoinKeywordGroup($relationAlias = null) Adds a LEFT JOIN clause to the query using the KeywordGroup relation
+ * @method     ChildKeywordQuery rightJoinKeywordGroup($relationAlias = null) Adds a RIGHT JOIN clause to the query using the KeywordGroup relation
+ * @method     ChildKeywordQuery innerJoinKeywordGroup($relationAlias = null) Adds a INNER JOIN clause to the query using the KeywordGroup relation
  *
  * @method     ChildKeywordQuery leftJoinContentAssociatedKeyword($relationAlias = null) Adds a LEFT JOIN clause to the query using the ContentAssociatedKeyword relation
  * @method     ChildKeywordQuery rightJoinContentAssociatedKeyword($relationAlias = null) Adds a RIGHT JOIN clause to the query using the ContentAssociatedKeyword relation
@@ -68,6 +70,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildKeyword findOneOrCreate(ConnectionInterface $con = null) Return the first ChildKeyword matching the query, or a new ChildKeyword object populated from the query conditions when no match is found
  *
  * @method     ChildKeyword findOneById(int $id) Return the first ChildKeyword filtered by the id column
+ * @method     ChildKeyword findOneByKeywordGroupId(int $keyword_group_id) Return the first ChildKeyword filtered by the keyword_group_id column
  * @method     ChildKeyword findOneByVisible(int $visible) Return the first ChildKeyword filtered by the visible column
  * @method     ChildKeyword findOneByPosition(int $position) Return the first ChildKeyword filtered by the position column
  * @method     ChildKeyword findOneByCode(string $code) Return the first ChildKeyword filtered by the code column
@@ -75,6 +78,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildKeyword findOneByUpdatedAt(string $updated_at) Return the first ChildKeyword filtered by the updated_at column
  *
  * @method     array findById(int $id) Return ChildKeyword objects filtered by the id column
+ * @method     array findByKeywordGroupId(int $keyword_group_id) Return ChildKeyword objects filtered by the keyword_group_id column
  * @method     array findByVisible(int $visible) Return ChildKeyword objects filtered by the visible column
  * @method     array findByPosition(int $position) Return ChildKeyword objects filtered by the position column
  * @method     array findByCode(string $code) Return ChildKeyword objects filtered by the code column
@@ -168,7 +172,7 @@ abstract class KeywordQuery extends ModelCriteria
      */
     protected function findPkSimple($key, $con)
     {
-        $sql = 'SELECT ID, VISIBLE, POSITION, CODE, CREATED_AT, UPDATED_AT FROM keyword WHERE ID = :p0';
+        $sql = 'SELECT ID, KEYWORD_GROUP_ID, VISIBLE, POSITION, CODE, CREATED_AT, UPDATED_AT FROM keyword WHERE ID = :p0';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
@@ -296,6 +300,49 @@ abstract class KeywordQuery extends ModelCriteria
         }
 
         return $this->addUsingAlias(KeywordTableMap::ID, $id, $comparison);
+    }
+
+    /**
+     * Filter the query on the keyword_group_id column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByKeywordGroupId(1234); // WHERE keyword_group_id = 1234
+     * $query->filterByKeywordGroupId(array(12, 34)); // WHERE keyword_group_id IN (12, 34)
+     * $query->filterByKeywordGroupId(array('min' => 12)); // WHERE keyword_group_id > 12
+     * </code>
+     *
+     * @see       filterByKeywordGroup()
+     *
+     * @param     mixed $keywordGroupId The value to use as filter.
+     *              Use scalar values for equality.
+     *              Use array values for in_array() equivalent.
+     *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return ChildKeywordQuery The current query, for fluid interface
+     */
+    public function filterByKeywordGroupId($keywordGroupId = null, $comparison = null)
+    {
+        if (is_array($keywordGroupId)) {
+            $useMinMax = false;
+            if (isset($keywordGroupId['min'])) {
+                $this->addUsingAlias(KeywordTableMap::KEYWORD_GROUP_ID, $keywordGroupId['min'], Criteria::GREATER_EQUAL);
+                $useMinMax = true;
+            }
+            if (isset($keywordGroupId['max'])) {
+                $this->addUsingAlias(KeywordTableMap::KEYWORD_GROUP_ID, $keywordGroupId['max'], Criteria::LESS_EQUAL);
+                $useMinMax = true;
+            }
+            if ($useMinMax) {
+                return $this;
+            }
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+        }
+
+        return $this->addUsingAlias(KeywordTableMap::KEYWORD_GROUP_ID, $keywordGroupId, $comparison);
     }
 
     /**
@@ -496,40 +543,42 @@ abstract class KeywordQuery extends ModelCriteria
     }
 
     /**
-     * Filter the query by a related \Keyword\Model\KeywordGroupAssociatedKeyword object
+     * Filter the query by a related \Keyword\Model\KeywordGroup object
      *
-     * @param \Keyword\Model\KeywordGroupAssociatedKeyword|ObjectCollection $keywordGroupAssociatedKeyword  the related object to use as filter
+     * @param \Keyword\Model\KeywordGroup|ObjectCollection $keywordGroup The related object(s) to use as filter
      * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
      *
      * @return ChildKeywordQuery The current query, for fluid interface
      */
-    public function filterByKeywordGroupAssociatedKeyword($keywordGroupAssociatedKeyword, $comparison = null)
+    public function filterByKeywordGroup($keywordGroup, $comparison = null)
     {
-        if ($keywordGroupAssociatedKeyword instanceof \Keyword\Model\KeywordGroupAssociatedKeyword) {
+        if ($keywordGroup instanceof \Keyword\Model\KeywordGroup) {
             return $this
-                ->addUsingAlias(KeywordTableMap::ID, $keywordGroupAssociatedKeyword->getKeywordId(), $comparison);
-        } elseif ($keywordGroupAssociatedKeyword instanceof ObjectCollection) {
+                ->addUsingAlias(KeywordTableMap::KEYWORD_GROUP_ID, $keywordGroup->getId(), $comparison);
+        } elseif ($keywordGroup instanceof ObjectCollection) {
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+
             return $this
-                ->useKeywordGroupAssociatedKeywordQuery()
-                ->filterByPrimaryKeys($keywordGroupAssociatedKeyword->getPrimaryKeys())
-                ->endUse();
+                ->addUsingAlias(KeywordTableMap::KEYWORD_GROUP_ID, $keywordGroup->toKeyValue('PrimaryKey', 'Id'), $comparison);
         } else {
-            throw new PropelException('filterByKeywordGroupAssociatedKeyword() only accepts arguments of type \Keyword\Model\KeywordGroupAssociatedKeyword or Collection');
+            throw new PropelException('filterByKeywordGroup() only accepts arguments of type \Keyword\Model\KeywordGroup or Collection');
         }
     }
 
     /**
-     * Adds a JOIN clause to the query using the KeywordGroupAssociatedKeyword relation
+     * Adds a JOIN clause to the query using the KeywordGroup relation
      *
      * @param     string $relationAlias optional alias for the relation
      * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
      *
      * @return ChildKeywordQuery The current query, for fluid interface
      */
-    public function joinKeywordGroupAssociatedKeyword($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    public function joinKeywordGroup($relationAlias = null, $joinType = Criteria::INNER_JOIN)
     {
         $tableMap = $this->getTableMap();
-        $relationMap = $tableMap->getRelation('KeywordGroupAssociatedKeyword');
+        $relationMap = $tableMap->getRelation('KeywordGroup');
 
         // create a ModelJoin object for this join
         $join = new ModelJoin();
@@ -544,14 +593,14 @@ abstract class KeywordQuery extends ModelCriteria
             $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
             $this->addJoinObject($join, $relationAlias);
         } else {
-            $this->addJoinObject($join, 'KeywordGroupAssociatedKeyword');
+            $this->addJoinObject($join, 'KeywordGroup');
         }
 
         return $this;
     }
 
     /**
-     * Use the KeywordGroupAssociatedKeyword relation KeywordGroupAssociatedKeyword object
+     * Use the KeywordGroup relation KeywordGroup object
      *
      * @see useQuery()
      *
@@ -559,13 +608,13 @@ abstract class KeywordQuery extends ModelCriteria
      *                                   to be used as main alias in the secondary query
      * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
      *
-     * @return   \Keyword\Model\KeywordGroupAssociatedKeywordQuery A secondary query class using the current class as primary query
+     * @return   \Keyword\Model\KeywordGroupQuery A secondary query class using the current class as primary query
      */
-    public function useKeywordGroupAssociatedKeywordQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    public function useKeywordGroupQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
     {
         return $this
-            ->joinKeywordGroupAssociatedKeyword($relationAlias, $joinType)
-            ->useQuery($relationAlias ? $relationAlias : 'KeywordGroupAssociatedKeyword', '\Keyword\Model\KeywordGroupAssociatedKeywordQuery');
+            ->joinKeywordGroup($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'KeywordGroup', '\Keyword\Model\KeywordGroupQuery');
     }
 
     /**
@@ -931,23 +980,6 @@ abstract class KeywordQuery extends ModelCriteria
         return $this
             ->joinKeywordI18n($relationAlias, $joinType)
             ->useQuery($relationAlias ? $relationAlias : 'KeywordI18n', '\Keyword\Model\KeywordI18nQuery');
-    }
-
-    /**
-     * Filter the query by a related KeywordGroup object
-     * using the keyword_group_associated_keyword table as cross reference
-     *
-     * @param KeywordGroup $keywordGroup the related object to use as filter
-     * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
-     *
-     * @return ChildKeywordQuery The current query, for fluid interface
-     */
-    public function filterByKeywordGroup($keywordGroup, $comparison = Criteria::EQUAL)
-    {
-        return $this
-            ->useKeywordGroupAssociatedKeywordQuery()
-            ->filterByKeywordGroup($keywordGroup, $comparison)
-            ->endUse();
     }
 
     /**

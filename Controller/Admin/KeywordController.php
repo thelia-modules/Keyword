@@ -426,16 +426,17 @@ class KeywordController extends AbstractCrudController
      */
     protected function hydrateObjectForm($object)
     {
+
         // Prepare the data that will hydrate the form
         $data = array(
-            'id'           => $object->getId(),
-            'locale'       => $object->getLocale(),
-            'title'        => $object->getTitle(),
-            'code'         => $object->getCode(),
-            'chapo'        => $object->getChapo(),
-            'description'  => $object->getDescription(),
-            'postscriptum' => $object->getPostscriptum(),
-            'visible'      => $object->getVisible()
+            'id'                => $object->getId(),
+            'locale'            => $object->getLocale(),
+            'title'             => $object->getTitle(),
+            'code'              => $object->getCode(),
+            'chapo'             => $object->getChapo(),
+            'description'       => $object->getDescription(),
+            'postscriptum'      => $object->getPostscriptum(),
+            'visible'           => $object->getVisible()
         );
 
         // Setup the object form
@@ -477,7 +478,8 @@ class KeywordController extends AbstractCrudController
             ->setChapo($formData['chapo'])
             ->setDescription($formData['description'])
             ->setPostscriptum($formData['postscriptum'])
-            ->setVisible($formData['visible']);
+            ->setVisible($formData['visible'])
+            ->setKeywordGroupId($formData['keyword_group_id']);
 
         return $keywordUpdateEvent;
     }
@@ -599,6 +601,7 @@ class KeywordController extends AbstractCrudController
     protected function redirectToEditionTemplate()
     {
         $args = $this->getEditionArguments();
+
         return $this->generateRedirect('/admin/module/Keyword/update?keyword_id='.$args['keyword_id']);
     }
 

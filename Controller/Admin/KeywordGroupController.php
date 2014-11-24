@@ -271,6 +271,7 @@ class KeywordGroupController extends AbstractCrudController
     protected function redirectToEditionTemplate()
     {
         $args = $this->getEditionArguments();
+
         return $this->generateRedirect('/admin/module/Keyword/group/update?keyword_group_id='.$args['keyword_group_id']);
     }
 

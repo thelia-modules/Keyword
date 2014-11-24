@@ -174,7 +174,6 @@ class KeywordContent extends Content
             $results->addRow($loopResultRow);
         }
 
-
         return $results;
     }
 

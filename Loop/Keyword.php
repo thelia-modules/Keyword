@@ -23,7 +23,6 @@
 
 namespace Keyword\Loop;
 
-use Keyword\Model\Base\KeywordGroupAssociatedKeywordQuery;
 use Keyword\Model\CategoryAssociatedKeywordQuery;
 use Keyword\Model\ContentAssociatedKeywordQuery;
 use Keyword\Model\FolderAssociatedKeywordQuery;
@@ -140,8 +139,7 @@ class Keyword extends BaseI18nLoop implements PropelSearchLoopInterface
 
         /* If keyword group criteria filter by keyword group code */
         if ($this->getKeywordGroup()) {
-            $keywordGroup = KeywordGroupAssociatedKeywordQuery::create()->findByKeywordGroupId($this->getKeywordGroup());
-            $search->filterByKeywordGroupAssociatedKeyword($keywordGroup);
+            $search->filterByKeywordGroupId($this->getKeywordGroup());
         }
 
         /* If keyword criteria filter by keyword code */
@@ -237,10 +235,8 @@ class Keyword extends BaseI18nLoop implements PropelSearchLoopInterface
                 $productId[] = $product->getId();
             }
 
-            $keywordGroup = KeywordGroupAssociatedKeywordQuery::create()->findOneByKeywordId($keyword->getId());
-
             $loopResultRow->set("ID", $keyword->getId())
-                ->set("KEYWORD_GROUP_ID", $keywordGroup->getKeywordGroupId())
+                ->set("KEYWORD_GROUP_ID", $keyword->getKeywordGroupId())
                 ->set("IS_TRANSLATED",$keyword->getVirtualColumn('IS_TRANSLATED'))
                 ->set("LOCALE",$this->locale)
                 ->set("TITLE",$keyword->getVirtualColumn('i18n_TITLE'))

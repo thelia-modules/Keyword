@@ -28,7 +28,7 @@ class KeywordUpdateObjectPositionEvent extends ActionEvent
     protected $mode;
     protected $position;
 
-    function __construct($keyword_id, $object, $object_id, $mode, $position)
+    public function __construct($keyword_id, $object, $object_id, $mode, $position)
     {
         $this->keyword_id = $keyword_id;
         $this->object = $object;
@@ -126,7 +126,5 @@ class KeywordUpdateObjectPositionEvent extends ActionEvent
     {
         return $this->position;
     }
-
-
 
 }

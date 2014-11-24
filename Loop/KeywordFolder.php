@@ -178,7 +178,6 @@ class KeywordFolder extends Folder
             $results->addRow($loopResultRow);
         }
 
-
         return $results;
     }
 
