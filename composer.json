@@ -1,5 +1,5 @@
 {
-    "name": "thelia/keyword",
+    "name": "thelia/keyword-module",
     "type": "thelia-module",
     "license": "LGPL V3",
     "description": "Associate contents, folders, categories and products to one or more keywords",
