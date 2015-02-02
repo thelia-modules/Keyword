@@ -105,11 +105,6 @@ class KeywordProduct extends Product
         $keywordListId = implode(',', $keywordListId);
 
         foreach ($results as $result) {
-            // If any content is associated with keyword
-            if (true === $result->getProducts()->isEmpty()) {
-                return null;
-            }
-
             foreach ($result->getProducts() as $product) {
                 $productIds[] = $product->getId();
             }
@@ -117,32 +112,49 @@ class KeywordProduct extends Product
 
         $productIds = implode(',', $productIds);
 
-        $join = new Join();
-        $join->addExplicitCondition(ProductTableMap::TABLE_NAME, 'ID', 'product', ProductAssociatedKeywordTableMap::TABLE_NAME, 'product_id', 'product_associated_keyword');
-        $join->setJoinType(Criteria::INNER_JOIN);
+        if ($productIds) {
+            $join = new Join();
+            $join->addExplicitCondition(
+                ProductTableMap::TABLE_NAME,
+                'ID',
+                'product',
+                ProductAssociatedKeywordTableMap::TABLE_NAME,
+                'product_id',
+                'product_associated_keyword'
+            );
+            $join->setJoinType(Criteria::INNER_JOIN);
 
-        $search->addJoinObject($join, 'product_associated_keyword_join');
-        $search->addJoinCondition('category_associated_keyword_join','category_associated_keyword.keyword_id IN ('.$keywordListId.')');
-        $search->addJoinCondition('product_associated_keyword_join','product_associated_keyword.product_id IN ('.$productIds.')');
-        $search->withColumn('product_associated_keyword.position', 'product_position');
+            $search->addJoinObject($join, 'product_associated_keyword_join');
+            $search->addJoinCondition(
+                'category_associated_keyword_join',
+                'category_associated_keyword.keyword_id IN (' . $keywordListId . ')'
+            );
+            $search->addJoinCondition(
+                'product_associated_keyword_join',
+                'product_associated_keyword.product_id IN (' . $productIds . ')'
+            );
+            $search->withColumn('product_associated_keyword.position', 'product_position');
 
-        $orders = $this->getAssociation_order();
+            $orders = $this->getAssociation_order();
 
-        foreach ($orders as $order) {
-            switch ($order) {
-                case "manual":
-                    $search->clearOrderByColumns();
-                    $search->addAscendingOrderByColumn('product_position');
-                    break;
-                case "manual_reverse":
-                    $search->clearOrderByColumns();
-                    $search->addDescendingOrderByColumn('product_position');
-                    break;
-                case "random":
-                    $search->clearOrderByColumns();
-                    $search->addAscendingOrderByColumn('RAND()');
-                    break(2);
+            foreach ($orders as $order) {
+                switch ($order) {
+                    case "manual":
+                        $search->clearOrderByColumns();
+                        $search->addAscendingOrderByColumn('product_position');
+                        break;
+                    case "manual_reverse":
+                        $search->clearOrderByColumns();
+                        $search->addDescendingOrderByColumn('product_position');
+                        break;
+                    case "random":
+                        $search->clearOrderByColumns();
+                        $search->addAscendingOrderByColumn('RAND()');
+                        break(2);
+                }
             }
+        } else {
+            return null;
         }
 
         return $search;

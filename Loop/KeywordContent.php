@@ -103,11 +103,6 @@ class KeywordContent extends Content
         $keywordListId = implode(',', $keywordListId);
 
         foreach ($results as $result) {
-            // If any content is associated with keyword
-            if (true === $result->getContents()->isEmpty()) {
-                return null;
-            }
-
             foreach ($result->getContents() as $content) {
                 $contentIds[] = $content->getId();
             }
@@ -115,32 +110,49 @@ class KeywordContent extends Content
 
         $contentIds = implode(',', $contentIds);
 
-        $join = new Join();
-        $join->addExplicitCondition(ContentTableMap::TABLE_NAME, 'ID', 'content', ContentAssociatedKeywordTableMap::TABLE_NAME, 'content_id', 'content_associated_keyword');
-        $join->setJoinType(Criteria::INNER_JOIN);
+        if ($contentIds) {
+            $join = new Join();
+            $join->addExplicitCondition(
+                ContentTableMap::TABLE_NAME,
+                'ID',
+                'content',
+                ContentAssociatedKeywordTableMap::TABLE_NAME,
+                'content_id',
+                'content_associated_keyword'
+            );
+            $join->setJoinType(Criteria::INNER_JOIN);
 
-        $search->addJoinObject($join, 'content_associated_keyword_join');
-        $search->addJoinCondition('content_associated_keyword_join','content_associated_keyword.keyword_id IN ('.$keywordListId.')');
-        $search->addJoinCondition('content_associated_keyword_join','content_associated_keyword.content_id IN ('.$contentIds.')');
-        $search->withColumn('content_associated_keyword.position', 'content_position');
+            $search->addJoinObject($join, 'content_associated_keyword_join');
+            $search->addJoinCondition(
+                'content_associated_keyword_join',
+                'content_associated_keyword.keyword_id IN (' . $keywordListId . ')'
+            );
+            $search->addJoinCondition(
+                'content_associated_keyword_join',
+                'content_associated_keyword.content_id IN (' . $contentIds . ')'
+            );
+            $search->withColumn('content_associated_keyword.position', 'content_position');
 
-        $orders = $this->getAssociation_order();
+            $orders = $this->getAssociation_order();
 
-        foreach ($orders as $order) {
-            switch ($order) {
-                case "manual":
-                    $search->clearOrderByColumns();
-                    $search->addAscendingOrderByColumn('content_position');
-                    break;
-                case "manual_reverse":
-                    $search->clearOrderByColumns();
-                    $search->addDescendingOrderByColumn('content_position');
-                    break;
-                case "random":
-                    $search->clearOrderByColumns();
-                    $search->addAscendingOrderByColumn('RAND()');
-                    break(2);
+            foreach ($orders as $order) {
+                switch ($order) {
+                    case "manual":
+                        $search->clearOrderByColumns();
+                        $search->addAscendingOrderByColumn('content_position');
+                        break;
+                    case "manual_reverse":
+                        $search->clearOrderByColumns();
+                        $search->addDescendingOrderByColumn('content_position');
+                        break;
+                    case "random":
+                        $search->clearOrderByColumns();
+                        $search->addAscendingOrderByColumn('RAND()');
+                        break(2);
+                }
             }
+        } else {
+            return null;
         }
 
         return $search;

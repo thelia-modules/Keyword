@@ -103,12 +103,6 @@ class KeywordFolder extends Folder
         $keywordListId = implode(',', $keywordListId);
 
         foreach ($results as $result) {
-
-            // If any content is associated with keyword
-            if (true === $result->getFolders()->isEmpty()) {
-                return null;
-            }
-
             foreach ($result->getFolders() as $folder) {
                 $folderIds[] = $folder->getId();
             }
@@ -116,32 +110,49 @@ class KeywordFolder extends Folder
 
         $folderIds = implode(',', $folderIds);
 
-        $join = new Join();
-        $join->addExplicitCondition(FolderTableMap::TABLE_NAME, 'ID', 'folder', FolderAssociatedKeywordTableMap::TABLE_NAME, 'folder_id', 'folder_associated_keyword');
-        $join->setJoinType(Criteria::INNER_JOIN);
+        if ($folderIds) {
+            $join = new Join();
+            $join->addExplicitCondition(
+                FolderTableMap::TABLE_NAME,
+                'ID',
+                'folder',
+                FolderAssociatedKeywordTableMap::TABLE_NAME,
+                'folder_id',
+                'folder_associated_keyword'
+            );
+            $join->setJoinType(Criteria::INNER_JOIN);
 
-        $search->addJoinObject($join, 'folder_associated_keyword_join');
-        $search->addJoinCondition('folder_associated_keyword_join','folder_associated_keyword.keyword_id IN ('.$keywordListId.')');
-        $search->addJoinCondition('folder_associated_keyword_join','folder_associated_keyword.folder_id IN ('.$folderIds.')');
-        $search->withColumn('folder_associated_keyword.position', 'folder_position');
+            $search->addJoinObject($join, 'folder_associated_keyword_join');
+            $search->addJoinCondition(
+                'folder_associated_keyword_join',
+                'folder_associated_keyword.keyword_id IN (' . $keywordListId . ')'
+            );
+            $search->addJoinCondition(
+                'folder_associated_keyword_join',
+                'folder_associated_keyword.folder_id IN (' . $folderIds . ')'
+            );
+            $search->withColumn('folder_associated_keyword.position', 'folder_position');
 
-        $orders = $this->getAssociation_order();
+            $orders = $this->getAssociation_order();
 
-        foreach ($orders as $order) {
-            switch ($order) {
-                case "manual":
-                    $search->clearOrderByColumns();
-                    $search->addAscendingOrderByColumn('folder_position');
-                    break;
-                case "manual_reverse":
-                    $search->clearOrderByColumns();
-                    $search->addDescendingOrderByColumn('folder_position');
-                    break;
-                case "random":
-                    $search->clearOrderByColumns();
-                    $search->addAscendingOrderByColumn('RAND()');
-                    break(2);
+            foreach ($orders as $order) {
+                switch ($order) {
+                    case "manual":
+                        $search->clearOrderByColumns();
+                        $search->addAscendingOrderByColumn('folder_position');
+                        break;
+                    case "manual_reverse":
+                        $search->clearOrderByColumns();
+                        $search->addDescendingOrderByColumn('folder_position');
+                        break;
+                    case "random":
+                        $search->clearOrderByColumns();
+                        $search->addAscendingOrderByColumn('RAND()');
+                        break(2);
+                }
             }
+        } else {
+            return null;
         }
 
         return $search;

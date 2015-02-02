@@ -104,11 +104,6 @@ class KeywordCategory extends Category
         $keywordListId = implode(',', $keywordListId);
 
         foreach ($results as $result) {
-            // If any product is associated with keyword
-            if (true === $result->getCategories()->isEmpty()) {
-                return null;
-            }
-
             foreach ($result->getCategories() as $category) {
                 $categoryIds[] = $category->getId();
             }
@@ -116,32 +111,49 @@ class KeywordCategory extends Category
 
         $categoryIds = implode(',', $categoryIds);
 
-        $join = new Join();
-        $join->addExplicitCondition(CategoryTableMap::TABLE_NAME, 'ID', 'category', CategoryAssociatedKeywordTableMap::TABLE_NAME, 'category_id', 'category_associated_keyword');
-        $join->setJoinType(Criteria::INNER_JOIN);
+        if ($categoryIds) {
+            $join = new Join();
+            $join->addExplicitCondition(
+                CategoryTableMap::TABLE_NAME,
+                'ID',
+                'category',
+                CategoryAssociatedKeywordTableMap::TABLE_NAME,
+                'category_id',
+                'category_associated_keyword'
+            );
+            $join->setJoinType(Criteria::INNER_JOIN);
 
-        $search->addJoinObject($join, 'category_associated_keyword_join');
-        $search->addJoinCondition('category_associated_keyword_join','category_associated_keyword.keyword_id IN ('.$keywordListId.')');
-        $search->addJoinCondition('category_associated_keyword_join','category_associated_keyword.category_id IN ('.$categoryIds.')');
-        $search->withColumn('category_associated_keyword.position', 'category_position');
+            $search->addJoinObject($join, 'category_associated_keyword_join');
+            $search->addJoinCondition(
+                'category_associated_keyword_join',
+                'category_associated_keyword.keyword_id IN (' . $keywordListId . ')'
+            );
+            $search->addJoinCondition(
+                'category_associated_keyword_join',
+                'category_associated_keyword.category_id IN (' . $categoryIds . ')'
+            );
+            $search->withColumn('category_associated_keyword.position', 'category_position');
 
-        $orders = $this->getAssociation_order();
+            $orders = $this->getAssociation_order();
 
-        foreach ($orders as $order) {
-            switch ($order) {
-                case "manual":
-                    $search->clearOrderByColumns();
-                    $search->addAscendingOrderByColumn('category_position');
-                    break;
-                case "manual_reverse":
-                    $search->clearOrderByColumns();
-                    $search->addDescendingOrderByColumn('category_position');
-                    break;
-                case "random":
-                    $search->clearOrderByColumns();
-                    $search->addAscendingOrderByColumn('RAND()');
-                    break(2);
+            foreach ($orders as $order) {
+                switch ($order) {
+                    case "manual":
+                        $search->clearOrderByColumns();
+                        $search->addAscendingOrderByColumn('category_position');
+                        break;
+                    case "manual_reverse":
+                        $search->clearOrderByColumns();
+                        $search->addDescendingOrderByColumn('category_position');
+                        break;
+                    case "random":
+                        $search->clearOrderByColumns();
+                        $search->addAscendingOrderByColumn('RAND()');
+                        break(2);
+                }
             }
+        } else {
+            return null;
         }
 
         return $search;
