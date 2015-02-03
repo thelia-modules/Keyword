@@ -132,6 +132,7 @@ class KeywordContent extends Content
                 'content_associated_keyword.content_id IN (' . $contentIds . ')'
             );
             $search->withColumn('content_associated_keyword.position', 'content_position');
+            $search->distinct();
 
             $orders = $this->getAssociation_order();
 

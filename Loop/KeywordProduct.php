@@ -134,6 +134,7 @@ class KeywordProduct extends Product
                 'product_associated_keyword.product_id IN (' . $productIds . ')'
             );
             $search->withColumn('product_associated_keyword.position', 'product_position');
+            $search->distinct();
 
             $orders = $this->getAssociation_order();
 

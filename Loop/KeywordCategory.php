@@ -133,6 +133,7 @@ class KeywordCategory extends Category
                 'category_associated_keyword.category_id IN (' . $categoryIds . ')'
             );
             $search->withColumn('category_associated_keyword.position', 'category_position');
+            $search->distinct();
 
             $orders = $this->getAssociation_order();
 

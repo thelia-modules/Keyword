@@ -132,6 +132,7 @@ class KeywordFolder extends Folder
                 'folder_associated_keyword.folder_id IN (' . $folderIds . ')'
             );
             $search->withColumn('folder_associated_keyword.position', 'folder_position');
+            $search->distinct();
 
             $orders = $this->getAssociation_order();
 
