@@ -68,15 +68,17 @@ class Keyword implements EventSubscriberInterface
             ->filterByFolderId($folder->getId())
             ->delete();
 
-        // Create all associations to this folder
-        foreach ($keywordListToSave as $keywordId) {
+        if ($keywordListToSave !== null) {
+            // Create all associations to this folder
+            foreach ($keywordListToSave as $keywordId) {
 
-            $keywordFolderAssociation = new FolderAssociatedKeyword();
-            $keywordFolderAssociation
-                ->setFolderId($folder->getId())
-                ->setKeywordId($keywordId)
-                ->save();
+                $keywordFolderAssociation = new FolderAssociatedKeyword();
+                $keywordFolderAssociation
+                    ->setFolderId($folder->getId())
+                    ->setKeywordId($keywordId)
+                    ->save();
 
+            }
         }
 
     }
@@ -94,15 +96,17 @@ class Keyword implements EventSubscriberInterface
             ->filterByContentId($content->getId())
             ->delete();
 
-        // Create all associations to this folder
-        foreach ($keywordListToSave as $keywordId) {
+        if ($keywordListToSave !== null) {
+            // Create all associations to this folder
+            foreach ($keywordListToSave as $keywordId) {
 
-            $keywordFolderAssociation = new ContentAssociatedKeyword();
-            $keywordFolderAssociation
-                ->setContentId($content->getId())
-                ->setKeywordId($keywordId)
-                ->save();
+                $keywordFolderAssociation = new ContentAssociatedKeyword();
+                $keywordFolderAssociation
+                    ->setContentId($content->getId())
+                    ->setKeywordId($keywordId)
+                    ->save();
 
+            }
         }
 
     }
@@ -120,15 +124,17 @@ class Keyword implements EventSubscriberInterface
             ->filterByCategoryId($category->getId())
             ->delete();
 
-        // Create all associations to this category
-        foreach ($keywordListToSave as $keywordId) {
+        if ($keywordListToSave !== null) {
+            // Create all associations to this category
+            foreach ($keywordListToSave as $keywordId) {
 
-            $keywordCategoryAssociation = new CategoryAssociatedKeyword();
-            $keywordCategoryAssociation
-                ->setCategoryId($category->getId())
-                ->setKeywordId($keywordId)
-                ->save();
+                $keywordCategoryAssociation = new CategoryAssociatedKeyword();
+                $keywordCategoryAssociation
+                    ->setCategoryId($category->getId())
+                    ->setKeywordId($keywordId)
+                    ->save();
 
+            }
         }
 
     }
@@ -146,15 +152,17 @@ class Keyword implements EventSubscriberInterface
             ->filterByProductId($product->getId())
             ->delete();
 
-        // Create all associations to this folder
-        foreach ($keywordListToSave as $keywordId) {
+        if ($keywordListToSave !== null) {
+            // Create all associations to this folder
+            foreach ($keywordListToSave as $keywordId) {
 
-            $keywordProductAssociation = new ProductAssociatedKeyword();
-            $keywordProductAssociation
-                ->setProductId($product->getId())
-                ->setKeywordId($keywordId)
-                ->save();
+                $keywordProductAssociation = new ProductAssociatedKeyword();
+                $keywordProductAssociation
+                    ->setProductId($product->getId())
+                    ->setKeywordId($keywordId)
+                    ->save();
 
+            }
         }
 
     }
