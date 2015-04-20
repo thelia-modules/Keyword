@@ -16,6 +16,21 @@ git submodule add https://github.com/thelia-modules/Keyword.git local/modules/Ke
 
 Next, go to your Thelia admin panel for module activation.
 
+## How to update
+
+__Before update, save your database.__
+
+If your module version is 2.3.x and you want to update to the 2.4.x version, you have to use the `keyword:update` command.
+__This command is only available from the v2.4.4.__
+
+* After saving your database, deactivate Keyword module
+* Replace all files of `local/modules/Keyword` by new files
+* Activate new Keyword module : all tables (excepted keyword_group_associated_keyword) of keyword module will be truncated, if this is not the case, empty them manually
+* Reinsert the Keyword module table data via phpmyadmin (datas of content_associated_keyword, folder_associated_keyword, category_associated_keyword, product_associated_keyword, keyword_group, keyword_group_i18n, keyword and keyword_i18n)
+* Run the Keyword module command : `keyword:update`
+
+Old associations will be updated and obsolete _keyword_group_associated_keyword_ table will be dropped.
+
 ## How to use
 
 You can manage your keywords on the configuration view of the module with the "configure" button on the modules list.
