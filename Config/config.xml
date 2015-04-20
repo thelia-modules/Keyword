@@ -26,6 +26,10 @@
         <form name="keyword.admin.modification" class="Keyword\Form\KeywordModificationForm"/>
     </forms>
 
+    <commands>
+        <command class="Keyword\Commands\Update"/>
+    </commands>
+
     <services>
         <service id="keyword.action" class="Keyword\Action\Keyword">
             <tag name="kernel.event_subscriber"/>
