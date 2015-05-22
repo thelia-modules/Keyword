@@ -126,8 +126,8 @@ class KeywordProduct extends Product
 
             $search->addJoinObject($join, 'product_associated_keyword_join');
             $search->addJoinCondition(
-                'category_associated_keyword_join',
-                'category_associated_keyword.keyword_id IN (' . $keywordListId . ')'
+                'product_associated_keyword_join',
+                'product_associated_keyword.keyword_id IN (' . $keywordListId . ')'
             );
             $search->addJoinCondition(
                 'product_associated_keyword_join',
