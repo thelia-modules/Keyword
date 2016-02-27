@@ -23,6 +23,12 @@
 
 namespace Keyword;
 
+use Keyword\Model\CategoryAssociatedKeywordQuery;
+use Keyword\Model\FolderAssociatedKeywordQuery;
+use Keyword\Model\ContentAssociatedKeywordQuery;
+use Keyword\Model\KeywordGroupQuery;
+use Keyword\Model\KeywordQuery;
+use Keyword\Model\ProductAssociatedKeywordQuery;
 use Propel\Runtime\Connection\ConnectionInterface;
 use Thelia\Install\Database;
 use Thelia\Module\BaseModule;
@@ -31,7 +37,18 @@ class Keyword extends BaseModule
 {
     public function postActivation(ConnectionInterface $con = null)
     {
-        $database = new Database($con->getWrappedConnection());
-        $database->insertSql(null, array(THELIA_ROOT . '/local/modules/Keyword/Config/thelia.sql'));
+
+        try {
+            CategoryAssociatedKeywordQuery::create()->findOne();
+            ContentAssociatedKeywordQuery::create()->findOne();
+            FolderAssociatedKeywordQuery::create()->findOne();
+            ProductAssociatedKeywordQuery::create()->findOne();
+            KeywordQuery::create()->findOne();
+            KeywordGroupQuery::create()->findOne();
+        } catch (\Exception $e) {
+            $database = new Database($con);
+            $database->insertSql(null, [__DIR__ . "/Config/thelia.sql"]);
+        }
+
     }
 }
