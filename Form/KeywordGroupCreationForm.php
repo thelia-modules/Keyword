@@ -49,11 +49,6 @@ class KeywordGroupCreationForm extends BaseForm
             ->add('code', TextType::class, array(
                     'constraints' => array(
                         new NotBlank(),
-                        new Callback(array(
-                            "methods" => array(
-                                array($this, "verifyExistingCode")
-                            )
-                        ))
                     ),
                     'label' => Translator::getInstance()->trans('Unique identifier', array(), 'keyword'),
                     'label_attr' => array(

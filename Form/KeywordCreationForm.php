@@ -49,12 +49,7 @@ class KeywordCreationForm extends BaseForm
                 ))
             ->add('code', TextType::class, array(
                     'constraints' => array(
-                        new NotBlank(),
-                        new Callback(array(
-                            "methods" => array(
-                                array($this, "verifyExistingCode")
-                            )
-                        ))
+                        new NotBlank()
                     ),
                     'label' => Translator::getInstance()->trans('Unique identifier', array(), 'keyword'),
                     'label_attr' => array(
