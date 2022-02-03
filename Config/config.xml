@@ -14,16 +14,16 @@
     </loops>
 
     <forms>
-        <form name="keyword.admin.folder.modification" class="Keyword\Form\KeywordFolderModificationForm"/>
-        <form name="keyword.admin.content.modification" class="Keyword\Form\KeywordContentModificationForm"/>
-        <form name="keyword.admin.category.modification" class="Keyword\Form\KeywordCategoryModificationForm"/>
-        <form name="keyword.admin.product.modification" class="Keyword\Form\KeywordProductModificationForm"/>
+        <form name="keyword_admin_folder_modification" class="Keyword\Form\KeywordFolderModificationForm"/>
+        <form name="keyword_admin_content_modification" class="Keyword\Form\KeywordContentModificationForm"/>
+        <form name="keyword_admin_category_modification" class="Keyword\Form\KeywordCategoryModificationForm"/>
+        <form name="keyword_admin_product_modification" class="Keyword\Form\KeywordProductModificationForm"/>
 
-        <form name="keyword.group.admin.creation" class="Keyword\Form\KeywordGroupCreationForm"/>
-        <form name="keyword.group.admin.modification" class="Keyword\Form\KeywordGroupModificationForm"/>
+        <form name="keyword_group_admin_creation" class="Keyword\Form\KeywordGroupCreationForm"/>
+        <form name="keyword_group_admin_modification" class="Keyword\Form\KeywordGroupModificationForm"/>
 
-        <form name="keyword.admin.creation" class="Keyword\Form\KeywordCreationForm"/>
-        <form name="keyword.admin.modification" class="Keyword\Form\KeywordModificationForm"/>
+        <form name="keyword_admin_creation" class="Keyword\Form\KeywordCreationForm"/>
+        <form name="keyword_admin_modification" class="Keyword\Form\KeywordModificationForm"/>
     </forms>
 
     <commands>
@@ -37,11 +37,6 @@
 
         <service id="keywordGroup.action" class="Keyword\Action\KeywordGroup">
             <tag name="kernel.event_subscriber"/>
-        </service>
-
-        <service id="keyword.smarty.plugin" class="Keyword\Smarty\Plugins\Keyword" scope="request">
-            <argument type="service" id="request"/>
-            <tag name="thelia.parser.register_plugin"/>
         </service>
     </services>
 

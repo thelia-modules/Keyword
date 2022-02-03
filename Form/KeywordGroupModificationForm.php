@@ -24,6 +24,7 @@
 namespace Keyword\Form;
 
 use Keyword\Model\KeywordGroupQuery;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Validator\Constraints\GreaterThan;
 use Symfony\Component\Validator\ExecutionContextInterface;
 use Thelia\Form\StandardDescriptionFieldsTrait;
@@ -42,7 +43,7 @@ class KeywordGroupModificationForm extends KeywordGroupCreationForm
         parent::buildForm();
 
         $this->formBuilder
-            ->add("id", "hidden", array("constraints" => array(new GreaterThan(array('value' => 0)))))
+            ->add("id", HiddenType::class, array("constraints" => array(new GreaterThan(array('value' => 0)))))
         ;
 
         // Add standard description fields, excluding title and locale, which a re defined in parent class
@@ -62,7 +63,7 @@ class KeywordGroupModificationForm extends KeywordGroupCreationForm
         }
     }
 
-    public function getName()
+    public static function getName()
     {
         return "admin_keyword_group_modification";
     }

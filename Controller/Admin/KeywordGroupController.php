@@ -30,14 +30,19 @@ use Keyword\Event\KeywordGroupUpdateEvent;
 use Keyword\Form\KeywordGroupCreationForm;
 use Keyword\Form\KeywordGroupModificationForm;
 use Keyword\Model\KeywordGroupQuery;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Thelia\Controller\Admin\AbstractCrudController;
 use Thelia\Controller\Admin\unknown;
 use Thelia\Core\Event\UpdatePositionEvent;
+use Thelia\Core\Template\ParserContext;
+use Symfony\Component\Routing\Annotation\Route;
+
 
 /**
  * Class KeywordGroupController
  * @package Keyword\Controller\Admin
  * @author Michaël Espeche <mespeche@openstudio.fr>
+ * @Route("/admin/module/Keyword/group", name="address") /
  */
 class KeywordGroupController extends AbstractCrudController
 {
@@ -59,6 +64,9 @@ class KeywordGroupController extends AbstractCrudController
         );
     }
 
+    /**
+     * @Route("/view", name="view")
+     */
     public function viewAction()
     {
         if (null !== $this->getExistingObject()) {
@@ -73,7 +81,7 @@ class KeywordGroupController extends AbstractCrudController
      */
     protected function getCreationForm()
     {
-        return new KeywordGroupCreationForm($this->getRequest());
+        return $this->createForm(KeywordGroupCreationForm::getName());
     }
 
     /**
@@ -81,7 +89,7 @@ class KeywordGroupController extends AbstractCrudController
      */
     protected function getUpdateForm()
     {
-        return new KeywordGroupModificationForm($this->getRequest());
+        return $this->createForm(KeywordGroupModificationForm::getName());
     }
 
     /**
@@ -112,7 +120,7 @@ class KeywordGroupController extends AbstractCrudController
      * @param  unknown                                    $object
      * @return \Keyword\Form\KeywordGroupModificationForm
      */
-    protected function hydrateObjectForm($object)
+    protected function hydrateObjectForm(ParserContext $parserContext, $object)
     {
         // Prepare the data that will hydrate the form
         $data = array(
@@ -127,7 +135,7 @@ class KeywordGroupController extends AbstractCrudController
         );
 
         // Setup the object form
-        return new KeywordGroupModificationForm($this->getRequest(), "form", $data);
+        return $this->createForm(KeywordGroupModificationForm::getName());
     }
 
     /**
@@ -283,7 +291,7 @@ class KeywordGroupController extends AbstractCrudController
         return $this->generateRedirect('/admin/module/Keyword');
     }
 
-    protected function performAdditionalUpdateAction($updateEvent)
+    protected function performAdditionalUpdateAction(EventDispatcherInterface $eventDispatcher, $updateEvent)
     {
         if ($this->getRequest()->get('save_mode') != 'stay') {
             return $this->redirectToListTemplate();

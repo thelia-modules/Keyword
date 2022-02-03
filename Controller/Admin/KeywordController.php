@@ -38,19 +38,25 @@ use Keyword\Form\KeywordProductModificationForm;
 use Keyword\Model\KeywordQuery;
 
 use Propel\Runtime\Exception\PropelException;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Thelia\Controller\Admin\AbstractCrudController;
 use Thelia\Controller\Admin\unknown;
 use Thelia\Core\Event\UpdatePositionEvent;
 use Thelia\Core\Security\AccessManager;
+use Thelia\Core\Template\ParserContext;
 use Thelia\Model\Base\FolderQuery;
 use Thelia\Form\Exception\FormValidationException;
 use Thelia\Model\CategoryQuery;
 use Thelia\Model\ContentQuery;
 use Thelia\Model\ProductQuery;
+use Symfony\Component\Routing\Annotation\Route;
+
+
 
 /**
  * Class KeywordController
  * @package Keyword\Controller\Admin
+ * @Route("/admin", name="keyword")
  * @author Michaël Espeche <mespeche@openstudio.fr>
  */
 class KeywordController extends AbstractCrudController
@@ -72,6 +78,9 @@ class KeywordController extends AbstractCrudController
         );
     }
 
+    /**
+     * @Route("/module/Keyword/view", name="view")
+     */
     public function viewAction()
     {
         if (null !== $this->getExistingObject()) {
@@ -81,6 +90,9 @@ class KeywordController extends AbstractCrudController
         }
     }
 
+    /**
+     * @Route("/folders/update/{folder_id}/keyword", name="update_keyword_folder_association")
+     */
     public function updateKeywordFolderAssociation($folder_id)
     {
         if (null !== $response = $this->checkAuth(array(), array('Keyword'), AccessManager::UPDATE)) {
@@ -88,7 +100,7 @@ class KeywordController extends AbstractCrudController
         }
 
         /** @var KeywordFolderModificationForm $keywordFolderUpdateForm */
-        $keywordFolderUpdateForm = new KeywordFolderModificationForm($this->getRequest());
+        $keywordFolderUpdateForm = $this->createForm(KeywordFolderModificationForm::getName());
 
         $message = false;
 
@@ -137,7 +149,9 @@ class KeywordController extends AbstractCrudController
             array('folder_id' => $folder_id, 'current_tab' => 'modules')
         );
     }
-
+    /**
+     * @Route("/content/update/{content_id}/keyword", name="update_keyword_content_association")
+     */
     public function updateKeywordContentAssociation($content_id)
     {
 
@@ -146,7 +160,7 @@ class KeywordController extends AbstractCrudController
         }
 
         /** @var KeywordContentModificationForm $keywordContentUpdateForm */
-        $keywordContentUpdateForm = new KeywordContentModificationForm($this->getRequest());
+        $keywordContentUpdateForm = $this->createForm(KeywordContentModificationForm::getName());
 
         $message = false;
 
@@ -196,6 +210,9 @@ class KeywordController extends AbstractCrudController
         );
     }
 
+    /**
+     *@Route("/categories/update/{category_id}/keyword", name="update_keyword_category_association") /
+     */
     public function updateKeywordCategoryAssociation($category_id)
     {
 
@@ -204,7 +221,7 @@ class KeywordController extends AbstractCrudController
         }
 
         /** @var KeywordCategoryModificationForm $keywordCategoryUpdateForm */
-        $keywordCategoryUpdateForm = new KeywordCategoryModificationForm($this->getRequest());
+        $keywordCategoryUpdateForm = $this->createForm(KeywordCategoryModificationForm::getName());
 
         $message = false;
 
@@ -254,6 +271,9 @@ class KeywordController extends AbstractCrudController
         );
     }
 
+    /**
+     * @Route("/product/update/{product_id}/keyword", name="update_keyword_product_association") /
+     */
     public function updateKeywordProductAssociation($product_id)
     {
 
@@ -262,7 +282,7 @@ class KeywordController extends AbstractCrudController
         }
 
         /** @var KeywordProductModificationForm $keywordProductUpdateForm */
-        $keywordProductUpdateForm = new KeywordProductModificationForm($this->getRequest());
+            $keywordProductUpdateForm = $this->createForm(KeywordProductModificationForm::getName());
 
         $message = false;
 
@@ -314,7 +334,7 @@ class KeywordController extends AbstractCrudController
 
     /**
      * Update keyword object position
-     *
+     * @Route("/module/Keyword/{object}/update-position", name="update_object_position_action") /
      */
     public function updateObjectPositionAction()
     {
@@ -407,7 +427,7 @@ class KeywordController extends AbstractCrudController
      */
     protected function getCreationForm()
     {
-        return new KeywordCreationForm($this->getRequest());
+        return $this->createForm(KeywordCreationForm::getName());
     }
 
     /**
@@ -415,7 +435,7 @@ class KeywordController extends AbstractCrudController
      */
     protected function getUpdateForm()
     {
-        return new KeywordModificationForm($this->getRequest());
+        return $this->createForm(KeywordModificationForm::getName());
     }
 
     /**
@@ -424,7 +444,7 @@ class KeywordController extends AbstractCrudController
      * @param  unknown                               $object
      * @return \Keyword\Form\KeywordModificationForm
      */
-    protected function hydrateObjectForm($object)
+    protected function hydrateObjectForm(ParserContext $parserContext, $object)
     {
 
         // Prepare the data that will hydrate the form
@@ -440,7 +460,7 @@ class KeywordController extends AbstractCrudController
         );
 
         // Setup the object form
-        return new KeywordModificationForm($this->getRequest(), "form", $data);
+        return $this->createForm(KeywordModificationForm::getName());
     }
 
     /**
@@ -634,7 +654,7 @@ class KeywordController extends AbstractCrudController
 
     }
 
-    protected function performAdditionalUpdateAction($updateEvent)
+    protected function performAdditionalUpdateAction(EventDispatcherInterface $eventDispatcher, $updateEvent)
     {
         if ($this->getRequest()->get('save_mode') != 'stay') {
             return $this->redirectToListTemplate();

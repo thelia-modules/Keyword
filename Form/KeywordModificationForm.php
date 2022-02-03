@@ -24,6 +24,8 @@
 namespace Keyword\Form;
 
 use Keyword\Model\KeywordQuery;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Validator\Constraints\GreaterThan;
 use Symfony\Component\Validator\ExecutionContextInterface;
 use Thelia\Core\Translation\Translator;
@@ -43,8 +45,8 @@ class KeywordModificationForm extends KeywordCreationForm
         parent::buildForm();
 
         $this->formBuilder
-            ->add("id", "hidden", array("constraints" => array(new GreaterThan(array('value' => 0)))))
-            ->add("keyword_group_id", "integer", array(
+            ->add("id", HiddenType::class, array("constraints" => array(new GreaterThan(array('value' => 0)))))
+            ->add("keyword_group_id", IntegerType::class, array(
                     "constraints" => array(
                         new GreaterThan(
                             array('value' => 0)
@@ -75,7 +77,7 @@ class KeywordModificationForm extends KeywordCreationForm
         }
     }
 
-    public function getName()
+    public static function getName()
     {
         return "admin_keyword_modification";
     }
