@@ -23,6 +23,7 @@
 namespace Keyword\Form;
 
 use Keyword\Model\KeywordQuery;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Thelia\Form\BaseForm;
 
 class KeywordCategoryModificationForm extends BaseForm
@@ -36,14 +37,14 @@ class KeywordCategoryModificationForm extends BaseForm
         }
 
         $this->formBuilder
-            ->add("keyword_list", "choice", array(
+            ->add("keyword_list", ChoiceType::class, array(
                 "choices" => $keywordList,
                 "multiple" => true
             ))
         ;
     }
 
-    public function getName()
+    public static function getName()
     {
         return 'keyword_category_modification';
     }

@@ -23,6 +23,8 @@
 namespace Keyword\Form;
 
 use Keyword\Model\KeywordQuery;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Validator\Constraints\Callback;
 use Symfony\Component\Validator\Constraints\GreaterThan;
 use Symfony\Component\Validator\Constraints\NotBlank;
@@ -36,7 +38,7 @@ class KeywordCreationForm extends BaseForm
     protected function buildForm()
     {
         $this->formBuilder
-            ->add('title', 'text', array(
+            ->add('title', TextType::class, array(
                     'constraints' => array(
                         new NotBlank()
                     ),
@@ -45,34 +47,29 @@ class KeywordCreationForm extends BaseForm
                         'for' => 'keyword_title'
                     )
                 ))
-            ->add('code', 'text', array(
+            ->add('code', TextType::class, array(
                     'constraints' => array(
-                        new NotBlank(),
-                        new Callback(array(
-                            "methods" => array(
-                                array($this, "verifyExistingCode")
-                            )
-                        ))
+                        new NotBlank()
                     ),
                     'label' => Translator::getInstance()->trans('Unique identifier', array(), 'keyword'),
                     'label_attr' => array(
                         'for' => 'keyword_code'
                     )
                 ))
-            ->add("keyword_group_id", "integer", array(
+            ->add("keyword_group_id", IntegerType::class, array(
                     "constraints" => array(
                         new GreaterThan(array(
                             'value' => 0
                         ))
                     )
                 ))
-            ->add('visible', 'integer', array(
+            ->add('visible', IntegerType::class, array(
                     'label' => Translator::getInstance()->trans('Visible ?'),
                     'label_attr' => array(
                         'for' => 'keyword_visible'
                     )
                 ))
-            ->add("locale", "text", array(
+            ->add("locale", TextType::class, array(
                     "constraints" => array(
                         new NotBlank()
                     )
@@ -89,7 +86,7 @@ class KeywordCreationForm extends BaseForm
         }
     }
 
-    public function getName()
+    public static function getName()
     {
         return 'admin_keyword_creation';
     }

@@ -9,10 +9,6 @@ use Propel\Runtime\Propel;
 
 class FolderAssociatedKeyword extends BaseFolderAssociatedKeyword
 {
-
-    use \Thelia\Model\Tools\ModelEventDispatcherTrait;
-    use \Thelia\Model\Tools\PositionManagementTrait;
-
     public function preInsert(ConnectionInterface $con = null)
     {
         $this->setPosition($this->getNextPosition());

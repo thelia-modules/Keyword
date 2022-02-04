@@ -12,7 +12,6 @@ use Thelia\Model\ProductQuery;
 
 class Keyword extends BaseKeyword
 {
-    use \Thelia\Model\Tools\ModelEventDispatcherTrait;
     use \Thelia\Model\Tools\PositionManagementTrait;
 
     public function getContents()

@@ -9,9 +9,6 @@ use Propel\Runtime\Propel;
 
 class ContentAssociatedKeyword extends BaseContentAssociatedKeyword
 {
-    use \Thelia\Model\Tools\ModelEventDispatcherTrait;
-    use \Thelia\Model\Tools\PositionManagementTrait;
-
     public function preInsert(ConnectionInterface $con = null)
     {
         $this->setPosition($this->getNextPosition());

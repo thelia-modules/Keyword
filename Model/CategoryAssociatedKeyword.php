@@ -9,9 +9,6 @@ use Propel\Runtime\Propel;
 
 class CategoryAssociatedKeyword extends BaseCategoryAssociatedKeyword
 {
-    use \Thelia\Model\Tools\ModelEventDispatcherTrait;
-    use \Thelia\Model\Tools\PositionManagementTrait;
-
     public function preInsert(ConnectionInterface $con = null)
     {
         $this->setPosition($this->getNextPosition());
