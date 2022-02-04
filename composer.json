@@ -1,7 +1,7 @@
 {
     "name": "thelia/keyword-module",
     "type": "thelia-module",
-    "license": "LGPL V3",
+    "license": "LGPL-3.0+",
     "description": "Associate contents, folders, categories and products to one or more keywords",
     "authors": [
         {
