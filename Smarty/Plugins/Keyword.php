@@ -28,8 +28,8 @@ use Keyword\Model\ContentAssociatedKeywordQuery;
 use Keyword\Model\FolderAssociatedKeywordQuery;
 use Keyword\Model\KeywordQuery;
 use Keyword\Model\ProductAssociatedKeywordQuery;
-use Thelia\Core\Template\Smarty\AbstractSmartyPlugin;
-use Thelia\Core\Template\Smarty\SmartyPluginDescriptor;
+use TheliaSmarty\Template\AbstractSmartyPlugin;
+use TheliaSmarty\Template\SmartyPluginDescriptor;
 
 class Keyword extends AbstractSmartyPlugin
 {
@@ -162,9 +162,6 @@ class Keyword extends AbstractSmartyPlugin
 
     }
 
-    /**
-     * @return an array of SmartyPluginDescriptor
-     */
     public function getPluginDescriptors()
     {
         return array(
