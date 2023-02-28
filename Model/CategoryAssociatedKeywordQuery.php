@@ -20,7 +20,6 @@ class CategoryAssociatedKeywordQuery extends BaseCategoryAssociatedKeywordQuery
      * Load an existing relation from the database
      * @param $categoryId
      * @param $keywordId
-     * @return ChildCategoryAssociatedKeyword
      */
     public static function getCategoryKeywordAssociation($categoryId, $keywordId) {
 

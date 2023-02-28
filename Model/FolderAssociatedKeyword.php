@@ -6,9 +6,12 @@ use Keyword\Model\Base\FolderAssociatedKeyword as BaseFolderAssociatedKeyword;
 use Keyword\Model\Map\FolderAssociatedKeywordTableMap;
 use Propel\Runtime\Connection\ConnectionInterface;
 use Propel\Runtime\Propel;
+use Thelia\Model\Tools\PositionManagementTrait;
 
 class FolderAssociatedKeyword extends BaseFolderAssociatedKeyword
 {
+    use PositionManagementTrait;
+
     public function preInsert(ConnectionInterface $con = null)
     {
         $this->setPosition($this->getNextPosition());
@@ -20,6 +23,4 @@ class FolderAssociatedKeyword extends BaseFolderAssociatedKeyword
     {
         $query->filterByKeywordId($this->getKeywordId());
     }
-
-
 }

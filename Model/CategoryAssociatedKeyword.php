@@ -3,12 +3,15 @@
 namespace Keyword\Model;
 
 use Keyword\Model\Base\CategoryAssociatedKeyword as BaseCategoryAssociatedKeyword;
-use Keyword\Model\Map\CategoryAssociatedKeywordTableMap;
+
 use Propel\Runtime\Connection\ConnectionInterface;
-use Propel\Runtime\Propel;
+
+use Thelia\Model\Tools\PositionManagementTrait;
 
 class CategoryAssociatedKeyword extends BaseCategoryAssociatedKeyword
 {
+    use PositionManagementTrait;
+
     public function preInsert(ConnectionInterface $con = null)
     {
         $this->setPosition($this->getNextPosition());

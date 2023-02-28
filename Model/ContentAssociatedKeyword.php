@@ -6,9 +6,12 @@ use Keyword\Model\Base\ContentAssociatedKeyword as BaseContentAssociatedKeyword;
 use Keyword\Model\Map\ContentAssociatedKeywordTableMap;
 use Propel\Runtime\Connection\ConnectionInterface;
 use Propel\Runtime\Propel;
+use Thelia\Model\Tools\PositionManagementTrait;
 
 class ContentAssociatedKeyword extends BaseContentAssociatedKeyword
 {
+    use PositionManagementTrait;
+
     public function preInsert(ConnectionInterface $con = null)
     {
         $this->setPosition($this->getNextPosition());

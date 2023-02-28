@@ -29,6 +29,7 @@ use Keyword\Event\KeywordGroupEvents;
 use Keyword\Event\KeywordGroupToggleVisibilityEvent;
 use Keyword\Event\KeywordGroupUpdateEvent;
 use Keyword\Model\KeywordGroupQuery;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Thelia\Core\Event\UpdatePositionEvent;
 
@@ -42,6 +43,10 @@ use Thelia\Core\Event\UpdatePositionEvent;
  */
 class KeywordGroup implements EventSubscriberInterface
 {
+    public function __construct(protected EventDispatcherInterface $dispatcher)
+    {
+
+    }
 
     public function createKeywordGroup(KeywordGroupEvents $event)
     {
@@ -94,7 +99,7 @@ class KeywordGroup implements EventSubscriberInterface
     {
         if (null !== $keywordGroup = KeywordGroupQuery::create()->findPk($event->getObjectId())) {
 
-            $keywordGroup->setDispatcher($event->getDispatcher());
+            $keywordGroup->setDispatcher($this->dispatcher);
 
             switch ($event->getMode()) {
                 case UpdatePositionEvent::POSITION_ABSOLUTE:

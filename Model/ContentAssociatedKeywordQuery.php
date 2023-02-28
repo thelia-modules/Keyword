@@ -20,7 +20,6 @@ class ContentAssociatedKeywordQuery extends BaseContentAssociatedKeywordQuery
      * Load an existing relation from the database
      * @param $contentId
      * @param $keywordId
-     * @return ChildContentAssociatedKeyword
      */
     public static function getContentKeywordAssociation($contentId, $keywordId) {
 

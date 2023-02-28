@@ -40,17 +40,17 @@ use Keyword\Model\KeywordQuery;
 use Propel\Runtime\Exception\PropelException;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Thelia\Controller\Admin\AbstractCrudController;
-use Thelia\Controller\Admin\unknown;
 use Thelia\Core\Event\UpdatePositionEvent;
+use Thelia\Core\HttpFoundation\Request;
 use Thelia\Core\Security\AccessManager;
 use Thelia\Core\Template\ParserContext;
+use Thelia\Log\Tlog;
 use Thelia\Model\Base\FolderQuery;
 use Thelia\Form\Exception\FormValidationException;
 use Thelia\Model\CategoryQuery;
 use Thelia\Model\ContentQuery;
 use Thelia\Model\ProductQuery;
 use Symfony\Component\Routing\Annotation\Route;
-
 
 
 /**
@@ -88,12 +88,18 @@ class KeywordController extends AbstractCrudController
 
             return $this->render('keyword-view', array('keyword_id' => $keyword->getId()));
         }
+
+        return $this->pageNotFound();
     }
 
     /**
      * @Route("/folders/update/{folder_id}/keyword", name="update_keyword_folder_association")
      */
-    public function updateKeywordFolderAssociation($folder_id)
+    public function updateKeywordFolderAssociation(
+        EventDispatcherInterface $dispatcher,
+        ParserContext            $parserContext,
+                                 $folder_id
+    )
     {
         if (null !== $response = $this->checkAuth(array(), array('Keyword'), AccessManager::UPDATE)) {
             return $response;
@@ -101,8 +107,6 @@ class KeywordController extends AbstractCrudController
 
         /** @var KeywordFolderModificationForm $keywordFolderUpdateForm */
         $keywordFolderUpdateForm = $this->createForm(KeywordFolderModificationForm::getName());
-
-        $message = false;
 
         try {
 
@@ -117,7 +121,7 @@ class KeywordController extends AbstractCrudController
             $event = $this->createEventInstance($form->getData());
             $event->setFolder($folder);
 
-            $this->dispatch(KeywordEvents::KEYWORD_UPDATE_FOLDER_ASSOCIATION, $event);
+            $dispatcher->dispatch($event, KeywordEvents::KEYWORD_UPDATE_FOLDER_ASSOCIATION);
 
             return $this->generateSuccessRedirect($keywordFolderUpdateForm);
 
@@ -126,33 +130,32 @@ class KeywordController extends AbstractCrudController
         } catch (PropelException $e) {
             $message = $e->getMessage();
         } catch (\Exception $e) {
-            $message = sprintf("Sorry, an error occured: %s", $e->getMessage()." ".$e->getFile());
+            $message = sprintf("Sorry, an error occured: %s", $e->getMessage() . " " . $e->getFile());
         }
 
         if ($message !== false) {
-            \Thelia\Log\Tlog::getInstance()->error(
+            Tlog::getInstance()->error(
                 sprintf("Error during keyword folder association update process : %s.", $message)
             );
 
             $keywordFolderUpdateForm->setErrorMessage($message);
 
-            $this->getParserContext()
+            $parserContext
                 ->addForm($keywordFolderUpdateForm)
-                ->setGeneralError($message)
-            ;
+                ->setGeneralError($message);
         }
 
-        // Redirect to current folder
-        return $this->generateRedirectFromRoute(
-            'admin.folders.update',
-            array(),
-            array('folder_id' => $folder_id, 'current_tab' => 'modules')
-        );
+        return $this->generateErrorRedirect($keywordFolderUpdateForm);
     }
+
     /**
      * @Route("/content/update/{content_id}/keyword", name="update_keyword_content_association")
      */
-    public function updateKeywordContentAssociation($content_id)
+    public function updateKeywordContentAssociation(
+        EventDispatcherInterface $dispatcher,
+        ParserContext            $parserContext,
+                                 $content_id
+    )
     {
 
         if (null !== $response = $this->checkAuth(array(), array('Keyword'), AccessManager::UPDATE)) {
@@ -161,8 +164,6 @@ class KeywordController extends AbstractCrudController
 
         /** @var KeywordContentModificationForm $keywordContentUpdateForm */
         $keywordContentUpdateForm = $this->createForm(KeywordContentModificationForm::getName());
-
-        $message = false;
 
         try {
 
@@ -177,7 +178,7 @@ class KeywordController extends AbstractCrudController
             $event = $this->createEventInstance($form->getData());
             $event->setContent($content);
 
-            $this->dispatch(KeywordEvents::KEYWORD_UPDATE_CONTENT_ASSOCIATION, $event);
+            $dispatcher->dispatch($event, KeywordEvents::KEYWORD_UPDATE_CONTENT_ASSOCIATION);
 
             return $this->generateSuccessRedirect($keywordContentUpdateForm);
 
@@ -186,7 +187,7 @@ class KeywordController extends AbstractCrudController
         } catch (PropelException $e) {
             $message = $e->getMessage();
         } catch (\Exception $e) {
-            $message = sprintf("Sorry, an error occured: %s", $e->getMessage()." ".$e->getFile());
+            $message = sprintf("Sorry, an error occured: %s", $e->getMessage() . " " . $e->getFile());
         }
 
         if ($message !== false) {
@@ -196,24 +197,22 @@ class KeywordController extends AbstractCrudController
 
             $keywordContentUpdateForm->setErrorMessage($message);
 
-            $this->getParserContext()
+            $parserContext
                 ->addForm($keywordContentUpdateForm)
-                ->setGeneralError($message)
-            ;
+                ->setGeneralError($message);
         }
 
         // Redirect to current folder
-        return $this->generateRedirectFromRoute(
-            'admin.content.update',
-            array(),
-            array('content_id' => $content_id, 'current_tab' => 'modules')
-        );
+        return $this->generateErrorRedirect($keywordContentUpdateForm);
     }
 
     /**
-     *@Route("/categories/update/{category_id}/keyword", name="update_keyword_category_association") /
+     * @Route("/categories/update/{category_id}/keyword", name="update_keyword_category_association") /
      */
-    public function updateKeywordCategoryAssociation($category_id)
+    public function updateKeywordCategoryAssociation(
+        EventDispatcherInterface $dispatcher,
+        ParserContext            $parserContext,
+                                 $category_id)
     {
 
         if (null !== $response = $this->checkAuth(array(), array('Keyword'), AccessManager::UPDATE)) {
@@ -222,8 +221,6 @@ class KeywordController extends AbstractCrudController
 
         /** @var KeywordCategoryModificationForm $keywordCategoryUpdateForm */
         $keywordCategoryUpdateForm = $this->createForm(KeywordCategoryModificationForm::getName());
-
-        $message = false;
 
         try {
 
@@ -238,7 +235,7 @@ class KeywordController extends AbstractCrudController
             $event = $this->createEventInstance($form->getData());
             $event->setCategory($category);
 
-            $this->dispatch(KeywordEvents::KEYWORD_UPDATE_CATEGORY_ASSOCIATION, $event);
+            $dispatcher->dispatch($event, KeywordEvents::KEYWORD_UPDATE_CATEGORY_ASSOCIATION);
 
             return $this->generateSuccessRedirect($keywordCategoryUpdateForm);
 
@@ -247,7 +244,7 @@ class KeywordController extends AbstractCrudController
         } catch (PropelException $e) {
             $message = $e->getMessage();
         } catch (\Exception $e) {
-            $message = sprintf("Sorry, an error occured: %s", $e->getMessage()." ".$e->getFile());
+            $message = sprintf("Sorry, an error occured: %s", $e->getMessage() . " " . $e->getFile());
         }
 
         if ($message !== false) {
@@ -257,34 +254,29 @@ class KeywordController extends AbstractCrudController
 
             $keywordCategoryUpdateForm->setErrorMessage($message);
 
-            $this->getParserContext()
+            $parserContext
                 ->addForm($keywordCategoryUpdateForm)
-                ->setGeneralError($message)
-            ;
+                ->setGeneralError($message);
         }
 
-        // Redirect to current folder
-        return $this->generateRedirectFromRoute(
-            'admin.categories.update',
-            array(),
-            array('category_id' => $category_id, 'current_tab' => 'modules')
-        );
+        return $this->generateErrorRedirect($keywordCategoryUpdateForm);
     }
 
     /**
      * @Route("/product/update/{product_id}/keyword", name="update_keyword_product_association") /
      */
-    public function updateKeywordProductAssociation($product_id)
+    public function updateKeywordProductAssociation(
+        EventDispatcherInterface $dispatcher,
+        ParserContext            $parserContext,
+                                 $product_id
+    )
     {
-
         if (null !== $response = $this->checkAuth(array(), array('Keyword'), AccessManager::UPDATE)) {
             return $response;
         }
 
         /** @var KeywordProductModificationForm $keywordProductUpdateForm */
-            $keywordProductUpdateForm = $this->createForm(KeywordProductModificationForm::getName());
-
-        $message = false;
+        $keywordProductUpdateForm = $this->createForm(KeywordProductModificationForm::getName());
 
         try {
 
@@ -299,7 +291,7 @@ class KeywordController extends AbstractCrudController
             $event = $this->createEventInstance($form->getData());
             $event->setProduct($product);
 
-            $this->dispatch(KeywordEvents::KEYWORD_UPDATE_PRODUCT_ASSOCIATION, $event);
+            $dispatcher->dispatch($event, KeywordEvents::KEYWORD_UPDATE_PRODUCT_ASSOCIATION);
 
             return $this->generateSuccessRedirect($keywordProductUpdateForm);
 
@@ -308,7 +300,7 @@ class KeywordController extends AbstractCrudController
         } catch (PropelException $e) {
             $message = $e->getMessage();
         } catch (\Exception $e) {
-            $message = sprintf("Sorry, an error occured: %s", $e->getMessage()." ".$e->getFile());
+            $message = sprintf("Sorry, an error occured: %s", $e->getMessage() . " " . $e->getFile());
         }
 
         if ($message !== false) {
@@ -318,32 +310,26 @@ class KeywordController extends AbstractCrudController
 
             $keywordProductUpdateForm->setErrorMessage($message);
 
-            $this->getParserContext()
+            $parserContext
                 ->addForm($keywordProductUpdateForm)
-                ->setGeneralError($message)
-            ;
+                ->setGeneralError($message);
         }
 
-        // Redirect to current folder
-        return $this->generateRedirectFromRoute(
-            'admin.products.update',
-            array(),
-            array('product_id' => $product_id, 'current_tab' => 'modules')
-        );
+        return $this->generateErrorRedirect($keywordProductUpdateForm);
     }
 
     /**
      * Update keyword object position
      * @Route("/module/Keyword/{object}/update-position", name="update_object_position_action") /
      */
-    public function updateObjectPositionAction()
+    public function updateObjectPositionAction(EventDispatcherInterface $dispatcher, Request $request)
     {
         // Check current user authorization
         if (null !== $response = $this->checkAuth($this->resourceCode, array(), AccessManager::UPDATE))
             return $response;
 
         try {
-            $mode = $this->getRequest()->get('mode', null);
+            $mode = $request->get('mode', null);
 
             if ($mode == 'up')
                 $mode = UpdatePositionEvent::POSITION_UP;
@@ -352,43 +338,34 @@ class KeywordController extends AbstractCrudController
             else
                 $mode = UpdatePositionEvent::POSITION_ABSOLUTE;
 
-            $position = $this->getRequest()->get('position', null);
-            $object = $this->getRequest()->get('object');
+            $position = $request->get('position', null);
+            $object = $request->get('object');
 
-            $event = $this->createObjectUpdatePositionEvent($mode, $position, $object);
+            $event = $this->createObjectUpdatePositionEvent($request, $mode, $position, $object);
 
-            $this->dispatch(KeywordEvents::KEYWORD_OBJECT_UPDATE_POSITION, $event);
+            $dispatcher->dispatch($event, KeywordEvents::KEYWORD_OBJECT_UPDATE_POSITION);
 
         } catch (\Exception $ex) {
             // Any error
             return $this->errorPage($ex);
         }
 
-        // Set the module router to use module routes
-        $this->setCurrentRouter("router.keyword");
+        $keywordId = $request->get('keyword_id');
 
-        // Redirect to keyword view
-        return $this->generateRedirectFromRoute(
-            'admin.keyword.view',
-            array(
-                'keyword_id'    => $this->getRequest()->get('keyword_id'),
-                'tab'           => $object
-            )
-        );
+        return $this->generateRedirect('/module/Keyword/view?keyword_id=' . $keywordId);
     }
 
     /**
      * @param $positionChangeMode
      * @param $positionValue
      * @param $object
-     * @return createObjectUpdatePositionEvent|void
      */
-    protected function createObjectUpdatePositionEvent($positionChangeMode, $positionValue, $object)
+    protected function createObjectUpdatePositionEvent(Request $request, $positionChangeMode, $positionValue, $object)
     {
         return new KeywordUpdateObjectPositionEvent(
-            $this->getRequest()->get('keyword_id', null),
+            $request->get('keyword_id', null),
             $object,
-            $this->getRequest()->get("$object".'_id', null),
+            $request->get("$object" . '_id', null),
             $positionChangeMode,
             $positionValue
         );
@@ -416,7 +393,7 @@ class KeywordController extends AbstractCrudController
     {
 
         $keywordAssociationEvent = new KeywordAssociationEvent(
-            empty($data["keyword_list"])?null:$data["keyword_list"]
+            empty($data["keyword_list"]) ? null : $data["keyword_list"]
         );
 
         return $keywordAssociationEvent;
@@ -441,22 +418,20 @@ class KeywordController extends AbstractCrudController
     /**
      * Hydrate the update form for this object, before passing it to the update template
      *
-     * @param  unknown                               $object
-     * @return \Keyword\Form\KeywordModificationForm
      */
     protected function hydrateObjectForm(ParserContext $parserContext, $object)
     {
 
         // Prepare the data that will hydrate the form
         $data = array(
-            'id'                => $object->getId(),
-            'locale'            => $object->getLocale(),
-            'title'             => $object->getTitle(),
-            'code'              => $object->getCode(),
-            'chapo'             => $object->getChapo(),
-            'description'       => $object->getDescription(),
-            'postscriptum'      => $object->getPostscriptum(),
-            'visible'           => $object->getVisible()
+            'id' => $object->getId(),
+            'locale' => $object->getLocale(),
+            'title' => $object->getTitle(),
+            'code' => $object->getCode(),
+            'chapo' => $object->getChapo(),
+            'description' => $object->getDescription(),
+            'postscriptum' => $object->getPostscriptum(),
+            'visible' => $object->getVisible()
         );
 
         // Setup the object form
@@ -465,8 +440,6 @@ class KeywordController extends AbstractCrudController
 
     /**
      * Creates the creation event with the provided form data
-     *
-     * @param  unknown                      $formData
      * @return \Keyword\Event\KeywordEvents
      */
     protected function getCreationEvent($formData)
@@ -485,7 +458,7 @@ class KeywordController extends AbstractCrudController
     /**
      * Creates the update event with the provided form data
      *
-     * @param unknown $formData
+     * @param $formData
      */
     protected function getUpdateEvent($formData)
     {
@@ -523,7 +496,7 @@ class KeywordController extends AbstractCrudController
     /**
      * Return true if the event contains the object, e.g. the action has updated the object in the event.
      *
-     * @param  \Keyword\Event\KeywordEvents $event
+     * @param \Keyword\Event\KeywordEvents $event
      * @return bool
      */
     protected function eventContainsObject($event)
@@ -534,7 +507,7 @@ class KeywordController extends AbstractCrudController
     /**
      * Get the created object from an event.
      *
-     * @param unknown $createEvent
+     * @param $createEvent
      */
     protected function getObjectFromEvent($event)
     {
@@ -560,7 +533,7 @@ class KeywordController extends AbstractCrudController
     /**
      * Returns the object label form the object event (name, title, etc.)
      *
-     * @param unknown $object
+     * @param $object
      */
     protected function getObjectLabel($object)
     {
@@ -570,7 +543,7 @@ class KeywordController extends AbstractCrudController
     /**
      * Returns the object ID from the object
      *
-     * @param unknown $object
+     * @param $object
      */
     protected function getObjectId($object)
     {
@@ -580,7 +553,7 @@ class KeywordController extends AbstractCrudController
     /**
      * Render the main list template
      *
-     * @param unknown $currentKeyword , if any, null otherwise.
+     * @param $currentKeyword , if any, null otherwise.
      */
     protected function renderListTemplate($currentKeyword)
     {
@@ -622,7 +595,7 @@ class KeywordController extends AbstractCrudController
     {
         $args = $this->getEditionArguments();
 
-        return $this->generateRedirect('/admin/module/Keyword/update?keyword_id='.$args['keyword_id']);
+        return $this->generateRedirect('/admin/module/Keyword/update?keyword_id=' . $args['keyword_id']);
     }
 
     /**

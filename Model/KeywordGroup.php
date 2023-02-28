@@ -5,10 +5,11 @@ namespace Keyword\Model;
 use Keyword\Model\Base\KeywordGroup as BaseKeywordGroup;
 use Keyword\Model\Map\KeywordGroupTableMap;
 use Propel\Runtime\Propel;
+use Thelia\Model\Tools\PositionManagementTrait;
 
 class KeywordGroup extends BaseKeywordGroup
 {
-    use \Thelia\Model\Tools\PositionManagementTrait;
+    use PositionManagementTrait;
 
     /**
      * Create a new keyword group.

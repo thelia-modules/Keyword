@@ -32,7 +32,6 @@ use Keyword\Form\KeywordGroupModificationForm;
 use Keyword\Model\KeywordGroupQuery;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Thelia\Controller\Admin\AbstractCrudController;
-use Thelia\Controller\Admin\unknown;
 use Thelia\Core\Event\UpdatePositionEvent;
 use Thelia\Core\Template\ParserContext;
 use Symfony\Component\Routing\Annotation\Route;
@@ -74,6 +73,8 @@ class KeywordGroupController extends AbstractCrudController
 
             return $this->render('keyword-group-view', array('keyword_group_id' => $keywordGroup->getId()));
         }
+
+        return $this->pageNotFound();
     }
 
     /**
@@ -106,9 +107,6 @@ class KeywordGroupController extends AbstractCrudController
         );
     }
 
-    /**
-     * @return KeywordToggleVisibilityEvent|void
-     */
     protected function createToggleVisibilityEvent()
     {
         return new KeywordGroupToggleVisibilityEvent($this->getExistingObject());
@@ -117,8 +115,7 @@ class KeywordGroupController extends AbstractCrudController
     /**
      * Hydrate the update form for this object, before passing it to the update template
      *
-     * @param  unknown                                    $object
-     * @return \Keyword\Form\KeywordGroupModificationForm
+     * @param  $object
      */
     protected function hydrateObjectForm(ParserContext $parserContext, $object)
     {
@@ -141,7 +138,7 @@ class KeywordGroupController extends AbstractCrudController
     /**
      * Creates the creation event with the provided form data
      *
-     * @param unknown $formData
+     * @param $formData
      */
     protected function getCreationEvent($formData)
     {
@@ -160,7 +157,7 @@ class KeywordGroupController extends AbstractCrudController
     /**
      * Creates the update event with the provided form data
      *
-     * @param unknown $formData
+     * @param $formData
      */
     protected function getUpdateEvent($formData)
     {
@@ -200,7 +197,7 @@ class KeywordGroupController extends AbstractCrudController
     /**
      * Get the created object from an event.
      *
-     * @param unknown $event
+     * @param $event
      */
     protected function getObjectFromEvent($event)
     {
@@ -226,7 +223,7 @@ class KeywordGroupController extends AbstractCrudController
     /**
      * Returns the object label form the object event (name, title, etc.)
      *
-     * @param unknown $object
+     * @param $object
      */
     protected function getObjectLabel($object)
     {
@@ -236,7 +233,7 @@ class KeywordGroupController extends AbstractCrudController
     /**
      * Returns the object ID from the object
      *
-     * @param unknown $object
+     * @param $object
      */
     protected function getObjectId($object)
     {
@@ -246,7 +243,7 @@ class KeywordGroupController extends AbstractCrudController
     /**
      * Render the main list template
      *
-     * @param unknown $currentKeyword , if any, null otherwise.
+     * @param $currentKeyword , if any, null otherwise.
      */
     protected function renderListTemplate($currentKeyword)
     {
@@ -296,6 +293,7 @@ class KeywordGroupController extends AbstractCrudController
         if ($this->getRequest()->get('save_mode') != 'stay') {
             return $this->redirectToListTemplate();
         }
-    }
 
+        return null;
+    }
 }

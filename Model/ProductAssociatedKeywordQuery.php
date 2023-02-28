@@ -20,7 +20,6 @@ class ProductAssociatedKeywordQuery extends BaseProductAssociatedKeywordQuery
      * Load an existing relation from the database
      * @param $productId
      * @param $keywordId
-     * @return ChildProductAssociatedKeyword
      */
     public static function getProductKeywordAssociation($productId, $keywordId) {
 

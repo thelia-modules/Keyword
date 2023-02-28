@@ -16,6 +16,10 @@
                 <input type="hidden" name="{$name}" value="{url path="/admin/categories/update" category_id={category attr='id'} current_tab='modules'}" />
                 {/form_field}
 
+                {form_field form=$form field='error_url'}
+                    <input type="hidden" name="{$name}" value="{url path="/admin/categories/update" category_id={category attr='id'} current_tab='modules'}" />
+                {/form_field}
+
                 {if $form_error}<div class="alert alert-danger">{$form_error_message}</div>{/if}
 
                 {ifloop rel="keyword_groups"}

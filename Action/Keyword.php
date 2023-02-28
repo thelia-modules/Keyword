@@ -41,6 +41,7 @@ use Keyword\Model\FolderAssociatedKeywordQuery;
 
 use Keyword\Model\KeywordQuery;
 use Keyword\Model\ProductAssociatedKeyword;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Thelia\Core\Event\UpdatePositionEvent;
 
@@ -54,6 +55,10 @@ use Thelia\Core\Event\UpdatePositionEvent;
  */
 class Keyword implements EventSubscriberInterface
 {
+    public function __construct(protected EventDispatcherInterface $dispatcher)
+    {
+
+    }
 
     public function updateKeywordFolderAssociation(KeywordAssociationEvent $event)
     {
@@ -171,7 +176,7 @@ class Keyword implements EventSubscriberInterface
     {
         if (null !== $keyword = KeywordQuery::create()->findPk($event->getObjectId())) {
 
-            $keyword->setDispatcher($event->getDispatcher());
+            $keyword->setDispatcher($this->dispatcher);
 
             switch ($event->getMode()) {
                 case UpdatePositionEvent::POSITION_ABSOLUTE:
@@ -275,7 +280,7 @@ class Keyword implements EventSubscriberInterface
         }
 
         if ($object !== null) {
-            $object->setDispatcher($event->getDispatcher());
+            $object->setDispatcher($this->dispatcher);
 
             switch ($event->getMode()) {
                 case UpdatePositionEvent::POSITION_ABSOLUTE:
