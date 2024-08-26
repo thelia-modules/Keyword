@@ -410,7 +410,7 @@
     <script>
         $(function() {
 
-            {if $smarty.get.tab}
+            {if $smarty.get.tab|default:null}
                 $('#tabbed-menu a[href="#{$smarty.get.tab}"]').tab('show');
             {/if}
 

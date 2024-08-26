@@ -23,6 +23,8 @@
 namespace Keyword\Form;
 
 use Keyword\Model\KeywordGroupQuery;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Validator\Constraints\Callback;
@@ -55,13 +57,14 @@ class KeywordGroupCreationForm extends BaseForm
                         'for' => 'keyword_code'
                     )
                 ))
-            ->add('visible', IntegerType::class, array(
+            ->add('visible', CheckboxType::class, array(
                     'label' => Translator::getInstance()->trans('Visible ?'),
+                    'required' => false,
                     'label_attr' => array(
                         'for' => 'keyword_visible'
                     )
                 ))
-            ->add("locale", TextType::class, array(
+            ->add("locale", HiddenType::class, array(
                     "constraints" => array(
                         new NotBlank()
                     )
