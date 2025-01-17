@@ -26,7 +26,16 @@
         <form name="keyword_admin_modification" class="Keyword\Form\KeywordModificationForm"/>
     </forms>
 
-    <commands>
-        <command class="Keyword\Commands\Update"/>
-    </commands>
+    <hooks>
+      <!-- backOffice -->
+      <hook id="keyword.back.hook" class="Keyword\Hook\BackHookManager">
+        <tag name="hook.event_listener" event="module.configuration" type="back" method="onModuleConfigure" />
+        <tag name="hook.event_listener" event="module.config-js" type="back" method="onModuleConfigJs" />
+
+        <tag name="hook.event_listener" event="category.tab-content" type="back" method="onCategoryTabContent" />
+        <tag name="hook.event_listener" event="content.tab-content" type="back" method="onContentTabContent" />
+        <tag name="hook.event_listener" event="folder.tab-content" type="back" method="onFolderTabContent" />
+        <tag name="hook.event_listener" event="product.tab-content" type="back" method="onProductTabContent" />
+      </hook>
+    </hooks>
 </config>

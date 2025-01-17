@@ -1,0 +1,79 @@
+<div class="keyword-module">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">{intl l="Keywords" d='keyword'}</h3>
+        </div>
+        <div class="panel-body">
+
+            {form name=$formName}
+                <form action="{$formAction}" method="POST" role="form">
+                    <legend>{intl l="Keywords association" d='keyword'}</legend>
+
+                    {form_hidden_fields form=$form}
+
+                    {form_field form=$form field='success_url'}
+                        <input type="hidden" name="{$name}" value="{$returnUrl}"/>
+                    {/form_field}
+
+                    {form_field form=$form field='error_url'}
+                        <input type="hidden" name="{$name}" value="{$returnUrl}"/>
+                    {/form_field}
+
+                    {if $form_error}
+                        <div class="alert alert-danger">{$form_error_message}</div>{/if}
+
+                    {ifloop rel="keyword_groups"}
+                        <div class="row">
+                            {loop name="keyword_groups" type="keyword_group"}
+                            {ifloop rel="keywords"}
+                                <div class="col-md-12">
+                                    <div class="panel panel-primary">
+                                        <div class="panel-heading">
+                                            <span class="panel-title">
+                                                <a data-toggle="collapse" href="#panel-{$CODE}">
+                                                    {$TITLE}
+                                                </a>
+                                            </span>
+                                        </div>
+
+                                        {$in =''}
+                                        {loop name="keywords" type="keyword" keyword_group=$ID}
+                                            {if in_array($objectId, ${$assocName})}
+                                                {$in = ' in'}
+                                            {/if}
+                                        {/loop}
+
+                                        <div class="panel-collapse collapse{$in}" id="panel-{$CODE}">
+                                            <div class="panel-body">
+                                                <div class="form-group">
+                                                    {loop name="keywords" type="keyword" keyword_group=$ID}
+                                                        <div class="checkbox">
+                                                            <label>
+                                                                {form_field form=$form field='keyword_list'}
+                                                                    <input type="checkbox" name="{$name}" value="{$ID}" {if in_array($objectId, ${$assocName})}checked="checked"{/if}>
+                                                                {$TITLE} ({$CODE})
+                                                                {/form_field}
+                                                            </label>
+                                                        </div>
+                                                    {/loop}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {/ifloop}
+                            {/loop}
+                        </div>
+                    {/ifloop}
+                    {elseloop rel="keyword_groups"}
+                        <div class="alert alert-info">{intl l="You must first configure keywords to use them." d='keyword'}</div>
+                    {/elseloop}
+
+                    <button type="submit" class="btn btn-primary">{intl l="Save"}</button>
+                </form>
+            {/form}
+
+        </div>
+    </div>
+
+</div>

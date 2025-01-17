@@ -33,6 +33,16 @@ use TheliaSmarty\Template\SmartyPluginDescriptor;
 
 class Keyword extends AbstractSmartyPlugin
 {
+    protected function genericHasKeyWord(array $params, string $paramName, string $queryFunction): bool
+    {
+        if (isset($params['keyword_code'], $params[$paramName])) {
+            $keyword = KeywordQuery::getKeywordByCode($params['keyword_code']);
+
+            return null !== $queryFunction($params[$paramName], $keyword?->getId());
+        }
+
+        return false;
+    }
 
     /**
      * Check if folder is associated to keyword code
@@ -41,29 +51,10 @@ class Keyword extends AbstractSmartyPlugin
      */
     public function folderHasKeyword($params)
     {
-        $ret = false;
-
-        if (isset($params['keyword_code']) && isset($params['folder_id'])) {
-
-            $keyword = KeywordQuery::getKeywordByCode($params['keyword_code']);
-
-            if (null !== $keyword) {
-                $keywordId = $keyword->getId();
-                $keywordFolderAssociation = FolderAssociatedKeywordQuery::getFolderKeywordAssociation($params['folder_id'], $keywordId);
-
-                if (null !== $keywordFolderAssociation) {
-                    $ret = true;
-                } else {
-                    $ret = false;
-                }
-            } else {
-                $ret = false;
-            }
-
-        }
-
-        return $ret;
-
+        return $this->genericHasKeyWord(
+            $params,
+            'folder_id',
+            'Keyword\Model\FolderAssociatedKeywordQuery::getFolderKeywordAssociation');
     }
 
     /**
@@ -73,29 +64,10 @@ class Keyword extends AbstractSmartyPlugin
      */
     public function contentHasKeyword($params)
     {
-        $ret = false;
-
-        if (isset($params['keyword_code']) && isset($params['content_id'])) {
-
-            $keyword = KeywordQuery::getKeywordByCode($params['keyword_code']);
-
-            if (null !== $keyword) {
-                $keywordId = $keyword->getId();
-                $keywordContentAssociation = ContentAssociatedKeywordQuery::getContentKeywordAssociation($params['content_id'], $keywordId);
-
-                if (null !== $keywordContentAssociation) {
-                    $ret = true;
-                } else {
-                    $ret = false;
-                }
-            } else {
-                $ret = false;
-            }
-
-        }
-
-        return $ret;
-
+        return $this->genericHasKeyWord(
+            $params,
+            'content_id',
+            'Keyword\Model\ContentAssociatedKeywordQuery::getContentKeywordAssociation');
     }
 
     /**
@@ -105,29 +77,10 @@ class Keyword extends AbstractSmartyPlugin
      */
     public function categoryHasKeyword($params)
     {
-        $ret = false;
-
-        if (isset($params['keyword_code']) && isset($params['category_id'])) {
-
-            $keyword = KeywordQuery::getKeywordByCode($params['keyword_code']);
-
-            if (null !== $keyword) {
-                $keywordId = $keyword->getId();
-                $keywordCategoryAssociation = CategoryAssociatedKeywordQuery::getCategoryKeywordAssociation($params['category_id'], $keywordId);
-
-                if (null !== $keywordCategoryAssociation) {
-                    $ret = true;
-                } else {
-                    $ret = false;
-                }
-            } else {
-                $ret = false;
-            }
-
-        }
-
-        return $ret;
-
+        return $this->genericHasKeyWord(
+            $params,
+            'category_id',
+            'Keyword\Model\CategoryAssociatedKeywordQuery::getCategoryKeywordAssociation');
     }
 
     /**
@@ -137,29 +90,10 @@ class Keyword extends AbstractSmartyPlugin
      */
     public function productHasKeyword($params)
     {
-        $ret = false;
-
-        if (isset($params['keyword_code']) && isset($params['product_id'])) {
-
-            $keyword = KeywordQuery::getKeywordByCode($params['keyword_code']);
-
-            if (null !== $keyword) {
-                $keywordId = $keyword->getId();
-                $keywordProductAssociation = ProductAssociatedKeywordQuery::getProductKeywordAssociation($params['product_id'], $keywordId);
-
-                if (null !== $keywordProductAssociation) {
-                    $ret = true;
-                } else {
-                    $ret = false;
-                }
-            } else {
-                $ret = false;
-            }
-
-        }
-
-        return $ret;
-
+        return $this->genericHasKeyWord(
+            $params,
+            'product_id',
+            'Keyword\Model\ProductAssociatedKeywordQuery::getProductKeywordAssociation');
     }
 
     public function getPluginDescriptors()

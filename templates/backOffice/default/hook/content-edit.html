@@ -1,0 +1,7 @@
+{include file='hook/generic-keyword-edit.html'
+    formName = 'keyword_admin_content_modification'
+    formAction = {url path="/admin/content/update/{content attr='id'}/keyword"}
+    returnUrl = {url path="admin/content/update/{content attr='id'}" current_tab='modules'}
+    objectId = {content attr='id'}
+    assocName = 'CONTENTS_ASSOCIATION'
+}

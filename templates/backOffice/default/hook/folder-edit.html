@@ -1,0 +1,7 @@
+{include file='hook/generic-keyword-edit.html'
+    formName = 'keyword_admin_folder_modification'
+    formAction = {url path="/admin/folders/update/{folder attr='id'}/keyword"}
+    returnUrl = {url path="/admin/folders/update/{folder attr='id'}" current_tab='modules'}
+    objectId = {folder attr='id'}
+    assocName = 'FOLDERS_ASSOCIATION'
+}

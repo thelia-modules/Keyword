@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<module>
+<module xmlns="http://thelia.net/schema/dic/module"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://thelia.net/schema/dic/module http://thelia.net/schema/dic/module/module-2_2.xsd">
     <fullnamespace>Keyword\Keyword</fullnamespace>
     <descriptive locale="fr_FR">
         <title>Mots clés</title>
@@ -7,11 +9,23 @@
     <descriptive locale="en_US">
         <title>Keyword</title>
     </descriptive>
-    <version>3.0.2</version>
-    <author>
-        <name>Michaël Espeche</name>
-        <email>mespeche@openstudio.fr</email>
-    </author>
+    <languages>
+      <language>en_US</language>
+      <language>fr_FR</language>
+    </languages>
+    <version>3.0.3</version>
+    <authors>
+      <author>
+          <name>Michaël Espeche</name>
+          <email>mespeche@openstudio.fr</email>
+      </author>
+      <author>
+        <name>Franck Allimant</name>
+        <company>OpenStudio</company>
+        <email>fallimant@openstudio.fr</email>
+        <website>www.openstudio.fr</website>
+      </author>
+    </authors>
     <type>classic</type>
     <thelia>2.5.0</thelia>
     <stability>prod</stability>

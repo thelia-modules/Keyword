@@ -1,0 +1,7 @@
+{include file='hook/generic-keyword-edit.html'
+    formName = 'keyword_admin_category_modification'
+    formAction = {url path="/admin/categories/update/{category attr='id'}/keyword"}
+    returnUrl = {url path="/admin/categories/update" category_id={category attr='id'} current_tab='modules'}
+    objectId = {category attr='id'}
+    assocName = 'CATEGORIES_ASSOCIATION'
+}

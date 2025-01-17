@@ -1,0 +1,7 @@
+{include file='hook/generic-keyword-edit.html'
+    formName = 'keyword_admin_product_modification'
+    formAction = {url path="/admin/product/update/{product attr='id'}/keyword"}
+    returnUrl = {url path="/admin/products/update" product_id={product attr='id'} current_tab='modules'}
+    objectId = {product attr='id'}
+    assocName = 'PRODUCTS_ASSOCIATION'
+}

@@ -161,8 +161,9 @@
     {* Capture the dialog body, to pass it to the generic dialog *}
     {capture "keyword_creation_dialog"}
 
-    {form_hidden_fields}
+    {form_hidden_fields exclude='locale'}
 
+    {render_form_field field='locale' value={lang attr='locale'}}
     {render_form_field field='success_url' value="{url path='/admin/module/Keyword/group/view' keyword_group_id=$keyword_group_id}"}
     {render_form_field field='keyword_group_id' value=$keyword_group_id}
     {render_form_field field='title'}
