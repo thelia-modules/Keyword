@@ -24,6 +24,16 @@ To associate one or more keywords to a content or a folder, go to tab "Modules" 
 
 This module allow you to use 6 new loops : keyword_category, keyword_product, keyword_content, keyword_folder, keyword_group and keyword.
 
+Since v3.1.0 you can use classic loops (category, product, content, folder) with the argument "keyword" to filter the results (and `keyword_match_mode` : `exact` or `partial`).
+
+Ex :
+
+```html
+{loop name="categories" type="category" keyword="my_keyword" keyword_match_mode="exact"}
+    ...
+{/loop}
+```
+
 Here is an example of using each :
 
 __Use the keyword_category loop (list of categories related to the "my_keyword" keyword)__
