@@ -36,14 +36,7 @@
                                             </span>
                                         </div>
 
-                                        {$in =''}
-                                        {loop name="keywords" type="keyword" keyword_group=$ID}
-                                            {if in_array($objectId, ${$assocName})}
-                                                {$in = ' in'}
-                                            {/if}
-                                        {/loop}
-
-                                        <div class="panel-collapse collapse{$in}" id="panel-{$CODE}">
+                                        <div class="panel-collapse collapse in" id="panel-{$CODE}">
                                             <div class="panel-body">
                                                 <div class="form-group">
                                                     {loop name="keywords" type="keyword" keyword_group=$ID}
