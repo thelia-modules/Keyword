@@ -22,6 +22,10 @@ class Keyword extends BaseKeyword
             $contentId[] = $contentAssociatedKeyword->getContentId();
         }
 
+        if (empty($contentId)) {
+            return new \Propel\Runtime\Collection\ObjectCollection();
+        }
+
         return ContentQuery::create()
             ->filterById($contentId)
             ->find();
@@ -33,6 +37,10 @@ class Keyword extends BaseKeyword
 
         foreach ($this->getFolderAssociatedKeywords() as $folderAssociatedKeyword) {
             $folderId[] = $folderAssociatedKeyword->getFolderId();
+        }
+
+        if (empty($folderId)) {
+            return new \Propel\Runtime\Collection\ObjectCollection();
         }
 
         return FolderQuery::create()
@@ -48,6 +56,10 @@ class Keyword extends BaseKeyword
             $categoryId[] = $categoryAssociatedKeyword->getCategoryId();
         }
 
+        if (empty($categoryId)) {
+            return new \Propel\Runtime\Collection\ObjectCollection();
+        }
+
         return CategoryQuery::create()
             ->filterById($categoryId)
             ->find();
@@ -59,6 +71,10 @@ class Keyword extends BaseKeyword
 
         foreach ($this->getProductAssociatedKeywords() as $productAssociatedKeyword) {
             $productId[] = $productAssociatedKeyword->getProductId();
+        }
+
+        if (empty($productId)) {
+            return new \Propel\Runtime\Collection\ObjectCollection();
         }
 
         return ProductQuery::create()
