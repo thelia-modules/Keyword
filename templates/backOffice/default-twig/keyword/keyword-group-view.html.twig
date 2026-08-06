@@ -1,0 +1,139 @@
+{% extends '@KeywordModule/backOffice/default-twig/keyword/_layout.html.twig' %}
+
+{% block kw_title %}{{ 'View keyword group "%title" associations'|trans({ '%title': keyword_group.title }, 'keyword') }}{% endblock %}
+{% block body_testid %}keyword-group-view-page{% endblock %}
+
+{% block kw_breadcrumb %}
+    <li class="breadcrumb-item active" aria-current="page">{{ keyword_group.title }}</li>
+{% endblock %}
+
+{% block kw_actions %}
+    {% if can_create %}
+        <a href="#keyword_creation_dialog" class="btn btn-primary" data-bs-toggle="modal" data-testid="keyword-create">
+            <i class="bi bi-plus-lg" aria-hidden="true"></i> {{ 'Add a new keyword'|trans({}, 'keyword') }}
+        </a>
+    {% endif %}
+    {% include '@KeywordModule/backOffice/default-twig/keyword/_prev_next.html.twig' with {
+        previous_url: previous_url,
+        next_url: next_url,
+        previous_label: 'View previous keyword group'|trans({}, 'keyword'),
+        next_label: 'View next keyword group'|trans({}, 'keyword'),
+    } only %}
+{% endblock %}
+
+{% block kw_body %}
+    <div class="card" data-testid="keyword-group-view-card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped align-middle mb-0" data-testid="keyword-table">
+                    {% if keywords is not empty %}
+                        <thead class="table-light">
+                            <tr>
+                                <th scope="col">{{ 'ID'|trans }}</th>
+                                <th scope="col">{{ 'Title'|trans }}</th>
+                                <th scope="col">{{ 'Unique identifier'|trans({}, 'keyword') }}</th>
+                                <th scope="col" class="text-center">{{ 'Visible'|trans }}</th>
+                                <th scope="col">{{ 'Position'|trans }}</th>
+                                <th scope="col" class="text-end">{{ 'Actions'|trans }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for keyword in keywords %}
+                                <tr data-testid="keyword-row">
+                                    <td>{{ keyword.id }}</td>
+                                    <td><a href="{{ keyword.view_url }}" title="{{ 'Browse this keyword'|trans({}, 'keyword') }}">{{ keyword.title }}</a></td>
+                                    <td>{{ keyword.code }}</td>
+                                    <td class="text-center">
+                                        {% if can_change %}
+                                            <a href="{{ keyword.toggle_url }}" class="btn btn-sm {{ keyword.visible ? 'btn-success' : 'btn-outline-secondary' }}" title="{{ keyword.visible ? 'Yes'|trans : 'No'|trans }}">
+                                                <i class="bi {{ keyword.visible ? 'bi-check-lg' : 'bi-x-lg' }}" aria-hidden="true"></i>
+                                            </a>
+                                        {% else %}
+                                            <i class="bi {{ keyword.visible ? 'bi-check-lg text-success' : 'bi-x-lg text-muted' }}" aria-hidden="true"></i>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {{ keyword.position }}
+                                        {% if can_change %}
+                                            <div class="btn-group btn-group-sm ms-2">
+                                                <a href="{{ keyword.position_up_url }}" class="btn btn-outline-secondary" title="{{ 'Move up'|trans({}, 'keyword') }}"><i class="bi bi-arrow-up" aria-hidden="true"></i></a>
+                                                <a href="{{ keyword.position_down_url }}" class="btn btn-outline-secondary" title="{{ 'Move down'|trans({}, 'keyword') }}"><i class="bi bi-arrow-down" aria-hidden="true"></i></a>
+                                            </div>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-end">
+                                        <div class="d-inline-flex gap-1">
+                                            <a class="btn btn-sm btn-outline-secondary" title="{{ 'Browse this keyword'|trans({}, 'keyword') }}" href="{{ keyword.view_url }}"><i class="bi bi-folder2-open" aria-hidden="true"></i></a>
+                                            {% if can_change %}
+                                                <a class="btn btn-sm btn-outline-primary" title="{{ 'Edit this keyword'|trans({}, 'keyword') }}" href="{{ keyword.edit_url }}"><i class="bi bi-pencil-square" aria-hidden="true"></i></a>
+                                            {% endif %}
+                                            {% if can_delete %}
+                                                <a class="btn btn-sm btn-outline-danger" title="{{ 'Delete this keyword'|trans({}, 'keyword') }}" href="#keyword_delete_dialog" data-bs-toggle="modal" data-keyword-id="{{ keyword.id }}"><i class="bi bi-trash" aria-hidden="true"></i></a>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    {% else %}
+                        <thead>
+                            <tr>
+                                <td class="message">
+                                    <div class="alert alert-info mb-0" data-testid="keyword-empty">
+                                        {% if can_create %}
+                                            {{ 'There is no keywords. To create a new one, click the + button above.'|trans({}, 'keyword') }}
+                                        {% else %}
+                                            {{ 'There is no keywords.'|trans({}, 'keyword') }}
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                        </thead>
+                    {% endif %}
+                </table>
+            </div>
+        </div>
+    </div>
+
+    {% if can_create %}
+        {% component 'BoCreateDialog' with {
+            id: 'keyword_creation_dialog',
+            title: 'Create a new keyword'|trans({}, 'keyword'),
+            form: create_form,
+            formAction: create_form_action,
+            submitLabel: 'Save'|trans,
+            testid: 'keyword-create',
+        } %}
+            {% block fields %}
+                {{ form_row(create_form.title) }}
+                {{ form_row(create_form.code) }}
+                <div class="form-check mb-3">
+                    {{ form_widget(create_form.visible, { attr: { class: 'form-check-input' } }) }}
+                    {{ form_label(create_form.visible, null, { label_attr: { class: 'form-check-label' } }) }}
+                </div>
+                {{ form_widget(create_form.locale) }}
+                {{ form_widget(create_form.keyword_group_id) }}
+                {{ form_widget(create_form.success_url) }}
+            {% endblock %}
+        {% endcomponent %}
+    {% endif %}
+
+    {% if can_delete %}
+        {# Body overridden to also carry the current keyword_group_id: after deletion,
+           KeywordController::redirectToListTemplate() reads it to go back to this group. #}
+        {% component 'BoConfirmDialog' with {
+            id: 'keyword_delete_dialog',
+            title: 'Delete keyword'|trans({}, 'keyword'),
+            formAction: delete_form_action,
+            testid: 'keyword-delete',
+            prefillTrigger: 'data-keyword-id',
+            prefillInput: 'keyword_id',
+        } %}
+            {% block body %}
+                <p class="mb-0">{{ 'Do you really want to delete this keyword and all its associations ?'|trans({}, 'keyword') }}</p>
+                <input type="hidden" name="keyword_id" value="" data-bo-prefill-modal-target="input">
+                <input type="hidden" name="keyword_group_id" value="{{ keyword_group.id }}">
+            {% endblock %}
+        {% endcomponent %}
+    {% endif %}
+{% endblock %}

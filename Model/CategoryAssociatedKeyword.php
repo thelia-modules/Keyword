@@ -12,8 +12,7 @@ class CategoryAssociatedKeyword extends BaseCategoryAssociatedKeyword
 {
     use PositionManagementTrait;
 
-    public function preInsert(ConnectionInterface $con = null)
-    {
+    public function preInsert(?ConnectionInterface $con = null): bool {
         $this->setPosition($this->getNextPosition());
 
         return parent::preInsert($con);

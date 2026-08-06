@@ -1,0 +1,86 @@
+{% extends '@KeywordModule/backOffice/default-twig/keyword/_layout.html.twig' %}
+
+{% block kw_title %}{{ 'View keyword "%title" associations'|trans({ '%title': keyword.title }, 'keyword') }}{% endblock %}
+{% block body_testid %}keyword-view-page{% endblock %}
+
+{% block kw_breadcrumb %}
+    <li class="breadcrumb-item"><a href="{{ keyword_group_view_url }}">{{ keyword_group_title }}</a></li>
+    <li class="breadcrumb-item active" aria-current="page">{{ keyword.title }}</li>
+{% endblock %}
+
+{% block kw_actions %}
+    {% include '@KeywordModule/backOffice/default-twig/keyword/_prev_next.html.twig' with {
+        previous_url: previous_url,
+        next_url: next_url,
+        previous_label: 'View previous keyword'|trans({}, 'keyword'),
+        next_label: 'View next keyword'|trans({}, 'keyword'),
+    } only %}
+{% endblock %}
+
+{% block kw_body %}
+    <div class="card" data-testid="keyword-view-card">
+        <div class="card-body">
+            <ul class="nav nav-tabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link {% if active_tab == 'folder' %}active{% endif %}" data-bs-toggle="tab" data-bs-target="#tab-folder" type="button" data-testid="keyword-view-tab-folder">
+                        {{ 'Folders association'|trans({}, 'keyword') }}
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link {% if active_tab == 'content' %}active{% endif %}" data-bs-toggle="tab" data-bs-target="#tab-content" type="button" data-testid="keyword-view-tab-content">
+                        {{ 'Contents association'|trans({}, 'keyword') }}
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link {% if active_tab == 'category' %}active{% endif %}" data-bs-toggle="tab" data-bs-target="#tab-category" type="button" data-testid="keyword-view-tab-category">
+                        {{ 'Categories association'|trans({}, 'keyword') }}
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link {% if active_tab == 'product' %}active{% endif %}" data-bs-toggle="tab" data-bs-target="#tab-product" type="button" data-testid="keyword-view-tab-product">
+                        {{ 'Products association'|trans({}, 'keyword') }}
+                    </button>
+                </li>
+            </ul>
+
+            <div class="tab-content pt-3">
+                <div class="tab-pane fade {% if active_tab == 'folder' %}show active{% endif %}" id="tab-folder" role="tabpanel">
+                    {% include '@KeywordModule/backOffice/default-twig/keyword/_association_tab.html.twig' with {
+                        rows: folders,
+                        empty_message: 'This keyword has no folder assocation.'|trans({}, 'keyword'),
+                        title_col_label: 'Folders'|trans,
+                        can_edit_position: can_edit_position,
+                        testid: 'keyword-view-folder',
+                    } only %}
+                </div>
+                <div class="tab-pane fade {% if active_tab == 'content' %}show active{% endif %}" id="tab-content" role="tabpanel">
+                    {% include '@KeywordModule/backOffice/default-twig/keyword/_association_tab.html.twig' with {
+                        rows: contents,
+                        empty_message: 'This keyword has no content assocation.'|trans({}, 'keyword'),
+                        title_col_label: 'Contents'|trans({}, 'keyword'),
+                        can_edit_position: can_edit_position,
+                        testid: 'keyword-view-content',
+                    } only %}
+                </div>
+                <div class="tab-pane fade {% if active_tab == 'category' %}show active{% endif %}" id="tab-category" role="tabpanel">
+                    {% include '@KeywordModule/backOffice/default-twig/keyword/_association_tab.html.twig' with {
+                        rows: categories,
+                        empty_message: 'This keyword has no category assocation.'|trans({}, 'keyword'),
+                        title_col_label: 'Categories'|trans,
+                        can_edit_position: can_edit_position,
+                        testid: 'keyword-view-category',
+                    } only %}
+                </div>
+                <div class="tab-pane fade {% if active_tab == 'product' %}show active{% endif %}" id="tab-product" role="tabpanel">
+                    {% include '@KeywordModule/backOffice/default-twig/keyword/_association_tab.html.twig' with {
+                        rows: products,
+                        empty_message: 'This keyword has no product assocation.'|trans({}, 'keyword'),
+                        title_col_label: 'Products'|trans,
+                        can_edit_position: can_edit_position,
+                        testid: 'keyword-view-product',
+                    } only %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

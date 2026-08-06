@@ -1,0 +1,61 @@
+{# Generic "keyword association" fragment, included by the product/category/content/folder
+   tab-content hooks. All data (form, groups, checked keyword ids, URLs) is prepared in PHP by
+   Keyword\Hook\TwigBackHook - this template only renders it.
+
+   Vars:
+     form            FormView for the *_modification association form (field: keyword_list[])
+     form_action     form action URL
+     return_url      success_url/error_url already baked into the form, kept here for display only
+     keyword_groups  array of { id, code, title, keywords: [{ id, title, code, checked }] } #}
+<div class="card" data-testid="keyword-association-card">
+    <div class="card-header">
+        <h2 class="h6 mb-0">{{ 'Keywords'|trans({}, 'keyword') }}</h2>
+    </div>
+    <div class="card-body">
+        {% form_theme form with bo_form_themes only %}
+        {{ form_start(form, { action: form_action, method: 'post', attr: { 'data-testid': 'keyword-association-form' } }) }}
+            <p class="text-muted">{{ 'Keywords association'|trans({}, 'keyword') }}</p>
+            {% do form.keyword_list.setRendered %}
+
+            {% if keyword_groups is not empty %}
+                <div class="row g-3">
+                    {% for group in keyword_groups %}
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <button class="btn btn-link p-0 text-decoration-none" type="button" data-bs-toggle="collapse" data-bs-target="#keyword-panel-{{ group.code }}">
+                                        {{ group.title }}
+                                    </button>
+                                </div>
+                                <div class="collapse show" id="keyword-panel-{{ group.code }}">
+                                    <div class="card-body">
+                                        {% for keyword in group.keywords %}
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input" id="keyword_list_{{ keyword.id }}"
+                                                       name="{{ form.keyword_list.vars.full_name }}" value="{{ keyword.id }}"
+                                                       {% if keyword.checked %}checked{% endif %}>
+                                                <label class="form-check-label" for="keyword_list_{{ keyword.id }}">{{ keyword.title }} ({{ keyword.code }})</label>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="alert alert-info mb-0">{{ 'You must first configure keywords to use them.'|trans({}, 'keyword') }}</div>
+            {% endif %}
+
+            {{ form_widget(form.success_url) }}
+            {{ form_widget(form.error_url) }}
+            {{ form_widget(form.error_message) }}
+            {% if form._token is defined %}{{ form_widget(form._token) }}{% endif %}
+
+            <button type="submit" class="btn btn-primary mt-3" data-testid="keyword-association-submit">
+                <i class="bi bi-check2" aria-hidden="true"></i> {{ 'Save'|trans }}
+            </button>
+        {# module fields added through the legacy form bridge would be rendered by module hooks, not auto-dumped #}
+        {{ form_end(form, { render_rest: false }) }}
+    </div>
+</div>
