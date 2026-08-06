@@ -51,7 +51,8 @@ class KeywordCreationForm extends BaseForm
                 ))
             ->add('code', TextType::class, array(
                     'constraints' => array(
-                        new NotBlank()
+                        new NotBlank(),
+                        new Callback([$this, 'verifyExistingCode'])
                     ),
                     'label' => Translator::getInstance()->trans('Unique identifier', array(), 'keyword'),
                     'label_attr' => array(
@@ -89,7 +90,7 @@ class KeywordCreationForm extends BaseForm
         }
     }
 
-    public static function getName()
+    public static function getName(): string
     {
         return 'admin_keyword_creation';
     }

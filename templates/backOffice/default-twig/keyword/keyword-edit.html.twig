@@ -1,0 +1,81 @@
+{% extends '@KeywordModule/backOffice/default-twig/keyword/_layout.html.twig' %}
+
+{% block kw_title %}{{ 'Edit keyword %title'|trans({ '%title': keyword.title }, 'keyword') }}{% endblock %}
+{% block body_testid %}keyword-edit-page{% endblock %}
+
+{% block kw_breadcrumb %}
+    <li class="breadcrumb-item"><a href="{{ keyword_group_view_url }}">{{ keyword_group_title }}</a></li>
+    <li class="breadcrumb-item active" aria-current="page">{{ keyword.title }}</li>
+{% endblock %}
+
+{% block kw_actions %}
+    {% include '@KeywordModule/backOffice/default-twig/keyword/_prev_next.html.twig' with {
+        previous_url: previous_url,
+        next_url: next_url,
+        previous_label: 'Edit previous keyword'|trans({}, 'keyword'),
+        next_label: 'Edit next keyword'|trans({}, 'keyword'),
+    } only %}
+{% endblock %}
+
+{% block kw_body %}
+    <div class="card" data-testid="keyword-edit-card">
+        <div class="card-body">
+            {% form_theme form with bo_form_themes only %}
+            {{ form_start(form, { action: form_action, method: 'post', attr: { 'data-testid': 'keyword-edit-form' } }) }}
+                <input type="hidden" name="keyword_id" value="{{ keyword.id }}">
+                <input type="hidden" name="current_tab" value="general">
+
+                <div class="row">
+                    <div class="col-md-8">
+                        {{ form_row(form.title) }}
+                        {{ form_row(form.chapo) }}
+                        <div class="mb-3">
+                            {{ form_label(form.description) }}
+                            {{ form_widget(form.description, { attr: { class: 'form-control wysiwyg', rows: 8 } }) }}
+                            {{ form_errors(form.description) }}
+                        </div>
+                        {{ form_row(form.postscriptum) }}
+                        {{ form_row(form.code) }}
+                        <div class="form-check mb-3">
+                            {{ form_widget(form.visible, { attr: { class: 'form-check-input' } }) }}
+                            {{ form_label(form.visible, null, { label_attr: { class: 'form-check-label' } }) }}
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label class="form-label" for="keyword_group_id_select">{{ 'Change keyword group'|trans({}, 'keyword') }}</label>
+                            <select class="form-select" id="keyword_group_id_select" name="{{ form.keyword_group_id.vars.full_name }}">
+                                {% for group in keyword_group_options %}
+                                    <option value="{{ group.id }}" {% if group.id == keyword.keyword_group_id %}selected{% endif %}>{{ group.title }}</option>
+                                {% endfor %}
+                            </select>
+                            {% do form.keyword_group_id.setRendered %}
+                        </div>
+                        <p class="text-muted small">
+                            {{ 'Keyword created on %date_create. Last modification: %date_change'|trans({
+                                '%date_create': keyword.created_at ? keyword.created_at|format_datetime('medium', 'short') : '-',
+                                '%date_change': keyword.updated_at ? keyword.updated_at|format_datetime('medium', 'short') : '-',
+                            }, 'keyword') }}
+                        </p>
+                    </div>
+                </div>
+
+                {{ form_widget(form.id) }}
+                {{ form_widget(form.locale) }}
+                {{ form_widget(form.success_url) }}
+                {{ form_widget(form.error_url) }}
+                {{ form_widget(form.error_message) }}
+                {% if form._token is defined %}{{ form_widget(form._token) }}{% endif %}
+
+                <button type="submit" class="btn btn-primary" data-testid="keyword-edit-submit">
+                    <i class="bi bi-check2" aria-hidden="true"></i> {{ 'Save'|trans }}
+                </button>
+                <a href="{{ keyword_group_view_url }}" class="btn btn-outline-secondary">{{ 'Cancel'|trans }}</a>
+            {{ form_end(form, { render_rest: false }) }}
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts_extra %}
+    {{ safe_hook('wysiwyg.js', { location: 'keyword-edit-js' }) }}
+{% endblock %}

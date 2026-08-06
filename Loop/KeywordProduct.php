@@ -33,7 +33,7 @@ use Thelia\Core\Template\Loop\Argument\Argument;
 use Thelia\Core\Template\Loop\Product;
 use Thelia\Core\Template\Element\LoopResult;
 
-use Thelia\Exception\TaxEngineException;
+use Thelia\Domain\Taxation\TaxEngine\Exception\TaxEngineException;
 use Thelia\Model\Map\ProductTableMap;
 use Thelia\Model\ProductQuery;
 use Thelia\Type\TypeCollection;
@@ -50,7 +50,7 @@ use Thelia\Type;
  */
 class KeywordProduct extends Product
 {
-    protected function getArgDefinitions()
+    protected function getArgDefinitions(): \Thelia\Core\Template\Loop\Argument\ArgumentCollection
     {
         $argument = parent::getArgDefinitions();
 
@@ -78,7 +78,7 @@ class KeywordProduct extends Product
 
     }
 
-    public function buildModelCriteria()
+    public function buildModelCriteria(): \Propel\Runtime\ActiveQuery\ModelCriteria
     {
         $search = parent::buildModelCriteria();
 
@@ -162,8 +162,7 @@ class KeywordProduct extends Product
 
     }
 
-    public function parseResults(LoopResult $results)
-    {
+    public function parseResults(LoopResult $results): \Thelia\Core\Template\Element\LoopResult {
         $complex = $this->getComplex();
         if (true === $complex) {
             return $this->parseComplex($results);

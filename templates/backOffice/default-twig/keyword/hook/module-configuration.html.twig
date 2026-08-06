@@ -1,0 +1,118 @@
+{# Rendered by Keyword\Hook\TwigBackHook on the `module.configuration` hook,
+   i.e. inside the core /admin/module/Keyword page. All rows and URLs are resolved
+   in PHP by the hook, so no routing/query happens here. #}
+<div class="card" data-testid="keyword-module-configuration">
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 class="h6 mb-0">{{ 'Keyword Groups'|trans({}, 'keyword') }}</h2>
+            {% if is_granted('CREATE', 'admin.keyword.group') %}
+                <a href="#keyword_group_creation_dialog" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-testid="keyword-group-create">
+                    <i class="bi bi-plus-lg" aria-hidden="true"></i> {{ 'Add a new keyword group'|trans({}, 'keyword') }}
+                </a>
+            {% endif %}
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-striped align-middle mb-0" data-testid="keyword-group-table">
+                {% if groups is not empty %}
+                    <thead class="table-light">
+                        <tr>
+                            <th scope="col">{{ 'ID'|trans }}</th>
+                            <th scope="col">{{ 'Title'|trans }}</th>
+                            <th scope="col">{{ 'Unique identifier'|trans({}, 'keyword') }}</th>
+                            <th scope="col" class="text-center">{{ 'Visible'|trans }}</th>
+                            <th scope="col">{{ 'Position'|trans }}</th>
+                            <th scope="col" class="text-end">{{ 'Actions'|trans }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for group in groups %}
+                            <tr data-testid="keyword-group-row">
+                                <td>{{ group.id }}</td>
+                                <td><a href="{{ group.view_url }}" title="{{ 'Browse this keyword group'|trans({}, 'keyword') }}">{{ group.title }}</a></td>
+                                <td>{{ group.code }}</td>
+                                <td class="text-center">
+                                    {% if is_granted('UPDATE', 'admin.keyword.group') %}
+                                        <a href="{{ group.toggle_url }}" class="btn btn-sm {{ group.visible ? 'btn-success' : 'btn-outline-secondary' }}" title="{{ group.visible ? 'Yes'|trans : 'No'|trans }}">
+                                            <i class="bi {{ group.visible ? 'bi-check-lg' : 'bi-x-lg' }}" aria-hidden="true"></i>
+                                        </a>
+                                    {% else %}
+                                        <i class="bi {{ group.visible ? 'bi-check-lg text-success' : 'bi-x-lg text-muted' }}" aria-hidden="true"></i>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {{ group.position }}
+                                    {% if is_granted('UPDATE', 'admin.keyword.group') %}
+                                        <div class="btn-group btn-group-sm ms-2">
+                                            <a href="{{ group.position_up_url }}" class="btn btn-outline-secondary" title="{{ 'Move up'|trans({}, 'keyword') }}"><i class="bi bi-arrow-up" aria-hidden="true"></i></a>
+                                            <a href="{{ group.position_down_url }}" class="btn btn-outline-secondary" title="{{ 'Move down'|trans({}, 'keyword') }}"><i class="bi bi-arrow-down" aria-hidden="true"></i></a>
+                                        </div>
+                                    {% endif %}
+                                </td>
+                                <td class="text-end">
+                                    <div class="d-inline-flex gap-1">
+                                        <a class="btn btn-sm btn-outline-secondary" title="{{ 'Browse this keyword group'|trans({}, 'keyword') }}" href="{{ group.view_url }}"><i class="bi bi-folder2-open" aria-hidden="true"></i></a>
+                                        {% if is_granted('UPDATE', 'admin.keyword.group') %}
+                                            <a class="btn btn-sm btn-outline-primary" title="{{ 'Edit this keyword group'|trans({}, 'keyword') }}" href="{{ group.edit_url }}"><i class="bi bi-pencil-square" aria-hidden="true"></i></a>
+                                        {% endif %}
+                                        {% if is_granted('DELETE', 'admin.keyword.group') %}
+                                            <a class="btn btn-sm btn-outline-danger" title="{{ 'Delete this keyword group'|trans({}, 'keyword') }}" href="#keyword_group_delete_dialog" data-bs-toggle="modal" data-keyword-group-id="{{ group.id }}"><i class="bi bi-trash" aria-hidden="true"></i></a>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                {% else %}
+                    <thead>
+                        <tr>
+                            <td class="message">
+                                <div class="alert alert-info mb-0" data-testid="keyword-group-empty">
+                                    {% if is_granted('CREATE', 'admin.keyword.group') %}
+                                        {{ 'There is no keywords group. To create a new one, click the + button above.'|trans({}, 'keyword') }}
+                                    {% else %}
+                                        {{ 'There is no keywords group.'|trans({}, 'keyword') }}
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                    </thead>
+                {% endif %}
+            </table>
+        </div>
+    </div>
+</div>
+
+{% if is_granted('CREATE', 'admin.keyword.group') %}
+    {% component 'BoCreateDialog' with {
+        id: 'keyword_group_creation_dialog',
+        title: 'Create a new keyword group'|trans({}, 'keyword'),
+        form: create_form,
+        formAction: create_form_action,
+        submitLabel: 'Save'|trans,
+        testid: 'keyword-group-create',
+    } %}
+        {% block fields %}
+            {{ form_row(create_form.title) }}
+            {{ form_row(create_form.code) }}
+            <div class="form-check mb-3">
+                {{ form_widget(create_form.visible, { attr: { class: 'form-check-input' } }) }}
+                {{ form_label(create_form.visible, null, { label_attr: { class: 'form-check-label' } }) }}
+            </div>
+            {{ form_widget(create_form.locale) }}
+            {{ form_widget(create_form.success_url) }}
+        {% endblock %}
+    {% endcomponent %}
+{% endif %}
+
+{% if is_granted('DELETE', 'admin.keyword.group') %}
+    {{ component('BoConfirmDialog', {
+        id: 'keyword_group_delete_dialog',
+        title: 'Delete keyword group'|trans({}, 'keyword'),
+        formAction: delete_form_action,
+        message: 'Do you really want to delete this keyword group and all its associations ?'|trans({}, 'keyword'),
+        testid: 'keyword-group-delete',
+        prefillTrigger: 'data-keyword-group-id',
+        prefillInput: 'keyword_group_id',
+    }) }}
+{% endif %}

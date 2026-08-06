@@ -23,42 +23,76 @@
 
 namespace Keyword;
 
-use Keyword\Model\CategoryAssociatedKeywordQuery;
-use Keyword\Model\FolderAssociatedKeywordQuery;
-use Keyword\Model\ContentAssociatedKeywordQuery;
-use Keyword\Model\KeywordGroupQuery;
-use Keyword\Model\KeywordQuery;
-use Keyword\Model\ProductAssociatedKeywordQuery;
 use Propel\Runtime\Connection\ConnectionInterface;
-use Thelia\Install\Database;
+use Propel\Runtime\Propel;
+use Thelia\Core\Install\Database;
 use Thelia\Module\BaseModule;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ServicesConfigurator;
 
 
 class Keyword extends BaseModule
 {
-    public function postActivation(ConnectionInterface $con = null) :void
+    public function postActivation(?ConnectionInterface $con = null): void
     {
-
-        try {
-            CategoryAssociatedKeywordQuery::create()->findOne();
-            ContentAssociatedKeywordQuery::create()->findOne();
-            FolderAssociatedKeywordQuery::create()->findOne();
-            ProductAssociatedKeywordQuery::create()->findOne();
-            KeywordQuery::create()->findOne();
-            KeywordGroupQuery::create()->findOne();
-        } catch (\Exception $e) {
-            $database = new Database($con);
-            $database->insertSql(null, [__DIR__ . "/Config/thelia.sql"]);
-        }
-
+        // Garde explicite plutot qu'un try/catch sur six requetes Propel : le catch
+        // large attrapait aussi les pannes de connexion et rejouait alors le SQL
+        // d'installation (qui contient des DROP TABLE) sur une base peuplee.
+        $this->installSchemaOnce($con, 'keyword_group', [__DIR__.'/Config/thelia.sql']);
     }
 
     public static function configureServices(ServicesConfigurator $servicesConfigurator): void
     {
         $servicesConfigurator->load(self::getModuleCode().'\\', __DIR__)
-            ->exclude([THELIA_MODULE_DIR . ucfirst(self::getModuleCode()). "/I18n/*"])
+            ->exclude([
+                __DIR__.'/I18n',
+                __DIR__.'/Config',
+                __DIR__.'/Tests',
+                __FILE__,
+            ])
             ->autowire(true)
             ->autoconfigure(true);
+    }
+
+    /**
+     * Installation du schema idempotente ET sans risque sur une base deja peuplee :
+     * Config/thelia.sql commence par des DROP TABLE, le rejouer detruit les donnees.
+     * Garde en deux temps : drapeau is_initialized, sinon presence reelle de la table
+     * temoin (rattrapage automatique du drapeau sur un parc existant).
+     *
+     * @param list<string> $sqlFiles
+     */
+    private function installSchemaOnce(?ConnectionInterface $con, string $witnessTable, array $sqlFiles): void
+    {
+        if (static::getConfigValue('is_initialized', false)) {
+            return;
+        }
+
+        if ($this->tableExists($witnessTable, $con)) {
+            static::setConfigValue('is_initialized', true);
+
+            return;
+        }
+
+        (new Database($con))->insertSql(null, $sqlFiles);
+
+        static::setConfigValue('is_initialized', true);
+    }
+
+    private function tableExists(string $table, ?ConnectionInterface $con): bool
+    {
+        $con ??= Propel::getReadConnection('TheliaMain');
+
+        try {
+            $statement = $con->prepare(
+                'SELECT COUNT(*) FROM information_schema.tables
+                 WHERE table_schema = DATABASE() AND table_name = :table'
+            );
+            $statement->execute(['table' => $table]);
+
+            return 0 < (int) $statement->fetchColumn();
+        } catch (\Throwable) {
+            // Ne rien faire est toujours moins grave que rejouer des DROP TABLE.
+            return true;
+        }
     }
 }

@@ -77,7 +77,7 @@ class KeywordModificationForm extends KeywordCreationForm
         }
     }
 
-    public static function getName()
+    public static function getName(): string
     {
         return "admin_keyword_modification";
     }

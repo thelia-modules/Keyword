@@ -1,0 +1,24 @@
+{# Prev/next navigation button pair, replacing the Smarty HAS_PREVIOUS/HAS_NEXT arrows.
+
+   Vars: previous_url (string|null), next_url (string|null),
+         previous_label, next_label (already translated) #}
+<div class="btn-group" role="group" data-testid="keyword-prev-next">
+    {% if previous_url %}
+        <a href="{{ previous_url }}" class="btn btn-outline-secondary" title="{{ previous_label }}">
+            <i class="bi bi-arrow-left" aria-hidden="true"></i>
+        </a>
+    {% else %}
+        <span class="btn btn-outline-secondary disabled">
+            <i class="bi bi-arrow-left" aria-hidden="true"></i>
+        </span>
+    {% endif %}
+    {% if next_url %}
+        <a href="{{ next_url }}" class="btn btn-outline-secondary" title="{{ next_label }}">
+            <i class="bi bi-arrow-right" aria-hidden="true"></i>
+        </a>
+    {% else %}
+        <span class="btn btn-outline-secondary disabled">
+            <i class="bi bi-arrow-right" aria-hidden="true"></i>
+        </span>
+    {% endif %}
+</div>
