@@ -53,7 +53,7 @@ class KeywordGroup extends BaseI18nLoop implements PropelSearchLoopInterface
     /**
      * @return ArgumentCollection
      */
-    protected function getArgDefinitions()
+    protected function getArgDefinitions(): \Thelia\Core\Template\Loop\Argument\ArgumentCollection
     {
         return new ArgumentCollection(
             Argument::createIntListTypeArgument('id'),
@@ -74,7 +74,7 @@ class KeywordGroup extends BaseI18nLoop implements PropelSearchLoopInterface
         );
     }
 
-    public function buildModelCriteria()
+    public function buildModelCriteria(): \Propel\Runtime\ActiveQuery\ModelCriteria
     {
 
         $search = KeywordGroupQuery::create();
@@ -118,7 +118,7 @@ class KeywordGroup extends BaseI18nLoop implements PropelSearchLoopInterface
                         throw new \InvalidArgumentException('Given_id order cannot be set without `id` argument');
                     foreach ($id as $singleId) {
                         $givenIdMatched = 'given_id_matched_' . $singleId;
-                        $search->withColumn(ContentTableMap::ID . "='$singleId'", $givenIdMatched);
+                        $search->withColumn(ContentTableMap::COL_ID . "='$singleId'", $givenIdMatched);
                         $search->orderBy($givenIdMatched, Criteria::DESC);
                     }
                     break;
@@ -133,7 +133,7 @@ class KeywordGroup extends BaseI18nLoop implements PropelSearchLoopInterface
 
     }
 
-    public function parseResults(LoopResult $loopResult)
+    public function parseResults(LoopResult $loopResult): LoopResult
     {
         foreach ($loopResult->getResultDataCollection() as $keywordGroup) {
 

@@ -63,7 +63,7 @@ class KeywordGroupModificationForm extends KeywordGroupCreationForm
         }
     }
 
-    public static function getName()
+    public static function getName(): string
     {
         return "admin_keyword_group_modification";
     }

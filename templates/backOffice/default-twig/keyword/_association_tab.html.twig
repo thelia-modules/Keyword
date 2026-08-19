@@ -1,0 +1,68 @@
+{# One "association" tab pane (folders / contents / categories / products) of the keyword view page.
+
+   Vars:
+     rows                array of { id, title, image_url, position, edit_url, browse_url (nullable), position_up_url, position_down_url, can_edit }
+     empty_message        already translated
+     title_col_label       already translated
+     can_edit_position    bool: show the position up/down links
+     testid                base data-testid #}
+<div class="table-responsive">
+    <table class="table table-striped align-middle" data-testid="{{ testid }}-table">
+        <caption>{{ title_col_label }}</caption>
+        {% if rows is not empty %}
+            <thead class="table-light">
+                <tr>
+                    <th scope="col">{{ 'ID'|trans }}</th>
+                    <th scope="col">&nbsp;</th>
+                    <th scope="col">{{ title_col_label }}</th>
+                    <th scope="col">{{ 'Position'|trans }}</th>
+                    <th scope="col" class="text-end">{{ 'Actions'|trans }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in rows %}
+                    <tr data-testid="{{ testid }}-row">
+                        <td>{{ row.id }}</td>
+                        <td>
+                            {% if row.image_url %}
+                                <a href="{{ row.browse_url ?? row.edit_url }}" title="{{ row.title }}">
+                                    <img class="img-thumbnail" src="{{ row.image_url }}" alt="{{ row.title }}" width="50" height="50">
+                                </a>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{{ row.browse_url ?? row.edit_url }}">{{ row.title }}</a>
+                        </td>
+                        <td>
+                            {{ row.position }}
+                            {% if can_edit_position %}
+                                <div class="btn-group btn-group-sm ms-2">
+                                    <a href="{{ row.position_up_url }}" class="btn btn-outline-secondary" title="{{ 'Move up'|trans({}, 'keyword') }}"><i class="bi bi-arrow-up" aria-hidden="true"></i></a>
+                                    <a href="{{ row.position_down_url }}" class="btn btn-outline-secondary" title="{{ 'Move down'|trans({}, 'keyword') }}"><i class="bi bi-arrow-down" aria-hidden="true"></i></a>
+                                </div>
+                            {% endif %}
+                        </td>
+                        <td class="text-end">
+                            <div class="d-inline-flex gap-1">
+                                {% if row.browse_url %}
+                                    <a class="btn btn-sm btn-outline-secondary" title="{{ 'Browse'|trans({}, 'keyword') }}" href="{{ row.browse_url }}"><i class="bi bi-folder2-open" aria-hidden="true"></i></a>
+                                {% endif %}
+                                {% if row.can_edit %}
+                                    <a class="btn btn-sm btn-outline-primary" title="{{ 'Edit'|trans }}" href="{{ row.edit_url }}"><i class="bi bi-pencil-square" aria-hidden="true"></i></a>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        {% else %}
+            <thead>
+                <tr>
+                    <td class="message">
+                        <div class="alert alert-info mb-0" data-testid="{{ testid }}-empty">{{ empty_message }}</div>
+                    </td>
+                </tr>
+            </thead>
+        {% endif %}
+    </table>
+</div>

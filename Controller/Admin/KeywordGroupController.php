@@ -27,22 +27,28 @@ use Keyword\Event\KeywordGroupDeleteEvent;
 use Keyword\Event\KeywordGroupEvents;
 use Keyword\Event\KeywordGroupToggleVisibilityEvent;
 use Keyword\Event\KeywordGroupUpdateEvent;
+use Keyword\Form\KeywordCreationForm;
 use Keyword\Form\KeywordGroupCreationForm;
 use Keyword\Form\KeywordGroupModificationForm;
 use Keyword\Model\KeywordGroupQuery;
+use Keyword\Model\KeywordQuery;
+use Propel\Runtime\ActiveQuery\Criteria;
+use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Thelia\Controller\Admin\AbstractCrudController;
 use Thelia\Core\Event\UpdatePositionEvent;
+use Thelia\Core\Security\AccessManager;
 use Thelia\Core\Template\ParserContext;
-use Symfony\Component\Routing\Annotation\Route;
+use Thelia\Form\BaseForm;
+use Symfony\Component\Routing\Attribute\Route;
 
 
 /**
  * Class KeywordGroupController
  * @package Keyword\Controller\Admin
  * @author Michaël Espeche <mespeche@openstudio.fr>
- * @Route("/admin/module/Keyword/group", name="address") /
  */
+#[Route('/admin/module/Keyword/group', name: 'keyword_group')]
 class KeywordGroupController extends AbstractCrudController
 {
 
@@ -63,33 +69,29 @@ class KeywordGroupController extends AbstractCrudController
         );
     }
 
-    /**
-     * @Route("/view", name="view")
-     */
+    #[Route('/view', name: 'view')]
     public function viewAction()
     {
-        if (null !== $this->getExistingObject()) {
-            $keywordGroup = $this->getExistingObject();
+        $keywordGroup = $this->getExistingObject();
 
-            return $this->render('keyword-group-view', array('keyword_group_id' => $keywordGroup->getId()));
+        if (null === $keywordGroup) {
+            return $this->pageNotFound();
         }
 
-        return $this->pageNotFound();
+        return $this->render('keyword/keyword-group-view', $this->getViewData($keywordGroup));
     }
 
     /**
      * Return the creation form for this object
      */
-    protected function getCreationForm()
-    {
+    protected function getCreationForm(): ?\Thelia\Form\BaseForm {
         return $this->createForm(KeywordGroupCreationForm::getName());
     }
 
     /**
      * Return the update form for this object
      */
-    protected function getUpdateForm()
-    {
+    protected function getUpdateForm(): ?\Thelia\Form\BaseForm {
         return $this->createForm(KeywordGroupModificationForm::getName());
     }
 
@@ -98,8 +100,7 @@ class KeywordGroupController extends AbstractCrudController
      * @param $positionValue
      * @return UpdatePositionEvent|void
      */
-    protected function createUpdatePositionEvent($positionChangeMode, $positionValue)
-    {
+    protected function createUpdatePositionEvent($positionChangeMode, $positionValue): \Thelia\Core\Event\ActionEvent {
         return new UpdatePositionEvent(
             $this->getRequest()->get('keyword_group_id', null),
             $positionChangeMode,
@@ -107,8 +108,7 @@ class KeywordGroupController extends AbstractCrudController
         );
     }
 
-    protected function createToggleVisibilityEvent()
-    {
+    protected function createToggleVisibilityEvent(): \Thelia\Core\Event\ActionEvent {
         return new KeywordGroupToggleVisibilityEvent($this->getExistingObject());
     }
 
@@ -117,9 +117,10 @@ class KeywordGroupController extends AbstractCrudController
      *
      * @param  $object
      */
-    protected function hydrateObjectForm(ParserContext $parserContext, $object)
-    {
-        // Prepare the data that will hydrate the form
+    protected function hydrateObjectForm(ParserContext $parserContext, $object): \Thelia\Form\BaseForm {
+        // Prepare the data that will hydrate the form. The Twig template no longer overrides
+        // the displayed field values on top of the form (as the Smarty render_form_field tag
+        // did) : the form itself must carry the current object values.
         $data = array(
             'id'           => $object->getId(),
             'locale'       => $object->getLocale(),
@@ -128,11 +129,12 @@ class KeywordGroupController extends AbstractCrudController
             'chapo'        => $object->getChapo(),
             'description'  => $object->getDescription(),
             'postscriptum' => $object->getPostscriptum(),
-            'visible'      => $object->getVisible()
+            'visible'      => (bool) $object->getVisible(),
+            'success_url'  => $this->getRoute('admin.keyword.group.update', ['keyword_group_id' => $object->getId()]),
         );
 
         // Setup the object form
-        return $this->createForm(KeywordGroupModificationForm::getName());
+        return $this->createForm(KeywordGroupModificationForm::getName(), FormType::class, $data);
     }
 
     /**
@@ -140,8 +142,7 @@ class KeywordGroupController extends AbstractCrudController
      *
      * @param $formData
      */
-    protected function getCreationEvent($formData)
-    {
+    protected function getCreationEvent($formData): \Thelia\Core\Event\ActionEvent|\Propel\Runtime\Event\ActiveRecordEvent|null {
 
         $keywordGroupCreateEvent = new KeywordGroupEvents(
             $formData['title'],
@@ -159,8 +160,7 @@ class KeywordGroupController extends AbstractCrudController
      *
      * @param $formData
      */
-    protected function getUpdateEvent($formData)
-    {
+    protected function getUpdateEvent($formData): \Thelia\Core\Event\ActionEvent|\Propel\Runtime\Event\ActiveRecordEvent|null {
         $keywordGroupUpdateEvent = new KeywordGroupUpdateEvent($formData['id']);
 
         $keywordGroupUpdateEvent
@@ -178,8 +178,7 @@ class KeywordGroupController extends AbstractCrudController
     /**
      * Creates the delete event with the provided form data
      */
-    protected function getDeleteEvent()
-    {
+    protected function getDeleteEvent(): \Propel\Runtime\Event\ActiveRecordEvent|\Thelia\Core\Event\ActionEvent|null {
         return new KeywordGroupDeleteEvent($this->getRequest()->get('keyword_group_id'), 0);
     }
 
@@ -189,8 +188,7 @@ class KeywordGroupController extends AbstractCrudController
      * @param  \Keyword\Event\KeywordGroupEvents $event
      * @return bool
      */
-    protected function eventContainsObject($event)
-    {
+    protected function eventContainsObject($event): bool {
         return $event->hasKeywordGroup();
     }
 
@@ -199,16 +197,14 @@ class KeywordGroupController extends AbstractCrudController
      *
      * @param $event
      */
-    protected function getObjectFromEvent($event)
-    {
+    protected function getObjectFromEvent($event): mixed {
         // TODO: Implement getObjectFromEvent() method.
     }
 
     /**
      * Load an existing object from the database
      */
-    protected function getExistingObject()
-    {
+    protected function getExistingObject(): ?\Propel\Runtime\ActiveRecord\ActiveRecordInterface {
         $keywordGroup = KeywordGroupQuery::create()
             ->findOneById($this->getRequest()->get('keyword_group_id', 0));
 
@@ -225,8 +221,7 @@ class KeywordGroupController extends AbstractCrudController
      *
      * @param $object
      */
-    protected function getObjectLabel($object)
-    {
+    protected function getObjectLabel($object): ?string {
         // TODO: Implement getObjectLabel() method.
     }
 
@@ -235,8 +230,7 @@ class KeywordGroupController extends AbstractCrudController
      *
      * @param $object
      */
-    protected function getObjectId($object)
-    {
+    protected function getObjectId($object): int {
         // TODO: Implement getObjectId() method.
     }
 
@@ -245,8 +239,7 @@ class KeywordGroupController extends AbstractCrudController
      *
      * @param $currentKeyword , if any, null otherwise.
      */
-    protected function renderListTemplate($currentKeyword)
-    {
+    protected function renderListTemplate($currentKeyword): \Symfony\Component\HttpFoundation\Response {
         return $this->render('module-configure',
             array(
                 'module_code' => 'Keyword',
@@ -265,16 +258,58 @@ class KeywordGroupController extends AbstractCrudController
     /**
      * Render the edition template
      */
-    protected function renderEditionTemplate()
-    {
-        return $this->render('keyword-group-edit', $this->getEditionArguments());
+    protected function renderEditionTemplate(): \Symfony\Component\HttpFoundation\Response {
+        $keywordGroupId = (int) $this->getRequest()->get('keyword_group_id', 0);
+        $keywordGroup = KeywordGroupQuery::create()->findPk($keywordGroupId);
+
+        if (null === $keywordGroup) {
+            return $this->pageNotFound();
+        }
+
+        $locale = $this->getCurrentEditionLocale();
+        $keywordGroup->setLocale($locale);
+
+        // The form was already hydrated (with the current values or, on a validation
+        // error redisplay, with the submitted values and errors) by hydrateObjectForm()
+        // or setupFormErrorContext(), both of which store it in the ParserContext.
+        $form = $this->getParserContext()->getForm(
+            KeywordGroupModificationForm::getName(),
+            KeywordGroupModificationForm::class,
+            FormType::class
+        );
+
+        if (!$form instanceof BaseForm) {
+            $form = $this->hydrateObjectForm($this->getParserContext(), $keywordGroup);
+        }
+
+        $previous = KeywordGroupQuery::create()
+            ->filterByPosition($keywordGroup->getPosition(), Criteria::LESS_THAN)
+            ->orderByPosition(Criteria::DESC)
+            ->findOne();
+
+        $next = KeywordGroupQuery::create()
+            ->filterByPosition($keywordGroup->getPosition(), Criteria::GREATER_THAN)
+            ->orderByPosition(Criteria::ASC)
+            ->findOne();
+
+        return $this->render('keyword/keyword-group-edit', [
+            'keyword_group' => [
+                'id' => $keywordGroup->getId(),
+                'title' => $keywordGroup->getTitle(),
+                'created_at' => $keywordGroup->getCreatedAt(),
+                'updated_at' => $keywordGroup->getUpdatedAt(),
+            ],
+            'previous_url' => $previous ? $this->getRoute('admin.keyword.group.update', ['keyword_group_id' => $previous->getId()]) : null,
+            'next_url' => $next ? $this->getRoute('admin.keyword.group.update', ['keyword_group_id' => $next->getId()]) : null,
+            'form' => $form->getForm()->createView(),
+            'form_action' => $this->getRoute('admin.keyword.group.save'),
+        ]);
     }
 
     /**
      * Redirect to the edition template
      */
-    protected function redirectToEditionTemplate()
-    {
+    protected function redirectToEditionTemplate(): \Symfony\Component\HttpFoundation\Response|\Symfony\Component\HttpFoundation\RedirectResponse {
         $args = $this->getEditionArguments();
 
         return $this->generateRedirect('/admin/module/Keyword/group/update?keyword_group_id='.$args['keyword_group_id']);
@@ -283,17 +318,88 @@ class KeywordGroupController extends AbstractCrudController
     /**
      * Redirect to the list template
      */
-    protected function redirectToListTemplate()
-    {
+    protected function redirectToListTemplate(): \Symfony\Component\HttpFoundation\Response|\Symfony\Component\HttpFoundation\RedirectResponse {
         return $this->generateRedirect('/admin/module/Keyword');
     }
 
-    protected function performAdditionalUpdateAction(EventDispatcherInterface $eventDispatcher, $updateEvent)
-    {
+    protected function performAdditionalUpdateAction(EventDispatcherInterface $eventDispatcher, $updateEvent): ?\Symfony\Component\HttpFoundation\Response {
         if ($this->getRequest()->get('save_mode') != 'stay') {
             return $this->redirectToListTemplate();
         }
 
         return null;
+    }
+
+    /**
+     * Build every piece of data displayed on the keyword group view page (breadcrumb,
+     * prev/next, rights, the keyword table and the keyword creation/delete dialogs),
+     * replacing the {loop} tags of the former Smarty template.
+     */
+    private function getViewData($keywordGroup): array
+    {
+        $locale = $this->getCurrentEditionLocale();
+        $keywordGroupId = $keywordGroup->getId();
+
+        $previous = KeywordGroupQuery::create()
+            ->filterByPosition($keywordGroup->getPosition(), Criteria::LESS_THAN)
+            ->orderByPosition(Criteria::DESC)
+            ->findOne();
+
+        $next = KeywordGroupQuery::create()
+            ->filterByPosition($keywordGroup->getPosition(), Criteria::GREATER_THAN)
+            ->orderByPosition(Criteria::ASC)
+            ->findOne();
+
+        $security = $this->getSecurityContext();
+        $canCreate = $security->isGranted(['ADMIN'], ['admin.keyword'], [], [AccessManager::CREATE]);
+        $canChange = $security->isGranted(['ADMIN'], ['admin.keyword'], [], [AccessManager::UPDATE]);
+        $canDelete = $security->isGranted(['ADMIN'], ['admin.keyword'], [], [AccessManager::DELETE]);
+
+        $keywords = [];
+
+        foreach (KeywordQuery::create()->filterByKeywordGroupId($keywordGroupId)->orderByPosition(Criteria::ASC)->find() as $keyword) {
+            $keyword->setLocale($locale);
+            $keywordId = $keyword->getId();
+
+            $keywords[] = [
+                'id' => $keywordId,
+                'title' => $keyword->getTitle(),
+                'code' => $keyword->getCode(),
+                'visible' => (bool) $keyword->getVisible(),
+                'position' => $keyword->getPosition(),
+                'view_url' => $this->getRoute('admin.keyword.view', ['keyword_id' => $keywordId]),
+                'edit_url' => $this->getRoute('admin.keyword.update', ['keyword_id' => $keywordId]),
+                'toggle_url' => $this->getRoute('admin.keyword.toggle-online', ['keyword_id' => $keywordId, 'keyword_group_id' => $keywordGroupId]),
+                'position_up_url' => $this->getRoute('admin.keyword.update-position', ['keyword_id' => $keywordId, 'keyword_group_id' => $keywordGroupId, 'mode' => 'up']),
+                'position_down_url' => $this->getRoute('admin.keyword.update-position', ['keyword_id' => $keywordId, 'keyword_group_id' => $keywordGroupId, 'mode' => 'down']),
+            ];
+        }
+
+        $createForm = null;
+
+        if ($canCreate) {
+            $createForm = $this->createForm(KeywordCreationForm::getName(), FormType::class, [
+                'locale' => $locale,
+                'visible' => true,
+                'keyword_group_id' => $keywordGroupId,
+                'success_url' => $this->getRoute('admin.keyword.group.view', ['keyword_group_id' => $keywordGroupId]),
+            ])->getForm()->createView();
+        }
+
+        return [
+            'keyword_group' => [
+                'id' => $keywordGroupId,
+                'title' => $keywordGroup->getTitle(),
+            ],
+            'previous_url' => $previous ? $this->getRoute('admin.keyword.group.view', ['keyword_group_id' => $previous->getId()]) : null,
+            'next_url' => $next ? $this->getRoute('admin.keyword.group.view', ['keyword_group_id' => $next->getId()]) : null,
+            'can_create' => $canCreate,
+            'can_change' => $canChange,
+            'can_delete' => $canDelete,
+            'keywords' => $keywords,
+            'create_form' => $createForm,
+            'create_form_action' => $this->getRoute('admin.keyword.create'),
+            'delete_form_action' => $this->getRoute('admin.keyword.delete'),
+        ];
     }
 }

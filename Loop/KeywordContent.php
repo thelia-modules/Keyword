@@ -48,7 +48,7 @@ use Thelia\Type;
  */
 class KeywordContent extends Content
 {
-    protected function getArgDefinitions()
+    protected function getArgDefinitions(): \Thelia\Core\Template\Loop\Argument\ArgumentCollection
     {
         $argument = parent::getArgDefinitions();
 
@@ -76,7 +76,7 @@ class KeywordContent extends Content
 
     }
 
-    public function buildModelCriteria()
+    public function buildModelCriteria(): \Propel\Runtime\ActiveQuery\ModelCriteria
     {
         $search = parent::buildModelCriteria();
 
@@ -160,8 +160,7 @@ class KeywordContent extends Content
 
     }
 
-    public function parseResults(LoopResult $results)
-    {
+    public function parseResults(LoopResult $results): \Thelia\Core\Template\Element\LoopResult {
         foreach ($results->getResultDataCollection() as $content) {
 
             $loopResultRow = new LoopResultRow($content);

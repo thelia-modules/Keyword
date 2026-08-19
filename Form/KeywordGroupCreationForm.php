@@ -51,6 +51,7 @@ class KeywordGroupCreationForm extends BaseForm
             ->add('code', TextType::class, array(
                     'constraints' => array(
                         new NotBlank(),
+                        new Callback([$this, 'verifyExistingCode'])
                     ),
                     'label' => Translator::getInstance()->trans('Unique identifier', array(), 'keyword'),
                     'label_attr' => array(
@@ -81,7 +82,7 @@ class KeywordGroupCreationForm extends BaseForm
         }
     }
 
-    public static function getName()
+    public static function getName(): string
     {
         return 'admin_keyword_group_creation';
     }

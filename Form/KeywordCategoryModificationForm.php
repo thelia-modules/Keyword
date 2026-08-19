@@ -44,7 +44,7 @@ class KeywordCategoryModificationForm extends BaseForm
         ;
     }
 
-    public static function getName()
+    public static function getName(): string
     {
         return 'keyword_category_modification';
     }

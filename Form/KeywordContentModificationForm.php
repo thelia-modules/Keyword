@@ -44,7 +44,7 @@ class KeywordContentModificationForm extends BaseForm
         ;
     }
 
-    public static function getName()
+    public static function getName(): string
     {
         return 'keyword_content_modification';
     }
