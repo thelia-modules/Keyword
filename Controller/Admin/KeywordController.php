@@ -45,7 +45,10 @@ use Keyword\Model\ProductAssociatedKeywordQuery;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\Exception\PropelException;
 use Symfony\Component\Form\Extension\Core\Type\FormType;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 use Thelia\Action\Image as ImageAction;
 use Thelia\Controller\Admin\AbstractCrudController;
 use Thelia\Core\Event\Image\ImageEvent;
@@ -56,6 +59,7 @@ use Thelia\Core\Security\AccessManager;
 use Thelia\Core\Template\ParserContext;
 use Thelia\Form\BaseForm;
 use Thelia\Log\Tlog;
+use Thelia\Tools\TokenProvider;
 use Thelia\Model\Base\FolderQuery;
 use Thelia\Form\Exception\FormValidationException;
 use Thelia\Model\CategoryImageQuery;
@@ -74,7 +78,7 @@ use Symfony\Component\Routing\Attribute\Route;
  * @package Keyword\Controller\Admin
  * @author Michaël Espeche <mespeche@openstudio.fr>
  */
-#[Route('/admin', name: 'keyword')]
+#[Route('/admin', name: 'admin.keyword')]
 class KeywordController extends AbstractCrudController
 {
     public function __construct()
@@ -94,7 +98,59 @@ class KeywordController extends AbstractCrudController
         );
     }
 
-    #[Route('/module/Keyword/view', name: 'view')]
+    /*
+     * The CRUD actions themselves live in AbstractCrudController. PHP attributes are not
+     * inherited by Symfony's route loader, so each one is re-declared here as a thin
+     * override carrying its route. These names are the module's public route ids, kept
+     * identical to the ones the removed Config/routing.xml used to declare.
+     */
+
+    #[Route('/module/Keyword/create', name: '.create')]
+    public function createAction(
+        EventDispatcherInterface $eventDispatcher,
+        TranslatorInterface $translator,
+    ): RedirectResponse|Response {
+        return parent::createAction($eventDispatcher, $translator);
+    }
+
+    #[Route('/module/Keyword/update', name: '.update')]
+    public function updateAction(ParserContext $parserContext): Response
+    {
+        return parent::updateAction($parserContext);
+    }
+
+    #[Route('/module/Keyword/save', name: '.save')]
+    public function processUpdateAction(
+        Request $request,
+        EventDispatcherInterface $eventDispatcher,
+        TranslatorInterface $translator,
+    ): Response|RedirectResponse {
+        return parent::processUpdateAction($request, $eventDispatcher, $translator);
+    }
+
+    #[Route('/module/Keyword/delete', name: '.delete')]
+    public function deleteAction(
+        Request $request,
+        TokenProvider $tokenProvider,
+        EventDispatcherInterface $eventDispatcher,
+        ParserContext $parserContext,
+    ): Response|RedirectResponse {
+        return parent::deleteAction($request, $tokenProvider, $eventDispatcher, $parserContext);
+    }
+
+    #[Route('/module/Keyword/toggle-online', name: '.toggle-online')]
+    public function setToggleVisibilityAction(EventDispatcherInterface $eventDispatcher): ?Response
+    {
+        return parent::setToggleVisibilityAction($eventDispatcher);
+    }
+
+    #[Route('/module/Keyword/update-position', name: '.update-position')]
+    public function updatePositionAction(Request $request, EventDispatcherInterface $eventDispatcher): mixed
+    {
+        return parent::updatePositionAction($request, $eventDispatcher);
+    }
+
+    #[Route('/module/Keyword/view', name: '.view')]
     public function viewAction(EventDispatcherInterface $dispatcher)
     {
         $keyword = $this->getExistingObject();
@@ -106,7 +162,7 @@ class KeywordController extends AbstractCrudController
         return $this->render('keyword/keyword-view', $this->getViewData($keyword, $dispatcher));
     }
 
-    #[Route('/folders/update/{folder_id}/keyword', name: 'update_keyword_folder_association')]
+    #[Route('/folders/update/{folder_id}/keyword', name: '.folders.association.update', requirements: ['folder_id' => '\\d+'])]
     public function updateKeywordFolderAssociation(
         EventDispatcherInterface $dispatcher,
         ParserContext            $parserContext,
@@ -160,7 +216,7 @@ class KeywordController extends AbstractCrudController
         return $this->generateErrorRedirect($keywordFolderUpdateForm);
     }
 
-    #[Route('/content/update/{content_id}/keyword', name: 'update_keyword_content_association')]
+    #[Route('/content/update/{content_id}/keyword', name: '.contents.association.update', requirements: ['content_id' => '\\d+'])]
     public function updateKeywordContentAssociation(
         EventDispatcherInterface $dispatcher,
         ParserContext            $parserContext,
@@ -216,7 +272,7 @@ class KeywordController extends AbstractCrudController
         return $this->generateErrorRedirect($keywordContentUpdateForm);
     }
 
-    #[Route('/categories/update/{category_id}/keyword', name: 'update_keyword_category_association')]
+    #[Route('/categories/update/{category_id}/keyword', name: '.categories.association.update', requirements: ['category_id' => '\\d+'])]
     public function updateKeywordCategoryAssociation(
         EventDispatcherInterface $dispatcher,
         ParserContext            $parserContext,
@@ -270,7 +326,7 @@ class KeywordController extends AbstractCrudController
         return $this->generateErrorRedirect($keywordCategoryUpdateForm);
     }
 
-    #[Route('/product/update/{product_id}/keyword', name: 'update_keyword_product_association')]
+    #[Route('/product/update/{product_id}/keyword', name: '.products.association.update', requirements: ['product_id' => '\\d+'])]
     public function updateKeywordProductAssociation(
         EventDispatcherInterface $dispatcher,
         ParserContext            $parserContext,
@@ -327,7 +383,7 @@ class KeywordController extends AbstractCrudController
     /**
      * Update keyword object position
      */
-    #[Route('/module/Keyword/{object}/update-position', name: 'update_object_position_action')]
+    #[Route('/module/Keyword/{object}/update-position', name: '.folder.update-position', requirements: ['object' => 'folder|content|category|product'])]
     public function updateObjectPositionAction(EventDispatcherInterface $dispatcher, Request $request)
     {
         // Check current user authorization
@@ -662,10 +718,9 @@ class KeywordController extends AbstractCrudController
      * Redirect to the list template
      */
     protected function redirectToListTemplate(): \Symfony\Component\HttpFoundation\Response|\Symfony\Component\HttpFoundation\RedirectResponse {
-        // Set the module router to use module routes
-        $this->setCurrentRouter("router.keyword");
-
-        // Redirect to parent keyword group list
+        // Redirect to parent keyword group list. Thelia 3 has no per-module router
+        // ("router.keyword" never existed here): the module routes are served by the
+        // admin router, which is the default one for an admin controller.
         return $this->generateRedirectFromRoute(
             'admin.keyword.group.view',
             array('keyword_group_id' => $this->getKeywordGroupId())

@@ -34,12 +34,17 @@ use Keyword\Model\KeywordGroupQuery;
 use Keyword\Model\KeywordQuery;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Symfony\Component\Form\Extension\Core\Type\FormType;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 use Thelia\Controller\Admin\AbstractCrudController;
 use Thelia\Core\Event\UpdatePositionEvent;
+use Thelia\Core\HttpFoundation\Request;
 use Thelia\Core\Security\AccessManager;
 use Thelia\Core\Template\ParserContext;
 use Thelia\Form\BaseForm;
+use Thelia\Tools\TokenProvider;
 use Symfony\Component\Routing\Attribute\Route;
 
 
@@ -48,7 +53,7 @@ use Symfony\Component\Routing\Attribute\Route;
  * @package Keyword\Controller\Admin
  * @author Michaël Espeche <mespeche@openstudio.fr>
  */
-#[Route('/admin/module/Keyword/group', name: 'keyword_group')]
+#[Route('/admin/module/Keyword/group', name: 'admin.keyword.group')]
 class KeywordGroupController extends AbstractCrudController
 {
 
@@ -69,7 +74,59 @@ class KeywordGroupController extends AbstractCrudController
         );
     }
 
-    #[Route('/view', name: 'view')]
+    /*
+     * The CRUD actions themselves live in AbstractCrudController. PHP attributes are not
+     * inherited by Symfony's route loader, so each one is re-declared here as a thin
+     * override carrying its route. These names are the module's public route ids, kept
+     * identical to the ones the removed Config/routing.xml used to declare.
+     */
+
+    #[Route('/create', name: '.create')]
+    public function createAction(
+        EventDispatcherInterface $eventDispatcher,
+        TranslatorInterface $translator,
+    ): RedirectResponse|Response {
+        return parent::createAction($eventDispatcher, $translator);
+    }
+
+    #[Route('/update', name: '.update')]
+    public function updateAction(ParserContext $parserContext): Response
+    {
+        return parent::updateAction($parserContext);
+    }
+
+    #[Route('/save', name: '.save')]
+    public function processUpdateAction(
+        Request $request,
+        EventDispatcherInterface $eventDispatcher,
+        TranslatorInterface $translator,
+    ): Response|RedirectResponse {
+        return parent::processUpdateAction($request, $eventDispatcher, $translator);
+    }
+
+    #[Route('/delete', name: '.delete')]
+    public function deleteAction(
+        Request $request,
+        TokenProvider $tokenProvider,
+        EventDispatcherInterface $eventDispatcher,
+        ParserContext $parserContext,
+    ): Response|RedirectResponse {
+        return parent::deleteAction($request, $tokenProvider, $eventDispatcher, $parserContext);
+    }
+
+    #[Route('/toggle-online', name: '.toggle-online')]
+    public function setToggleVisibilityAction(EventDispatcherInterface $eventDispatcher): ?Response
+    {
+        return parent::setToggleVisibilityAction($eventDispatcher);
+    }
+
+    #[Route('/update-position', name: '.update-position')]
+    public function updatePositionAction(Request $request, EventDispatcherInterface $eventDispatcher): mixed
+    {
+        return parent::updatePositionAction($request, $eventDispatcher);
+    }
+
+    #[Route('/view', name: '.view')]
     public function viewAction()
     {
         $keywordGroup = $this->getExistingObject();
