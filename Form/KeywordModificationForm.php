@@ -66,7 +66,8 @@ class KeywordModificationForm extends KeywordCreationForm
 
     public function verifyExistingCode($value, ExecutionContextInterface $context)
     {
-        $keywordId = $this->getRequest()->get('keyword_id');
+        // Validated only on the POST submit of the edit form, which carries keyword_id as a hidden input.
+        $keywordId = $this->getRequest()->request->get('keyword_id');
         $keywordUpdated = KeywordQuery::create()->findPk($keywordId);
 
         // If the sent code isn't identical to the keyword code being updated

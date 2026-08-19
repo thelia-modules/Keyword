@@ -391,7 +391,7 @@ class KeywordController extends AbstractCrudController
             return $response;
 
         try {
-            $mode = $request->get('mode', null);
+            $mode = $request->query->get('mode');
 
             if ($mode == 'up')
                 $mode = UpdatePositionEvent::POSITION_UP;
@@ -400,8 +400,8 @@ class KeywordController extends AbstractCrudController
             else
                 $mode = UpdatePositionEvent::POSITION_ABSOLUTE;
 
-            $position = $request->get('position', null);
-            $object = $request->get('object');
+            $position = $request->query->get('position');
+            $object = $request->attributes->get('object');
 
             $event = $this->createObjectUpdatePositionEvent($request, $mode, $position, $object);
 
@@ -412,7 +412,7 @@ class KeywordController extends AbstractCrudController
             return $this->errorPage($ex);
         }
 
-        $keywordId = $request->get('keyword_id');
+        $keywordId = $request->query->get('keyword_id');
 
         return $this->generateRedirect('/module/Keyword/view?keyword_id=' . $keywordId);
     }
@@ -425,9 +425,9 @@ class KeywordController extends AbstractCrudController
     protected function createObjectUpdatePositionEvent(Request $request, $positionChangeMode, $positionValue, $object)
     {
         return new KeywordUpdateObjectPositionEvent(
-            $request->get('keyword_id', null),
+            $request->query->get('keyword_id'),
             $object,
-            $request->get("$object" . '_id', null),
+            $request->query->get($object.'_id'),
             $positionChangeMode,
             $positionValue
         );
@@ -440,7 +440,7 @@ class KeywordController extends AbstractCrudController
      */
     protected function createUpdatePositionEvent($positionChangeMode, $positionValue): \Thelia\Core\Event\ActionEvent {
         return new UpdatePositionEvent(
-            $this->getRequest()->get('keyword_id', null),
+            $this->requestValue('keyword_id'),
             $positionChangeMode,
             $positionValue
         );
@@ -458,6 +458,20 @@ class KeywordController extends AbstractCrudController
         );
 
         return $keywordAssociationEvent;
+    }
+
+    /**
+     * Reads a scalar parameter from the POST body first, then from the query string.
+     *
+     * The keyword screens are reached both by GET links (?keyword_id=...) and by POST form
+     * submits carrying the same field as a hidden input. Request::get(), which used to hide
+     * that difference, is deprecated since Symfony 7.4.
+     */
+    private function requestValue(string $key, mixed $default = null): mixed
+    {
+        $request = $this->getRequest();
+
+        return $request->request->get($key) ?? $request->query->get($key) ?? $default;
     }
 
     /**
@@ -548,7 +562,7 @@ class KeywordController extends AbstractCrudController
      * Creates the delete event with the provided form data
      */
     protected function getDeleteEvent(): \Propel\Runtime\Event\ActiveRecordEvent|\Thelia\Core\Event\ActionEvent|null {
-        return new KeywordDeleteEvent($this->getRequest()->get('keyword_id'), 0);
+        return new KeywordDeleteEvent($this->requestValue('keyword_id'), 0);
     }
 
     /**
@@ -575,7 +589,7 @@ class KeywordController extends AbstractCrudController
      */
     protected function getExistingObject(): ?\Propel\Runtime\ActiveRecord\ActiveRecordInterface {
         $keyword = KeywordQuery::create()
-            ->findOneById($this->getRequest()->get('keyword_id', 0));
+            ->findOneById($this->requestValue('keyword_id', 0));
 
         if (null !== $keyword) {
             $keyword->setLocale($this->getCurrentEditionLocale());
@@ -609,15 +623,15 @@ class KeywordController extends AbstractCrudController
      * @param $currentKeyword , if any, null otherwise.
      */
     protected function renderListTemplate($currentKeyword): \Symfony\Component\HttpFoundation\Response {
-        $request = $this->getRequest()->get('admin_keyword_creation');
-        if (isset($request['keyword_group_id'])) {
+        $submittedData = $this->getRequest()->request->all(KeywordCreationForm::getName());
+        if (isset($submittedData['keyword_group_id'])) {
             // Re-display the keyword group page the creation dialog was opened from.
             // The validation error is kept in session by ParserContext::addForm() and will
             // resurface if the dialog is reopened, mirroring the rest of this back-office's
             // create-dialog error handling (e.g. configuration/state/list.html.twig).
             return $this->generateRedirectFromRoute(
                 'admin.keyword.group.view',
-                array('keyword_group_id' => $request['keyword_group_id'])
+                array('keyword_group_id' => $submittedData['keyword_group_id'])
             );
         } else {
             return $this->generateRedirect('/admin/module/Keyword');
@@ -628,7 +642,7 @@ class KeywordController extends AbstractCrudController
     protected function getEditionArguments()
     {
         return array(
-            'keyword_id' => $this->getRequest()->get('keyword_id', 0)
+            'keyword_id' => $this->requestValue('keyword_id', 0)
         );
     }
 
@@ -636,7 +650,7 @@ class KeywordController extends AbstractCrudController
      * Render the edition template
      */
     protected function renderEditionTemplate(): \Symfony\Component\HttpFoundation\Response {
-        $keywordId = (int) $this->getRequest()->get('keyword_id', 0);
+        $keywordId = (int) $this->requestValue('keyword_id', 0);
         $keyword = KeywordQuery::create()->findPk($keywordId);
 
         if (null === $keyword) {
@@ -709,7 +723,7 @@ class KeywordController extends AbstractCrudController
     protected function getKeywordGroupId()
     {
 
-        $keywordGroupId = $this->getRequest()->get('keyword_group_id', null);
+        $keywordGroupId = $this->requestValue('keyword_group_id');
 
         return $keywordGroupId != null ? $keywordGroupId : 0;
     }
@@ -729,7 +743,7 @@ class KeywordController extends AbstractCrudController
     }
 
     protected function performAdditionalUpdateAction(EventDispatcherInterface $eventDispatcher, $updateEvent): ?\Symfony\Component\HttpFoundation\Response {
-        if ($this->getRequest()->get('save_mode') != 'stay') {
+        if ($this->requestValue('save_mode') != 'stay') {
             return $this->redirectToListTemplate();
         }
     }
@@ -762,7 +776,7 @@ class KeywordController extends AbstractCrudController
             'keyword_group_view_url' => $this->getRoute('admin.keyword.group.view', ['keyword_group_id' => $keyword->getKeywordGroupId()]),
             'previous_url' => $previousId ? $this->getRoute('admin.keyword.view', ['keyword_id' => $previousId]) : null,
             'next_url' => $nextId ? $this->getRoute('admin.keyword.view', ['keyword_id' => $nextId]) : null,
-            'active_tab' => (string) $this->getRequest()->get('tab', 'folder'),
+            'active_tab' => (string) $this->requestValue('tab', 'folder'),
             'can_edit_position' => $canEditPosition,
             'folders' => $this->buildFolderAssociationRows($dispatcher, $keywordId, $locale),
             'contents' => $this->buildContentAssociationRows($dispatcher, $keywordId, $locale),

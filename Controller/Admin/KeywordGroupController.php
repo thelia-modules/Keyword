@@ -153,13 +153,27 @@ class KeywordGroupController extends AbstractCrudController
     }
 
     /**
+     * Reads a scalar parameter from the POST body first, then from the query string.
+     *
+     * The keyword group screens are reached both by GET links (?keyword_group_id=...) and by
+     * POST form submits carrying the same field as a hidden input. Request::get(), which used
+     * to hide that difference, is deprecated since Symfony 7.4.
+     */
+    private function requestValue(string $key, mixed $default = null): mixed
+    {
+        $request = $this->getRequest();
+
+        return $request->request->get($key) ?? $request->query->get($key) ?? $default;
+    }
+
+    /**
      * @param $positionChangeMode
      * @param $positionValue
      * @return UpdatePositionEvent|void
      */
     protected function createUpdatePositionEvent($positionChangeMode, $positionValue): \Thelia\Core\Event\ActionEvent {
         return new UpdatePositionEvent(
-            $this->getRequest()->get('keyword_group_id', null),
+            $this->requestValue('keyword_group_id'),
             $positionChangeMode,
             $positionValue
         );
@@ -236,7 +250,7 @@ class KeywordGroupController extends AbstractCrudController
      * Creates the delete event with the provided form data
      */
     protected function getDeleteEvent(): \Propel\Runtime\Event\ActiveRecordEvent|\Thelia\Core\Event\ActionEvent|null {
-        return new KeywordGroupDeleteEvent($this->getRequest()->get('keyword_group_id'), 0);
+        return new KeywordGroupDeleteEvent($this->requestValue('keyword_group_id'), 0);
     }
 
     /**
@@ -263,7 +277,7 @@ class KeywordGroupController extends AbstractCrudController
      */
     protected function getExistingObject(): ?\Propel\Runtime\ActiveRecord\ActiveRecordInterface {
         $keywordGroup = KeywordGroupQuery::create()
-            ->findOneById($this->getRequest()->get('keyword_group_id', 0));
+            ->findOneById($this->requestValue('keyword_group_id', 0));
 
         if (null !== $keywordGroup) {
             $keywordGroup->setLocale($this->getCurrentEditionLocale());
@@ -308,7 +322,7 @@ class KeywordGroupController extends AbstractCrudController
     protected function getEditionArguments()
     {
         return array(
-            'keyword_group_id' => $this->getRequest()->get('keyword_group_id', 0)
+            'keyword_group_id' => $this->requestValue('keyword_group_id', 0)
         );
     }
 
@@ -316,7 +330,7 @@ class KeywordGroupController extends AbstractCrudController
      * Render the edition template
      */
     protected function renderEditionTemplate(): \Symfony\Component\HttpFoundation\Response {
-        $keywordGroupId = (int) $this->getRequest()->get('keyword_group_id', 0);
+        $keywordGroupId = (int) $this->requestValue('keyword_group_id', 0);
         $keywordGroup = KeywordGroupQuery::create()->findPk($keywordGroupId);
 
         if (null === $keywordGroup) {
@@ -380,7 +394,7 @@ class KeywordGroupController extends AbstractCrudController
     }
 
     protected function performAdditionalUpdateAction(EventDispatcherInterface $eventDispatcher, $updateEvent): ?\Symfony\Component\HttpFoundation\Response {
-        if ($this->getRequest()->get('save_mode') != 'stay') {
+        if ($this->requestValue('save_mode') != 'stay') {
             return $this->redirectToListTemplate();
         }
 

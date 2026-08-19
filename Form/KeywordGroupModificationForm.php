@@ -52,7 +52,8 @@ class KeywordGroupModificationForm extends KeywordGroupCreationForm
 
     public function verifyExistingCode($value, ExecutionContextInterface $context)
     {
-        $keywordGroupId = $this->getRequest()->get('keyword_group_id');
+        // Validated only on the POST submit of the edit form, which carries keyword_group_id as a hidden input.
+        $keywordGroupId = $this->getRequest()->request->get('keyword_group_id');
         $keywordGroupUpdated = KeywordGroupQuery::create()->findPk($keywordGroupId);
 
         // If the sent code isn't identical to the keyword group code being updated
