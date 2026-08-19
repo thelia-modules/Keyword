@@ -4,30 +4,14 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://thelia.net/schema/dic/config http://thelia.net/schema/dic/config/thelia-1.0.xsd">
 
-    <loops>
-        <loop name="keyword_content" class="Keyword\Loop\KeywordContent" />
-        <loop name="keyword_folder" class="Keyword\Loop\KeywordFolder" />
-        <loop name="keyword_category" class="Keyword\Loop\KeywordCategory" />
-        <loop name="keyword_product" class="Keyword\Loop\KeywordProduct" />
-        <loop name="keyword" class="Keyword\Loop\Keyword" />
-        <loop name="keyword_group" class="Keyword\Loop\KeywordGroup" />
-    </loops>
+    <!-- Nothing to declare here: in Thelia 3 loops, forms and hooks are discovered from the
+         services registered by Keyword::configureServices().
 
-    <forms>
-        <form name="keyword_admin_folder_modification" class="Keyword\Form\KeywordFolderModificationForm"/>
-        <form name="keyword_admin_content_modification" class="Keyword\Form\KeywordContentModificationForm"/>
-        <form name="keyword_admin_category_modification" class="Keyword\Form\KeywordCategoryModificationForm"/>
-        <form name="keyword_admin_product_modification" class="Keyword\Form\KeywordProductModificationForm"/>
-
-        <form name="keyword_group_admin_creation" class="Keyword\Form\KeywordGroupCreationForm"/>
-        <form name="keyword_group_admin_modification" class="Keyword\Form\KeywordGroupModificationForm"/>
-
-        <form name="keyword_admin_creation" class="Keyword\Form\KeywordCreationForm"/>
-        <form name="keyword_admin_modification" class="Keyword\Form\KeywordModificationForm"/>
-    </forms>
-
-    <!-- Les hooks back-office sont enregistrés par Keyword\Hook\TwigBackHook::getSubscribedHooks()
-         (auto-discovery Thelia 3). L'ancienne déclaration XML instanciait BackHookManager sans
-         autowiring : son container jamais initialisé faisait silencieusement disparaître tous
-         les fragments du hook. -->
+         - Loops keep their historical names, which the auto-discovery derives from the class
+           short name (Keyword\Loop\KeywordContent -> keyword_content).
+         - Forms keep the names returned by their own getName(). The former <forms> aliases
+           (keyword_admin_*) only existed for the removed Smarty back-office templates.
+         - Hooks are registered by Keyword\Hook\TwigBackHook::getSubscribedHooks(). The old XML
+           declaration instantiated BackHookManager without autowiring: its container was never
+           initialized, which made every fragment of the hook silently disappear. -->
 </config>
