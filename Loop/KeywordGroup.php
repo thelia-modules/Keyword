@@ -24,6 +24,7 @@
 namespace Keyword\Loop;
 
 use Keyword\Model\KeywordGroupQuery;
+use Keyword\Model\Map\KeywordGroupTableMap;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Thelia\Core\Template\Element\BaseI18nLoop;
 use Thelia\Core\Template\Element\LoopResult;
@@ -118,7 +119,7 @@ class KeywordGroup extends BaseI18nLoop implements PropelSearchLoopInterface
                         throw new \InvalidArgumentException('Given_id order cannot be set without `id` argument');
                     foreach ($id as $singleId) {
                         $givenIdMatched = 'given_id_matched_' . $singleId;
-                        $search->withColumn(ContentTableMap::COL_ID . "='$singleId'", $givenIdMatched);
+                        $search->withColumn(KeywordGroupTableMap::COL_ID . "='$singleId'", $givenIdMatched);
                         $search->orderBy($givenIdMatched, Criteria::DESC);
                     }
                     break;
