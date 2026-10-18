@@ -26,7 +26,7 @@ namespace Keyword\Form;
 use Keyword\Model\KeywordGroupQuery;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Validator\Constraints\GreaterThan;
-use Symfony\Component\Validator\ExecutionContextInterface;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Thelia\Form\StandardDescriptionFieldsTrait;
 
 /**
