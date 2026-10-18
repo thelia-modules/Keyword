@@ -269,7 +269,7 @@ class KeywordGroupController extends AbstractCrudController
      * @param $event
      */
     protected function getObjectFromEvent($event): mixed {
-        // TODO: Implement getObjectFromEvent() method.
+        return $event->hasKeywordGroup() ? $event->getKeywordGroup() : null;
     }
 
     /**
@@ -293,7 +293,7 @@ class KeywordGroupController extends AbstractCrudController
      * @param $object
      */
     protected function getObjectLabel($object): ?string {
-        // TODO: Implement getObjectLabel() method.
+        return $object->getTitle();
     }
 
     /**
@@ -302,7 +302,7 @@ class KeywordGroupController extends AbstractCrudController
      * @param $object
      */
     protected function getObjectId($object): int {
-        // TODO: Implement getObjectId() method.
+        return $object->getId();
     }
 
     /**

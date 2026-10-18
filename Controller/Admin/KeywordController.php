@@ -581,7 +581,7 @@ class KeywordController extends AbstractCrudController
      * @param $createEvent
      */
     protected function getObjectFromEvent($event): mixed {
-        // TODO: Implement getObjectFromEvent() method.
+        return $event->hasKeyword() ? $event->getKeyword() : null;
     }
 
     /**
@@ -605,7 +605,7 @@ class KeywordController extends AbstractCrudController
      * @param $object
      */
     protected function getObjectLabel($object): ?string {
-        // TODO: Implement getObjectLabel() method.
+        return $object->getTitle();
     }
 
     /**
@@ -614,7 +614,7 @@ class KeywordController extends AbstractCrudController
      * @param $object
      */
     protected function getObjectId($object): int {
-        // TODO: Implement getObjectId() method.
+        return $object->getId();
     }
 
     /**
@@ -746,6 +746,8 @@ class KeywordController extends AbstractCrudController
         if ($this->requestValue('save_mode') != 'stay') {
             return $this->redirectToListTemplate();
         }
+
+        return null;
     }
 
     /**

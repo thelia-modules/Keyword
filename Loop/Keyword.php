@@ -27,6 +27,7 @@ use Keyword\Model\CategoryAssociatedKeywordQuery;
 use Keyword\Model\ContentAssociatedKeywordQuery;
 use Keyword\Model\FolderAssociatedKeywordQuery;
 use Keyword\Model\KeywordQuery;
+use Keyword\Model\Map\KeywordTableMap;
 use Keyword\Model\ProductAssociatedKeywordQuery;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Thelia\Core\Template\Element\BaseI18nLoop;
@@ -181,7 +182,7 @@ class Keyword extends BaseI18nLoop implements PropelSearchLoopInterface
                         throw new \InvalidArgumentException('Given_id order cannot be set without `id` argument');
                     foreach ($id as $singleId) {
                         $givenIdMatched = 'given_id_matched_' . $singleId;
-                        $search->withColumn(ContentTableMap::COL_ID . "='$singleId'", $givenIdMatched);
+                        $search->withColumn(KeywordTableMap::COL_ID . "='$singleId'", $givenIdMatched);
                         $search->orderBy($givenIdMatched, Criteria::DESC);
                     }
                     break;
